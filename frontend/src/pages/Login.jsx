@@ -83,7 +83,7 @@ const Login = () => {
 
                     <div className="relative z-10">
                         <div className="text-center mb-8 transform transition-transform duration-500">
-                            <div className="inline-flex items-center justify-center w-17 h-17 rounded-full bg-white/10 p- shadow-lg border border-white/20 mb-4 group-hover:scale-110 group-hover:rotate3 transition-transform duration-500 backdrop-blur-md">
+                            <div className="inline-flex items-center justify-center w-17 h-17 rounded-full bg-white/10 p- shadow-lg border border-white/20 mb-4 group-hover:scale-110 group-hover:rotate 3 transition-transform duration-500 backdrop-blur-md">
                                 <img src="/images/logo-bogor.png" alt="Logo Kabupaten Bogor" className="w-full h-full object-contain drop-shadow-md" />
                             </div>
                             <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-lg tracking-wide">

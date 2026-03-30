@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,7 +31,9 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-^zugmu*!h8*&gl7q69n^&s-@pg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# Allow local and Vercel domains
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.vercel.app').split(',')
+CSRF_TRUSTED_ORIGINS = [f"https://{h.strip()}" for h in ALLOWED_HOSTS if h.strip() and not h.startswith(('localhost', '127.0.0.1'))]
 
 
 # Application definition
@@ -95,24 +98,29 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', 'desa_cimanggu_db'),
         'USER': os.getenv('DB_USER', 'postgres'),
         'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
+# Use DATABASE_URL for Production (e.g. Supabase/Neon/Vercel)
+db_from_env = dj_database_url.config(conn_max_age=600)
+if db_from_env:
+    DATABASES['default'].update(db_from_env)
+
 # Windows GeoDjango path (sesuaikan path OSGeo4W/PostgreSQL jika perlu)
-import os
-if os.name == 'nt':
-    # Default OSGeo4W path on Windows
-    OSGEO4W = r"C:\Users\fadjar\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OSGeo4W"
-    
-    # Path to OSGeo4W bin folder
-    os.environ['PATH'] = os.path.join(OSGEO4W, r"bin") + ';' + os.environ['PATH']
-    os.environ['PROJ_LIB'] = os.path.join(OSGEO4W, r"share\proj")
-    
-    # Geodjango required DLLs
-    GEOS_LIBRARY_PATH = os.path.join(OSGEO4W, r"bin\geos_c.dll")
-    GDAL_LIBRARY_PATH = os.path.join(OSGEO4W, r"bin\gdal310.dll") # Bisa gdal309, gdal308, dll tergantung versi. Cek isi C:\OSGeo4W\bin
+# import os
+# if os.name == 'nt':
+#     # Default OSGeo4W path on Windows
+#     OSGEO4W = r"C:\Users\fadjar\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OSGeo4W"
+#     
+#     # Path to OSGeo4W bin folder
+#     os.environ['PATH'] = os.path.join(OSGEO4W, r"bin") + ';' + os.environ['PATH']
+#     os.environ['PROJ_LIB'] = os.path.join(OSGEO4W, r"share\proj")
+#     
+#     # Geodjango required DLLs
+#     GEOS_LIBRARY_PATH = os.path.join(OSGEO4W, r"bin\geos_c.dll")
+#     GDAL_LIBRARY_PATH = os.path.join(OSGEO4W, r"bin\gdal310.dll") # Bisa gdal309, gdal308, dll tergantung versi. Cek isi C:\OSGeo4W\bin
 
 
 # Password validation
