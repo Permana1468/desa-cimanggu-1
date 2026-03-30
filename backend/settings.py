@@ -75,7 +75,10 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'frontend/dist')],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'frontend/dist'),
+            os.path.join(BASE_DIR, 'staticfiles'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -164,6 +167,7 @@ WHITENOISE_USE_FINDERS = True
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'frontend/dist'),
 ]
+WHITENOISE_ROOT = os.path.join(BASE_DIR, 'frontend/dist')
 
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:5173,http://localhost:3000').split(',')

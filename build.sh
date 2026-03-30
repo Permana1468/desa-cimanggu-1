@@ -26,4 +26,9 @@ else:
 echo "== Collecting Statics =="
 python3 manage.py collectstatic --noinput
 
+# Verify existence of index.html
+echo "== Verifying Build Artifacts =="
+ls -R frontend/dist || echo "frontend/dist not found"
+ls -R staticfiles || echo "staticfiles not found"
+
 echo "== Build Finished Successfully =="
