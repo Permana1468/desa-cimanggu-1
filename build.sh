@@ -1,6 +1,9 @@
-#!/bin/bash
-
-echo "== Starting Build Process =="
+# Build Frontend
+echo "== Building Frontend =="
+cd frontend
+npm install
+npm run build
+cd ..
 
 # Install dependencies
 python3 -m pip install -r requirements.txt
