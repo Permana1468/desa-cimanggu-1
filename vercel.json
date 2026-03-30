@@ -26,21 +26,18 @@
       "dest": "backend/wsgi.py"
     },
     {
-      "src": "/media/(.*)",
-      "dest": "backend/wsgi.py"
-    },
-    {
       "src": "/static/(.*)",
       "dest": "backend/wsgi.py"
     },
     {
-      "src": "/(.*)",
-      "dest": "/$1",
-      "continue": true
+      "src": "/media/(.*)",
+      "dest": "backend/wsgi.py"
+    },
+    {
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
-      "status": 200,
       "dest": "/index.html"
     }
   ]
