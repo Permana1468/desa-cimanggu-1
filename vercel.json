@@ -4,7 +4,7 @@
     "index.py": {
       "runtime": "python3.12",
       "maxDuration": 10,
-      "includeFiles": "frontend/dist/**,staticfiles/**"
+      "includeFiles": "frontend/**/*,staticfiles/**/*,backend/**/*,users/**/*,manage.py"
     }
   },
   "routes": [

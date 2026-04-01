@@ -22,18 +22,34 @@ import sys, os
 
 
 def health_check(request):
-    """Diagnostic endpoint to verify Django is running correctly."""
+    """Diagnostic endpoint to verify Django is running and list files on Vercel."""
+    import os
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+    # List all files and folders in current root to see what Vercel bundled
+    file_list = []
+    try:
+        for root, dirs, files in os.walk(base_dir):
+            # Limit depth to avoid too much data
+            depth = root[len(base_dir):].count(os.sep)
+            if depth < 3:
+                for d in dirs:
+                    file_list.append(os.path.join(root, d).replace(base_dir, ''))
+                for f in files:
+                    file_list.append(os.path.join(root, f).replace(base_dir, ''))
+    except Exception as e:
+        file_list.append(f"Error listing files: {str(e)}")
+
     index_path = os.path.join(base_dir, 'frontend', 'dist', 'index.html')
     staticfiles_path = os.path.join(base_dir, 'staticfiles')
+    
     return JsonResponse({
         'status': 'ok',
         'django': 'running',
-        'python_version': sys.version,
         'base_dir': base_dir,
         'index_html_exists': os.path.exists(index_path),
         'staticfiles_exists': os.path.exists(staticfiles_path),
-        'index_in_staticfiles': os.path.exists(os.path.join(staticfiles_path, 'index.html')),
+        'file_list': sorted(file_list[:80])  # Show top 80 files for diagnosis
     })
 
 

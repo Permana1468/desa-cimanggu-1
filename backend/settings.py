@@ -191,7 +191,7 @@ _frontend_dist = os.path.join(BASE_DIR, 'frontend', 'dist')
 STATICFILES_DIRS = [_frontend_dist] if os.path.exists(_frontend_dist) else []
 
 # WhiteNoise: serve frontend/dist files at root URL (for Vite assets)
-WHITENOISE_ROOT = os.path.join(BASE_DIR, 'frontend', 'dist')
+WHITENOISE_ROOT = _frontend_dist
 WHITENOISE_USE_FINDERS = True
 
 # CORS Configuration
