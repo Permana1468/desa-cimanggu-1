@@ -25,15 +25,26 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-^zugmu*!h8*&gl7q69n^&s-@pgx=6f17b1a#cb%!=(k0f*)1s1')
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+
+# SECURITY WARNING: keep the secret key used in production secret!
+if DEBUG:
+    # Use fallback only in local development
+    SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-^zugmu*!h8*&gl7q69n^&s-@pgx=6f17b1a#cb%!=(k0f*)1s1')
+else:
+    # Fail fast if SECRET_KEY is missing in production
+    SECRET_KEY = os.environ['SECRET_KEY']
+
 
 # Allow local and Vercel domains
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.vercel.app').split(',')
-CSRF_TRUSTED_ORIGINS = [f"https://{h.strip()}" for h in ALLOWED_HOSTS if h.strip() and not h.startswith(('localhost', '127.0.0.1'))]
+_raw_origins = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in _raw_origins if o.strip()]
+# Add vercel domains to trusted origins automatically
+for host in ALLOWED_HOSTS:
+    if host.strip() and not host.startswith(('localhost', '127.0.0.1')):
+        CSRF_TRUSTED_ORIGINS.append(f"https://{host.strip().lstrip('.')}")
 
 
 # Application definition
@@ -69,6 +80,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Security Settings for Production (aktif ketika DEBUG=False)
+if not DEBUG:
+    SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'True') == 'True'
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -161,16 +182,28 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Only add frontend/dist to STATICFILES_DIRS if it exists (build-time)
+_frontend_dist = os.path.join(BASE_DIR, 'frontend', 'dist')
+STATICFILES_DIRS = [_frontend_dist] if os.path.exists(_frontend_dist) else []
+
+# WhiteNoise: serve frontend/dist files at root URL (for Vite assets)
+WHITENOISE_ROOT = os.path.join(BASE_DIR, 'frontend', 'dist')
 WHITENOISE_USE_FINDERS = True
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'frontend/dist'),
-]
-WHITENOISE_ROOT = os.path.join(BASE_DIR, 'frontend/dist')
 
 # CORS Configuration
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:5173,http://localhost:3000').split(',')
+_cors_env = os.getenv('CORS_ALLOWED_ORIGINS', '')
+if _cors_env:
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_env.split(',') if o.strip()]
+else:
+    CORS_ALLOWED_ORIGINS = [
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'https://desa-cimanggu-1.vercel.app',
+    ]
+CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL', 'False') == 'True'
 
 # Alternatif spesifik origin:
 # CORS_ALLOWED_ORIGINS = [
@@ -182,7 +215,10 @@ CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:5173,
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 }
 
 # Simple JWT Configuration
@@ -200,5 +236,4 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 # Media files (Uploaded images, etc.)
 MEDIA_URL = '/media/'
-import os
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

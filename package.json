@@ -1,0 +1,9 @@
+{
+  "name": "desa-cimanggu-1",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "bash build.sh"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

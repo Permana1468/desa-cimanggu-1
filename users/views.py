@@ -65,7 +65,7 @@ class AdminUserViewSet(viewsets.ModelViewSet):
     def reset_password(self, request, pk=None):
         user = self.get_object()
         
-        # User input (misalnya lewat modal custom reset) atau reset ke default jika body kosong
+        # User input (misalnya lewat modal custom reset)
         if request.data and 'new_password' in request.data:
             serializer = AdminUserResetPasswordSerializer(data=request.data)
             if serializer.is_valid():
@@ -73,12 +73,12 @@ class AdminUserViewSet(viewsets.ModelViewSet):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            # Default password jika tidak dikirim dari form
-            new_password = "password123"
+            # Tolak request jika tidak mengirimkan password baru, untuk menghindari celah keamanan.
+            return Response({"new_password": ["Password baru wajib diisi."]}, status=status.HTTP_400_BAD_REQUEST)
 
         user.set_password(new_password)
         user.save()
-        return Response({"detail": f"Password untuk user '{user.username}' berhasil direset menjadi '{new_password}'."}, status=status.HTTP_200_OK)
+        return Response({"detail": f"Password untuk user '{user.username}' berhasil direset."}, status=status.HTTP_200_OK)
 
 
 # ----------------------------------------------------
@@ -119,9 +119,18 @@ class AbsensiScanView(APIView):
     """
     API for Kiosk Barcode Scanner to record attendance.
     """
-    permission_classes = [permissions.AllowAny] # Biasanya Kiosk berjalan tanpa login khusus, atau dengan token spesifik. Kita buka AllowAny untuk kemudahan simulasi lokal.
+    permission_classes = [permissions.AllowAny] # Access controlled via X-API-KEY header
 
     def post(self, request):
+        import os
+        kiosk_api_key = os.getenv('KIOSK_API_KEY')
+        
+        # Validasi API Key Kiosk
+        if kiosk_api_key:
+            provided_key = request.headers.get('X-API-KEY')
+            if not provided_key or provided_key != kiosk_api_key:
+                return Response({"error": "Unauthorized Kiosk Access. Invalid or missing X-API-KEY header."}, status=status.HTTP_401_UNAUTHORIZED)
+
         id_unik = request.data.get('id_unik')
         if not id_unik:
             return Response({"error": "ID Unik tidak ditemukan di request."}, status=status.HTTP_400_BAD_REQUEST)
