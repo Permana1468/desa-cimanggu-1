@@ -17,4 +17,8 @@ else
     exit 1
 fi
 
+# Collect static files for Django
+echo "== Collecting Static Files =="
+python3 manage.py collectstatic --noinput
+
 echo "== Build Finished Successfully =="
