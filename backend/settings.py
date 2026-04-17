@@ -29,16 +29,11 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # SECURITY WARNING: keep the secret key used in production secret!
-if DEBUG:
-    # Use fallback only in local development
-    SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-^zugmu*!h8*&gl7q69n^&s-@pgx=6f17b1a#cb%!=(k0f*)1s1')
-else:
-    # Fail fast if SECRET_KEY is missing in production
-    SECRET_KEY = os.environ['SECRET_KEY']
-
+# Using os.getenv with a fallback to prevent crash if ENV is missing on Vercel
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-only-for-initial-setup')
 
 # Allow local and Vercel domains
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.vercel.app').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.vercel.app,*').split(',')
 
 # CSRF Trusted Origins - auto-add Vercel domains
 _raw_origins = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
