@@ -118,6 +118,10 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Fallback to local SQLite if DATABASE_URL is not set.
 db_url_env = os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL') or ''
 
+# 🚨 EMERGENCY OVERRIDE: If the Vercel env contains sqlite by mistake or is empty, force Supabase
+if not db_url_env or 'sqlite' in db_url_env:
+    db_url_env = 'postgresql://postgres.yupabeqtuqiajxgnvkup:Desacimanggu1_2007@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres'
+
 # Auto-correct missing protocol (common copy-paste error from Supabase/Neon)
 if db_url_env and not db_url_env.startswith(('postgres://', 'postgresql://', 'sqlite://')):
     db_url_env = f"postgresql://{db_url_env}"
@@ -125,9 +129,9 @@ if db_url_env and not db_url_env.startswith(('postgres://', 'postgresql://', 'sq
 try:
     DATABASES = {
         'default': dj_database_url.parse(
-            db_url_env or f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+            db_url_env,
             conn_max_age=0, # Recommended for Serverless Functions
-            ssl_require=True if db_url_env and 'localhost' not in db_url_env else False
+            ssl_require=True if 'localhost' not in db_url_env else False
         )
     }
 except Exception as e:
