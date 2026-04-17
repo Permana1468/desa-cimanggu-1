@@ -155,44 +155,114 @@ const KelolaBerita = () => {
 
             {/* MODAL FORM TAMBAH BERITA */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex flex-col items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-                    <div className="bg-[#0f172a] border border-white/10 rounded-3xl w-full max-w-2xl shadow-2xl animate-scale-up flex flex-col overflow-hidden">
-                        <div className="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-[#1e293b]/50 shrink-0">
-                            <h3 className="text-lg font-bold text-white uppercase tracking-wider">Tulis Berita Baru</h3>
-                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white text-xl p-2 hover:bg-white/5 rounded-full transition-colors">✕</button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-6 bg-black/80 backdrop-blur-md transition-all duration-300">
+                    <div className="bg-[#0f172a]/95 border-0 md:border md:border-white/10 w-full h-full md:h-auto md:max-h-[90vh] md:max-w-4xl md:rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-scale-up flex flex-col overflow-hidden">
+                        
+                        {/* Header Modal */}
+                        <div className="px-8 py-6 border-b border-white/5 flex justify-between items-center bg-white/5 backdrop-blur-xl shrink-0">
+                            <div>
+                                <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-[0.2em]">Tulis Berita Baru</h3>
+                                <p className="text-xs text-yellow-400/70 font-bold mt-1 tracking-widest uppercase">Publikasikan informasi terkini desa</p>
+                            </div>
+                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white text-2xl p-3 hover:bg-white/10 rounded-full transition-all transform hover:rotate-90">✕</button>
                         </div>
 
-                        <div className="overflow-y-auto max-h-[80vh] custom-scrollbar">
-                            <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Judul Artikel</label>
-                                <input required type="text" name="judul" value={formData.judul} onChange={handleChange} className="w-full px-4 py-2.5 bg-[#1e293b]/50 border border-white/10 rounded-lg text-white focus:border-yellow-500 outline-none transition" placeholder="Masukkan judul..." />
-                            </div>
-                            <div className="grid grid-cols-2 gap-5">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Kategori</label>
-                                    <select name="kategori" value={formData.kategori} onChange={handleChange} className="w-full px-4 py-2.5 bg-[#1e293b]/50 border border-white/10 rounded-lg text-white focus:border-yellow-500 outline-none transition appearance-none">
-                                        <option value="Kegiatan">Kegiatan</option>
-                                        <option value="Pengumuman">Pengumuman</option>
-                                        <option value="Bansos">Bansos</option>
-                                    </select>
+                        {/* Content Scroll Area */}
+                        <div className="overflow-y-auto flex-1 custom-scrollbar">
+                            <form onSubmit={handleSubmit} className="p-8 space-y-8">
+                                
+                                {/* Judul Section */}
+                                <div className="space-y-3">
+                                    <label className="block text-xs font-black text-blue-400 uppercase tracking-[0.2em]">Judul Artikel</label>
+                                    <input 
+                                        required 
+                                        type="text" 
+                                        name="judul" 
+                                        value={formData.judul} 
+                                        onChange={handleChange} 
+                                        className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white text-lg font-bold focus:border-yellow-500 focus:bg-white/10 outline-none transition-all placeholder:text-gray-600" 
+                                        placeholder="Masukkan judul berita yang menarik..." 
+                                    />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Upload Gambar Cover</label>
-                                    <input required type="file" name="gambar_cover" onChange={handleChange} className="block w-full text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-yellow-500/10 file:text-yellow-400 hover:file:bg-yellow-500/20 cursor-pointer" accept="image/*" />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Konten Berita</label>
-                                <textarea required name="konten" value={formData.konten} onChange={handleChange} rows="5" className="w-full px-4 py-2.5 bg-[#1e293b]/50 border border-white/10 rounded-lg text-gray-300 focus:border-yellow-500 outline-none leading-relaxed" placeholder="Tulis isi berita di sini..."></textarea>
-                            </div>
 
-                            <div className="pt-4 flex justify-end gap-3">
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 transition">Batal</button>
-                                <button type="submit" disabled={isSaving} className="bg-yellow-500 hover:bg-yellow-400 disabled:opacity-50 text-black font-bold px-8 py-2.5 rounded-lg transition shadow-[0_0_15px_rgba(234,179,8,0.3)]">
-                                    {isSaving ? 'Menyimpan...' : 'Publikasikan'}
-                                </button>
-                            </div>
+                                {/* Responsive Grid for Category & Image */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <label className="block text-xs font-black text-blue-400 uppercase tracking-[0.2em]">Kategori</label>
+                                        <div className="relative">
+                                            <select 
+                                                name="kategori" 
+                                                value={formData.kategori} 
+                                                onChange={handleChange} 
+                                                className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-bold focus:border-yellow-500 outline-none transition-all appearance-none cursor-pointer"
+                                            >
+                                                <option value="Kegiatan">Kegiatan Desa</option>
+                                                <option value="Pengumuman">Pengumuman Resmi</option>
+                                                <option value="Bansos">Bantuan Sosial</option>
+                                            </select>
+                                            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-yellow-500">▼</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="space-y-3">
+                                        <label className="block text-xs font-black text-blue-400 uppercase tracking-[0.2em]">Gambar Cover (HD)</label>
+                                        <div className="relative group">
+                                            <input 
+                                                required 
+                                                type="file" 
+                                                name="gambar_cover" 
+                                                onChange={handleChange} 
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                                                accept="image/*" 
+                                            />
+                                            <div className="w-full px-6 py-4 bg-white/5 border-2 border-dashed border-white/10 rounded-2xl text-gray-400 group-hover:border-yellow-500/50 group-hover:bg-yellow-500/5 transition-all flex items-center gap-4">
+                                                <div className="w-10 h-10 bg-yellow-500/10 rounded-xl flex items-center justify-center text-yellow-500">📸</div>
+                                                <span className="text-sm font-medium truncate">
+                                                    {formData.gambar_cover ? formData.gambar_cover.name : 'Pilih Gambar...'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Konten Textarea */}
+                                <div className="space-y-3">
+                                    <label className="block text-xs font-black text-blue-400 uppercase tracking-[0.2em]">Konten Berita</label>
+                                    <textarea 
+                                        required 
+                                        name="konten" 
+                                        value={formData.konten} 
+                                        onChange={handleChange} 
+                                        rows="8" 
+                                        className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-gray-200 focus:border-yellow-500 focus:bg-white/10 outline-none leading-relaxed transition-all resize-none placeholder:text-gray-600" 
+                                        placeholder="Tuliskan isi berita secara lengkap di sini..."
+                                    ></textarea>
+                                </div>
+
+                                {/* Form Actions */}
+                                <div className="pt-6 flex flex-col md:flex-row justify-end gap-4 border-t border-white/5">
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setIsModalOpen(false)} 
+                                        className="order-2 md:order-1 px-8 py-4 rounded-2xl text-gray-400 font-bold hover:bg-white/5 hover:text-white transition-all"
+                                    >
+                                        Batal
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        disabled={isSaving} 
+                                        className="order-1 md:order-2 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 disabled:opacity-50 text-[#0f172a] font-black px-12 py-4 rounded-2xl transition-all shadow-[0_10px_30px_rgba(234,179,8,0.3)] hover:shadow-[0_15px_40px_rgba(234,179,8,0.4)] transform hover:-translate-y-1 flex items-center justify-center gap-3"
+                                    >
+                                        {isSaving ? (
+                                            <>
+                                                <div className="w-5 h-5 border-2 border-[#0f172a]/30 border-t-[#0f172a] rounded-full animate-spin"></div>
+                                                Memproses...
+                                            </>
+                                        ) : (
+                                            <>Publikasikan Berita 🚀</>
+                                        )}
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -203,4 +273,3 @@ const KelolaBerita = () => {
 };
 
 export default KelolaBerita;
-
