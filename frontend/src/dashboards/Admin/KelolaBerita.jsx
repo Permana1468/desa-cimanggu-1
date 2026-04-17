@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { compressImage } from '../utils/imageUtils';
+import { compressImage } from '../../utils/imageUtils';
 
 const KelolaBerita = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);

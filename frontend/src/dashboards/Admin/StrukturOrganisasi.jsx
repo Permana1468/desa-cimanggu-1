@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { QRCodeSVG } from 'qrcode.react';
 import { Printer } from 'lucide-react';
-import { compressImage } from '../utils/imageUtils';
+import { compressImage } from '../../utils/imageUtils';
 
 const StrukturOrganisasi = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
