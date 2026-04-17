@@ -226,13 +226,14 @@ const StrukturOrganisasi = () => {
             {/* MODAL FORM TAMBAH PEJABAT */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-                    <div className="bg-[#0f172a] border border-white/10 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-scale-up">
-                        <div className="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-[#1e293b]/50">
-                            <h3 className="text-lg font-bold text-white">Data Pejabat Baru</h3>
-                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white text-xl">✕</button>
+                    <div className="bg-[#0f172a] border border-white/10 rounded-3xl w-full max-w-lg shadow-2xl animate-scale-up flex flex-col overflow-hidden">
+                        <div className="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-[#1e293b]/50 shrink-0">
+                            <h3 className="text-lg font-bold text-white uppercase tracking-wider">Data Pejabat Baru</h3>
+                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white text-xl p-2 hover:bg-white/5 rounded-full transition-colors">✕</button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                        <div className="overflow-y-auto max-h-[80vh] custom-scrollbar">
+                            <form onSubmit={handleSubmit} className="p-6 space-y-5">
                             <div>
                                 <label className="block text-sm font-medium text-gray-300 mb-2">Nama Lengkap (Beserta Gelar)</label>
                                 <input required type="text" name="nama" value={formData.nama} onChange={handleChange} className="w-full px-4 py-2.5 bg-[#1e293b]/50 border border-white/10 rounded-lg text-white focus:border-yellow-500 outline-none transition" placeholder="Cth: Bpk. Fulan, S.E." />
@@ -263,7 +264,8 @@ const StrukturOrganisasi = () => {
                                     {isSaving ? 'Menyimpan...' : 'Simpan Pejabat'}
                                 </button>
                             </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
             )}

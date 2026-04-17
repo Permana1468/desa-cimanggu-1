@@ -81,7 +81,7 @@ const KelolaBerita = () => {
         if (!window.confirm("Apakah Anda yakin ingin menghapus berita ini?")) return;
 
         try {
-            await api.delete(`/users/api/berita/${id}//`);
+            await api.delete(`/users/api/berita/${id}/`);
             fetchBerita();
         } catch (error) {
             console.error("Gagal menghapus berita", error);
