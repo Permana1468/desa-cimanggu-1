@@ -116,12 +116,22 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database Configuration
 # Using dj-database-url to handle DATABASE_URL from environment variables (Supabase/Neon/etc)
 # Fallback to local SQLite if DATABASE_URL is not set.
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
-        conn_max_age=600
-    )
-}
+try:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+            conn_max_age=0, # Recommended for Serverless Functions
+            ssl_require=True if os.getenv('DATABASE_URL') and 'localhost' not in os.getenv('DATABASE_URL', '') else False
+        )
+    }
+except Exception:
+    # Safe fallback if URL is malformed
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # GeoDjango Configuration (Disabled)
