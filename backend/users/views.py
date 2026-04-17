@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.http import HttpResponse
 from django.core import signing
 import random
+import string
 import openpyxl
 import os
 from .models import CustomUser, LandingPageSetting, Berita, PejabatDesa, Kehadiran, UsulanMusrenbang, RencanaAnggaran, RencanaAnggaranItem
@@ -43,17 +44,15 @@ class CaptchaView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        # Generate random simple math problem
-        a = random.randint(1, 20)
-        b = random.randint(1, 20)
-        operation = "+" # We can randomize this later if needed
-        answer = a + b
+        # Generate random alphanumeric string (length 6)
+        chars = string.ascii_uppercase + string.digits
+        captcha_str = ''.join(random.choice(chars) for _ in range(6))
         
         # Sign the answer into a token
-        token = signing.dumps(answer)
+        token = signing.dumps(captcha_str)
         
         return Response({
-            "question": f"{a} {operation} {b} = ?",
+            "question": captcha_str,
             "captcha_token": token
         })
 

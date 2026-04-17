@@ -191,17 +191,17 @@ const Register = () => {
                             {/* CAPTCHA SECTION */}
                             <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between gap-4">
                                 <div className="flex-1">
-                                    <p className="text-[9px] uppercase tracking-widest text-yellow-400 font-bold mb-1 opacity-80">Security Check</p>
+                                    <p className="text-[9px] uppercase tracking-widest text-yellow-400 font-bold mb-1 opacity-80">Kode CAPTCHA</p>
                                     <div className="flex items-center gap-3">
-                                        <span className="text-lg font-black text-white italic tracking-tighter">{captcha.question || "---"}</span>
+                                        <span className="text-xl font-black text-white italic tracking-[0.2em] bg-white/5 px-2 py-1 rounded select-none">{captcha.question || "---"}</span>
                                         <button type="button" onClick={fetchCaptcha} className="p-1 text-slate-400 hover:text-white transition-all"><RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} /></button>
                                     </div>
                                 </div>
-                                <div className="w-20">
+                                <div className="w-28">
                                     <input 
-                                        name="captcha_answer" required type="number" value={formData.captcha_answer} onChange={handleChange}
-                                        className="w-full px-3 py-2 bg-slate-900/60 border border-white/10 rounded-lg text-white text-center font-bold outline-none focus:ring-2 focus:ring-yellow-400" 
-                                        placeholder="?" 
+                                        name="captcha_answer" required type="text" value={formData.captcha_answer} onChange={handleChange}
+                                        className="w-full px-3 py-2 bg-slate-900/60 border border-white/10 rounded-lg text-white text-center font-bold tracking-widest uppercase outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        placeholder="KODE" 
                                     />
                                 </div>
                             </div>

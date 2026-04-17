@@ -146,9 +146,9 @@ const Login = () => {
                             {/* CAPTCHA SECTION */}
                             <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between gap-4 group/captcha transition-all hover:bg-white/10">
                                 <div className="flex-1">
-                                    <p className="text-[10px] uppercase tracking-widest text-yellow-400 font-bold mb-1 opacity-80">Security Check</p>
+                                    <p className="text-[10px] uppercase tracking-widest text-yellow-400 font-bold mb-1 opacity-80">Kode CAPTCHA</p>
                                     <div className="flex items-center gap-3">
-                                        <span className="text-xl font-black text-white italic tracking-tighter drop-shadow-sm">
+                                        <span className="text-2xl font-black text-white italic tracking-[0.2em] drop-shadow-[0_2px_10px_rgba(255,255,255,0.3)] select-none bg-white/10 px-3 py-1 rounded-lg">
                                             {captcha.question || "---"}
                                         </span>
                                         <button 
@@ -159,11 +159,11 @@ const Login = () => {
                                         </button>
                                     </div>
                                 </div>
-                                <div className="w-24">
+                                <div className="w-32">
                                     <input 
-                                        type="number" required value={captchaAnswer} onChange={(e) => setCaptchaAnswer(e.target.value)}
-                                        className="w-full px-3 py-2.5 bg-slate-900/60 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-yellow-400 text-center font-bold placeholder-slate-600 outline-none" 
-                                        placeholder="?" 
+                                        type="text" required value={captchaAnswer} onChange={(e) => setCaptchaAnswer(e.target.value)}
+                                        className="w-full px-3 py-2.5 bg-slate-900/60 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-yellow-400 text-center font-bold tracking-widest uppercase placeholder-slate-600 outline-none" 
+                                        placeholder="KODE" 
                                     />
                                 </div>
                             </div>
