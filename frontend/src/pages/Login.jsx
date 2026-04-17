@@ -37,6 +37,10 @@ const Login = () => {
 
     useEffect(() => {
         fetchCaptcha();
+        const timer = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+        }, 8000);
+        return () => clearInterval(timer);
     }, []);
 
     const handleLogin = async (e) => {
@@ -57,7 +61,7 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center relative font-sans overflow-x-hidden p-4 md:p-8">
+        <div className="min-h-screen flex items-center justify-center relative font-sans overflow-x-hidden p-4 py-12 md:py-0">
             {/* Background Carousel */}
             <div className="absolute inset-0 z-0 bg-black">
                 {heroImages.map((src, index) => (
@@ -72,33 +76,32 @@ const Login = () => {
                     </div>
                 ))}
                 {/* Overlay Gelap Gradasi */}
-                <div className="absolute inset-0 z-20 bg-gradient-to-br from-[#0b1120]/95 via-[#0b1120]/80 to-[#0b1120]/60 backdrop-blur-[2px]"></div>
+                <div className="absolute inset-0 z-20 bg-gradient-to-br from-[#0b1120]/80 via-[#0b1120]/50 to-transparent backdrop-blur-[2px]"></div>
             </div>
 
-            {/* Back to Home Button */}
-            <Link to="/" className="absolute top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-black/40 hover:bg-white/20 backdrop-blur-xl border border-white/20 rounded-full text-white transition-all shadow-xl group">
-                <Home size={16} className="group-hover:-translate-x-1 transition-transform" />
-                <span className="hidden sm:inline text-sm font-bold tracking-tight">Kembali ke Beranda</span>
-                <span className="sm:hidden text-xs font-bold tracking-tight">Kembali</span>
+            {/* Back to Home Button - Posisinya disesuaikan agar tidak tabrakan */}
+            <Link to="/" className="absolute top-4 left-4 sm:top-6 sm:left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-full text-white transition-all shadow-lg group">
+                <Home size={18} className="group-hover:-translate-x-1 transition-transform" />
+                <span className="text-sm font-medium">Kembali ke Beranda</span>
             </Link>
 
             {/* Login Form Container */}
-            <div className="relative z-30 w-full max-w-[420px] mx-auto animate-fade-in-up md:perspective-1000 my-auto">
+            <div className="relative z-30 w-full max-w-sm mx-auto animate-fade-in-up md:perspective-1000 mt-8 sm:mt-0">
                 {/* Floating Card */}
-                <div className="p-6 md:p-10 bg-white/5 backdrop-blur-[40px] border border-white/10 rounded-[2.5rem] shadow-[0_30px_70px_rgba(0,0,0,0.8)] relative overflow-hidden group">
-                    
-                    {/* Glowing Accent */}
-                    <div className="absolute -top-24 -right-24 w-48 h-48 bg-yellow-500/15 rounded-full blur-[70px] pointer-events-none"></div>
+                <div className="p-7 md:p-8 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-transform duration-500 hover:-translate-y-2 relative overflow-hidden group">
+
+                    {/* Glow Effect */}
+                    <div className="absolute -inset-1 bg-gradient-to-br from-yellow-500/10 via-transparent to-blue-500/10 rounded-3xl blur-2xl z-0 opacity-50"></div>
 
                     <div className="relative z-10">
-                        <div className="text-center mb-6 md:mb-8">
-                            <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-white/10 p-2.5 shadow-2xl border border-white/20 mb-4 backdrop-blur-md transform -rotate-2 hover:rotate-0 transition-transform">
+                        <div className="text-center mb-6">
+                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 p-2 shadow-lg border border-white/20 mb-4 backdrop-blur-md">
                                 <img src="/images/logo-bogor.png" alt="Logo" className="w-full h-full object-contain drop-shadow-md" />
                             </div>
-                            <h2 className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 drop-shadow-sm tracking-tight uppercase">
+                            <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-sm tracking-tight uppercase">
                                 DESA CIMANGGU I
                             </h2>
-                            <p className="text-slate-400/90 font-bold text-[10px] md:text-[11px] mt-1.5 opacity-80 uppercase tracking-[0.2em]">Sistem Digitalisasi Desa (SDD)</p>
+                            <p className="text-slate-200 font-medium text-[11px] md:text-xs mt-2 opacity-80 uppercase tracking-widest">Sistem Digitalisasi Desa (SDD)</p>
                         </div>
 
                         {error && (
@@ -108,61 +111,58 @@ const Login = () => {
                         )}
 
                         <form onSubmit={handleLogin} className="space-y-4">
-                            <div className="space-y-2">
-                                <label className="block text-[11px] md:text-sm font-bold text-slate-300 ml-1 uppercase tracking-wider">Username</label>
+                            <div className="space-y-1.5">
+                                <label className="block text-sm font-medium text-slate-200 ml-1">Username</label>
                                 <div className="relative group/input">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-transform group-focus-within/input:scale-110">
-                                        <User className="h-5 w-5 text-slate-500 group-focus-within/input:text-yellow-400 transition-colors" />
+                                        <User className="h-5 w-5 text-slate-300 group-focus-within/input:text-yellow-400 transition-colors" />
                                     </div>
                                     <input
                                         type="text"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         required
-                                        className="block w-full pl-11 pr-4 py-3.5 bg-black/40 border border-white/10 rounded-2xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 transition-all shadow-inner"
-                                        placeholder="Username Anda"
+                                        className="block w-full pl-11 pr-4 py-3.5 bg-slate-900/40 border border-white/10 rounded-2xl text-white placeholder-slate-400/70 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 transition-all shadow-inner backdrop-blur-sm"
+                                        placeholder="Masukkan username"
                                     />
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="block text-[11px] md:text-sm font-bold text-slate-300 ml-1 uppercase tracking-wider">Password</label>
+                            <div className="space-y-1.5">
+                                <label className="block text-sm font-medium text-slate-200 ml-1">Password</label>
                                 <div className="relative group/input">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-transform group-focus-within/input:scale-110">
-                                        <Lock className="h-5 w-5 text-slate-500 group-focus-within/input:text-yellow-400 transition-colors" />
+                                        <Lock className="h-5 w-5 text-slate-300 group-focus-within/input:text-yellow-400 transition-colors" />
                                     </div>
                                     <input
                                         type="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
-                                        className="block w-full pl-11 pr-4 py-3.5 bg-black/40 border border-white/10 rounded-2xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 transition-all shadow-inner"
-                                        placeholder="Password Anda"
+                                        className="block w-full pl-11 pr-4 py-3.5 bg-slate-900/40 border border-white/10 rounded-2xl text-white placeholder-slate-400/70 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 transition-all shadow-inner backdrop-blur-sm"
+                                        placeholder="Masukkan password"
                                     />
                                 </div>
                             </div>
 
                             {/* CAPTCHA SECTION */}
-                            <div className="bg-black/20 border border-white/5 rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-between gap-3 group/captcha transition-all hover:bg-black/30">
-                                <div className="flex-1 w-full sm:w-auto text-center sm:text-left">
-                                    <p className="text-[9px] uppercase tracking-widest text-yellow-500/70 font-black mb-1.5 p-1">Verifikasi Captcha</p>
-                                    <div className="flex items-center justify-center sm:justify-start gap-3">
-                                        <span className="text-xl font-black text-white italic tracking-[0.2em] select-none bg-white/5 px-4 py-2 rounded-xl border border-white/5 shadow-inner">
+                            <div className="bg-white/5 border border-white/10 rounded-2xl p-3 flex items-center justify-between gap-4 group/captcha transition-all hover:bg-white/10">
+                                <div className="flex-1 text-left">
+                                    <p className="text-[9px] uppercase tracking-widest text-yellow-400 font-bold mb-1 opacity-70">Kode CAPTCHA</p>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xl font-black text-white italic tracking-[0.1em] select-none bg-white/5 px-2 py-1 rounded">
                                             {captcha.question || "---"}
                                         </span>
-                                        <button 
-                                            type="button" onClick={fetchCaptcha}
-                                            className="p-2.5 bg-white/5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all"
-                                        >
-                                            <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
+                                        <button type="button" onClick={fetchCaptcha} className="p-1 text-slate-400 hover:text-white transition-all">
+                                            <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} />
                                         </button>
                                     </div>
                                 </div>
-                                <div className="w-full sm:w-28 text-center sm:text-right">
+                                <div className="w-28 text-right">
                                     <input 
                                         type="text" required value={captchaAnswer} onChange={(e) => setCaptchaAnswer(e.target.value)}
-                                        className="w-full px-3 py-2.5 bg-black/40 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-yellow-400/50 text-center font-black text-sm tracking-widest uppercase outline-none" 
-                                        placeholder="HASIL" 
+                                        className="w-full px-2 py-2 bg-slate-900/60 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-yellow-400/50 text-center font-bold text-sm tracking-widest uppercase outline-none" 
+                                        placeholder="KODE" 
                                     />
                                 </div>
                             </div>
@@ -170,30 +170,30 @@ const Login = () => {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className={`w-full flex items-center justify-center gap-3 py-4 sm:py-5 px-4 rounded-2xl text-slate-900 font-black text-lg shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 mt-8 ${isLoading
+                                className={`w-full flex items-center justify-center gap-2 py-4 px-4 rounded-2xl text-slate-900 font-extrabold text-lg shadow-xl transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 mt-8 ${isLoading
                                     ? 'bg-yellow-600/50 cursor-not-allowed scale-95'
-                                    : 'bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 hover:shadow-[0_0_30px_rgba(234,179,8,0.3)] bg-[length:200%_auto] hover:bg-right'
+                                    : 'bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 hover:shadow-[0_0_20px_rgba(234,179,8,0.5)] bg-[length:200%_auto] hover:bg-right'
                                     }`}
                             >
                                 {isLoading ? (
                                     <span className="flex items-center gap-2 uppercase tracking-widest text-sm">
-                                        <RefreshCw size={18} className="animate-spin" />
-                                        Proses...
+                                        <RefreshCw size={20} className="animate-spin" />
+                                        Memproses...
                                     </span>
                                 ) : (
                                     <>
-                                        <span className="uppercase tracking-wider">Masuk Aplikasi</span>
+                                        <span>Masuk Aplikasi</span>
                                         <ArrowRight size={22} className="stroke-[3] group-hover:translate-x-1 transition-transform" />
                                     </>
                                 )}
                             </button>
                         </form>
 
-                        <div className="mt-8 text-center border-t border-white/10 pt-6">
-                            <p className="text-slate-400 text-sm mb-4 font-medium">
-                                Belum punya akun? <Link to="/register" className="text-yellow-500 font-black hover:underline tracking-tight">Daftar Sekarang</Link>
+                        <div className="mt-8 text-center border-t border-white/10 pt-6 pb-2">
+                            <p className="text-slate-300 text-sm mb-4">
+                                Belum punya akun? <Link to="/register" className="text-yellow-400 font-bold hover:underline">Daftar Sekarang</Link>
                             </p>
-                            <p className="text-slate-500/50 text-[9px] font-bold tracking-[0.2em] uppercase">
+                            <p className="text-slate-400/50 text-[10px] tracking-wider uppercase">
                                 &copy; {new Date().getFullYear()} Pemerintah Desa Cimanggu 1.
                             </p>
                         </div>
@@ -206,7 +206,7 @@ const Login = () => {
                 @keyframes fade-in-up {
                     0% {
                         opacity: 0;
-                        transform: translateY(30px) scale(0.98);
+                        transform: translateY(40px) scale(0.95);
                     }
                     100% {
                         opacity: 1;
