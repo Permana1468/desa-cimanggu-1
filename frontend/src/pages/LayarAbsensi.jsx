@@ -33,7 +33,7 @@ const LayarAbsensi = () => {
             }
         };
         fetchSettings();
-    }, [API_URL]);
+    }, []);
 
     // Slider Timer
     useEffect(() => {

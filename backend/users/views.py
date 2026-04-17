@@ -823,10 +823,13 @@ class HealthCheckView(APIView):
         
         try:
             # Check DB
+            from django.db import connection
             connection.ensure_connection()
             status_info["database"] = "connected"
         except Exception as e:
             status_info["database"] = f"error: {str(e)}"
+            
+        return Response(status_info, status=status.HTTP_200_OK)
             
 class SystemInitView(APIView):
     """
@@ -835,22 +838,30 @@ class SystemInitView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        username = "admin"
-        password = "desa1234"
-        
-        user, created = CustomUser.objects.get_or_create(
-            username=username,
-            defaults={'role': 'ADMIN', 'email': 'admin@desa.id'}
-        )
-        
-        user.set_password(password)
-        user.save()
-        
-        status_msg = "Admin user created." if created else "Admin password reset to default."
-        return Response({
-            "message": status_msg,
-            "credentials": {
-                "username": username,
-                "password": password
-            }
-        })
+        try:
+            username = "admin"
+            password = "desa1234"
+            
+            user, created = CustomUser.objects.get_or_create(
+                username=username,
+                defaults={'role': 'ADMIN', 'email': 'admin@desa.id'}
+            )
+            
+            user.set_password(password)
+            user.save()
+            
+            status_msg = "Admin user created." if created else "Admin password reset to default."
+            return Response({
+                "message": status_msg,
+                "credentials": {
+                    "username": username,
+                    "password": password
+                }
+            })
+        except Exception as e:
+            # Prevent 500 crash on Vercel
+            return Response({
+                "error": "Failed to initialize system.",
+                "detail": str(e),
+                "hint": "Check if your DATABASE_URL is correctly set in Vercel environment variables."
+            }, status=status.HTTP_200_OK) # Still 200 so user can read it
