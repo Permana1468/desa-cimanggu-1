@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Upload, Image as ImageIcon } from 'lucide-react';
 import api from '../../services/api';
+import { compressImage } from '../../utils/imageUtils';
 
 const IdentitasProfilForm = () => {
     const [formData, setFormData] = useState({
@@ -53,7 +54,11 @@ const IdentitasProfilForm = () => {
             });
 
             // Image file
-            if (imageFile) submitData.append('logo', imageFile);
+            if (imageFile) {
+                // Kompresi otomatis sebelum upload
+                const compressedFile = await compressImage(imageFile);
+                submitData.append('logo', compressedFile);
+            }
 
             if (formData.id) {
                 await api.patch(`/users/api/landing-page/${formData.id}/`, submitData, {

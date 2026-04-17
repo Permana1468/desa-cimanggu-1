@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { QRCodeSVG } from 'qrcode.react';
 import { Printer } from 'lucide-react';
+import { compressImage } from '../utils/imageUtils';
 
 const StrukturOrganisasi = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,15 +50,17 @@ const StrukturOrganisasi = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSaving(true);
-        const data = new FormData();
-        data.append('nama', formData.nama);
-        data.append('jabatan', formData.jabatan);
-        data.append('level', formData.level);
-        if (formData.foto) {
-            data.append('foto', formData.foto);
-        }
-
         try {
+            const data = new FormData();
+            data.append('nama', formData.nama);
+            data.append('jabatan', formData.jabatan);
+            data.append('level', formData.level);
+            
+            if (formData.foto) {
+                // Kompresi otomatis sebelum upload
+                const compressedFile = await compressImage(formData.foto);
+                data.append('foto', compressedFile);
+            }
             const token = localStorage.getItem('access_token');
             await axios.post(`${API_URL}/users/api/pejabat-desa/`, data, {
                 headers: {

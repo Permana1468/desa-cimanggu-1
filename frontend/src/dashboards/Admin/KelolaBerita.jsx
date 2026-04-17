@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { compressImage } from '../utils/imageUtils';
 
 const KelolaBerita = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,15 +48,17 @@ const KelolaBerita = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSaving(true);
-        const data = new FormData();
-        data.append('judul', formData.judul);
-        data.append('kategori', formData.kategori);
-        data.append('konten', formData.konten);
-        if (formData.gambar_cover) {
-            data.append('gambar_cover', formData.gambar_cover);
-        }
-
         try {
+            const data = new FormData();
+            data.append('judul', formData.judul);
+            data.append('kategori', formData.kategori);
+            data.append('konten', formData.konten);
+            
+            if (formData.gambar_cover) {
+                // Kompresi otomatis
+                const compressedFile = await compressImage(formData.gambar_cover);
+                data.append('gambar_cover', compressedFile);
+            }
             const token = localStorage.getItem('access_token');
             await axios.post(`${API_URL}/users/api/berita/`, data, {
                 headers: {
