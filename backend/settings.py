@@ -35,6 +35,10 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-only-for-initial-
 # Allow local and Vercel domains
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.vercel.app,*').split(',')
 
+# Disable APPEND_SLASH for Vercel stability
+APPEND_SLASH = False
+
+
 # CSRF Trusted Origins - auto-add Vercel domains
 _raw_origins = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in _raw_origins if o.strip()]

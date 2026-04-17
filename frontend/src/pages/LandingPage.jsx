@@ -1041,9 +1041,11 @@ const LandingPage = () => {
             {/* Footer */}
             <footer className="border-t border-white/10 bg-slate-900 py-12 text-center px-4 relative z-20">
                 <img
-                    src={siteData?.logo || "https://upload.wikimedia.org/wikipedia/commons/1/18/Lambang_Kabupaten_Bogor%2C_Jawa_Barat%2C_Indonesia.svg"}
+                    src="/images/logo-bogor.png"
                     alt="Logo Footer"
                     className="w-12 h-12 object-contain drop-shadow-md mx-auto mb-6"
+                    onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
+                    style={{ cursor: 'pointer' }}
                 />
                 <h3 className="text-xl font-bold text-white mb-2">Pemerintah {siteData?.title || 'Desa Cimanggu I'}</h3>
                 <p className="text-slate-400 text-sm mb-8">{siteData?.description || 'Kecamatan Cibungbulang, Kabupaten Bogor'}</p>

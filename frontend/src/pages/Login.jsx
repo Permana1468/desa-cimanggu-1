@@ -25,7 +25,8 @@ const Login = () => {
 
     const fetchCaptcha = async () => {
         try {
-            const res = await axios.get('/users/api/captcha/');
+            // Remove trailing slash to be safer with Vercel routing
+            const res = await axios.get('/users/api/captcha');
             setCaptcha({
                 question: res.data.question,
                 token: res.data.captcha_token
@@ -84,22 +85,22 @@ const Login = () => {
             </Link>
 
             {/* Login Form Container (Glassmorphism & Floating) */}
-            <div className="relative z-30 w-full max-w-md mx-4 animate-fade-in-up perspective-1000">
+            <div className="relative z-30 w-full max-w-sm mx-4 animate-fade-in-up perspective-1000">
                 {/* Floating Card */}
-                <div className="p-6 md:p-8 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-transform duration-500 hover:-translate-y-3 hover:shadow-[0_30px_60px_rgba(0,0,0,0.6)] relative overflow-hidden group">
+                <div className="p-5 md:p-7 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-transform duration-500 hover:-translate-y-3 relative overflow-hidden group">
 
                     {/* Glow Effect Behind Card content */}
-                    <div className="absolute -inset-1 bg-gradient-to-br from-yellow-500/20 via-transparent to-blue-500/20 rounded-3xl blur-2xl z-0 transition-all duration-700 group-hover:opacity-100 opacity-50"></div>
+                    <div className="absolute -inset-1 bg-gradient-to-br from-yellow-500/10 via-transparent to-blue-500/10 rounded-3xl blur-2xl z-0 opacity-50"></div>
 
                     <div className="relative z-10">
-                        <div className="text-center mb-6 transform transition-transform duration-500">
-                            <div className="inline-flex items-center justify-center w-17 h-17 rounded-full bg-white/10 p- shadow-lg border border-white/20 mb-4 group-hover:scale-110 group-hover:rotate 3 transition-transform duration-500 backdrop-blur-md">
-                                <img src="/images/logo-bogor.png" alt="Logo Kabupaten Bogor" className="w-full h-full object-contain drop-shadow-md" />
+                        <div className="text-center mb-5">
+                            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white/10 p-2 shadow-lg border border-white/20 mb-3 backdrop-blur-md">
+                                <img src="/images/logo-bogor.png" alt="Logo" className="w-full h-full object-contain drop-shadow-md" />
                             </div>
-                            <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-lg tracking-wide">
+                            <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-sm tracking-tight">
                                 DESA CIMANGGU I
                             </h2>
-                            <p className="text-slate-200 font-medium text-sm mt-2 opacity-90 tracking-wide">Sistem Digitalisasi Desa (SDD)</p>
+                            <p className="text-slate-200 font-medium text-[11px] mt-1 opacity-80 uppercase tracking-widest">Sistem Digitalisasi Desa (SDD)</p>
                         </div>
 
                         {error && (
@@ -144,25 +145,25 @@ const Login = () => {
                             </div>
 
                             {/* CAPTCHA SECTION */}
-                            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between gap-4 group/captcha transition-all hover:bg-white/10">
+                            <div className="bg-white/5 border border-white/10 rounded-2xl p-3 flex items-center justify-between gap-4 group/captcha transition-all hover:bg-white/10">
                                 <div className="flex-1">
-                                    <p className="text-[10px] uppercase tracking-widest text-yellow-400 font-bold mb-1 opacity-80">Kode CAPTCHA</p>
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-2xl font-black text-white italic tracking-[0.2em] drop-shadow-[0_2px_10px_rgba(255,255,255,0.3)] select-none bg-white/10 px-3 py-1 rounded-lg">
+                                    <p className="text-[9px] uppercase tracking-widest text-yellow-400 font-bold mb-1 opacity-70">Kode CAPTCHA</p>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xl font-black text-white italic tracking-[0.1em] select-none bg-white/5 px-2 py-1 rounded">
                                             {captcha.question || "---"}
                                         </span>
                                         <button 
                                             type="button" onClick={fetchCaptcha}
-                                            className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
+                                            className="p-1 text-slate-400 hover:text-white transition-all"
                                         >
-                                            <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
+                                            <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} />
                                         </button>
                                     </div>
                                 </div>
-                                <div className="w-32">
+                                <div className="w-28">
                                     <input 
                                         type="text" required value={captchaAnswer} onChange={(e) => setCaptchaAnswer(e.target.value)}
-                                        className="w-full px-3 py-2.5 bg-slate-900/60 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-yellow-400 text-center font-bold tracking-widest uppercase placeholder-slate-600 outline-none" 
+                                        className="w-full px-2 py-2 bg-slate-900/60 border border-white/10 rounded-xl text-white focus:ring-1 focus:ring-yellow-400 text-center font-bold text-sm tracking-widest uppercase outline-none" 
                                         placeholder="KODE" 
                                     />
                                 </div>
