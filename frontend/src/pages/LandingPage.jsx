@@ -1046,7 +1046,7 @@ const LandingPage = () => {
                     src="/images/logo-bogor.png"
                     alt="Logo Footer"
                     className="w-12 h-12 object-contain drop-shadow-md mx-auto mb-6"
-                    onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                     style={{ cursor: 'pointer' }}
                 />
                 <h3 className="text-xl font-bold text-white mb-2">Pemerintah {siteData?.title || 'Desa Cimanggu I'}</h3>
@@ -1057,8 +1057,8 @@ const LandingPage = () => {
                     <a href="#" className="hover:text-white transition-colors">Kontak</a>
                 </div>
                 <p className="text-slate-500 text-xs text-center border-t border-slate-800 pt-8 mt-4 max-w-4xl mx-auto">
-                    &copy; {new Date().getFullYear()} Pemerintah {siteData?.title || 'Desa Cimanggu I'}. Dikembangkan untuk optimalisasi pelayanan digital masyarakat.<br />
-                    Built with React & Tailwind CSS
+                    &copy; {new Date().getFullYear()} Pemerintah {siteData?.title || 'Desa Cimanggu I'}. <br />
+
                 </p>
             </footer>
 
