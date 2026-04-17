@@ -167,7 +167,10 @@ const LayarAbsensi = () => {
                     <h1 className="text-xl sm:text-2xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 tracking-wider uppercase mb-1 drop-shadow-sm">
                         Presensi Digital
                     </h1>
-                    <p className="text-gray-400 font-bold tracking-[0.2em] uppercase text-[10px] sm:text-xs md:text-sm opacity-80">Pemdes Cimanggu I</p>
+                    <p className="text-gray-400 font-bold tracking-[0.2em] uppercase text-[10px] sm:text-xs md:text-sm opacity-80 flex items-center gap-2">
+                        Pemdes Cimanggu I 
+                        <span className="text-[8px] bg-white/10 px-1.5 py-0.5 rounded opacity-30">V2-H</span>
+                    </p>
                 </div>
 
                 {/* Jam Besar */}
@@ -220,9 +223,6 @@ const LayarAbsensi = () => {
 
                 </div>
 
-                <div className="hidden md:block absolute bottom-6 text-gray-600 text-xs font-medium tracking-wider w-full text-center">
-                    Gunakan Scanner Fisik · Tekan F11 untuk Layar Penuh (Fullscreen)
-                </div>
             </div>
         </div>
     );
