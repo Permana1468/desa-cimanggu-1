@@ -116,16 +116,23 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database Configuration
 # Using dj-database-url to handle DATABASE_URL from environment variables (Supabase/Neon/etc)
 # Fallback to local SQLite if DATABASE_URL is not set.
+db_url_env = os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL') or ''
+
+# Auto-correct missing protocol (common copy-paste error from Supabase/Neon)
+if db_url_env and not db_url_env.startswith(('postgres://', 'postgresql://', 'sqlite://')):
+    db_url_env = f"postgresql://{db_url_env}"
+
 try:
     DATABASES = {
-        'default': dj_database_url.config(
-            default=os.getenv('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+        'default': dj_database_url.parse(
+            db_url_env or f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
             conn_max_age=0, # Recommended for Serverless Functions
-            ssl_require=True if os.getenv('DATABASE_URL') and 'localhost' not in os.getenv('DATABASE_URL', '') else False
+            ssl_require=True if db_url_env and 'localhost' not in db_url_env else False
         )
     }
-except Exception:
-    # Safe fallback if URL is malformed
+except Exception as e:
+    # If it still fails, use dummy backend to allow boot, but fail on query
+    print(f"DATABASE CONFIG ERROR: {str(e)}")
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
