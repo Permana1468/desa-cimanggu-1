@@ -15,13 +15,12 @@ const LayarAbsensi = () => {
     // Barcode Scanner Buffer
     const barcodeBuffer = useRef('');
     const scanTimeout = useRef(null);
-    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
     // Fetch Carousel Settings
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const res = await axios.get(`${API_URL}/users/api/landing-page/`);
+                const res = await axios.get('/users/api/landing-page/');
                 if (res.data && res.data.length > 0) {
                     const data = res.data[0];
                     const fetchedImages = [data.carousel_image_1, data.carousel_image_2, data.carousel_image_3].filter(img => img);
@@ -97,7 +96,7 @@ const LayarAbsensi = () => {
     const verifyAttendance = async (idUnik) => {
         try {
             // Panggil API Backend
-            const response = await axios.post(`${API_URL}/users/api/absensi/scan/`, {
+            const response = await axios.post('/users/api/absensi/scan/', {
                 id_unik: idUnik
             });
 

@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -32,7 +32,8 @@ from .views import (
     PresensiKegiatanLPMViewSet,
     LaporanDigitalLPMViewSet,
     GaleriProyekLPMViewSet,
-    LPMDashboardStatsView
+    LPMDashboardStatsView,
+    HealthCheckView
 )
 
 router = DefaultRouter()
@@ -64,8 +65,9 @@ router.register(r'lpm/galeri', GaleriProyekLPMViewSet, basename='lpm-galeri')
 
 urlpatterns = [
     # Auth
-    path('api/captcha/', CaptchaView.as_view(), name='captcha'),
-    path('api/register/', RegisterView.as_view(), name='register'),
+    re_path(r'^api/captcha/?$', CaptchaView.as_view(), name='captcha'),
+    re_path(r'^api/register/?$', RegisterView.as_view(), name='register'),
+    path('api/health/', HealthCheckView.as_view(), name='health'),
     
     # JWT Auth
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -78,8 +80,8 @@ urlpatterns = [
     # endpoint user = /api/admin/users/ dan /api/admin/users/<id>/reset-password/
 
     # Kiosk Absensi Endpoint
-    path('api/absensi/scan/', AbsensiScanView.as_view(), name='absensi_scan'),
-    path('api/absensi/export-excel/', AbsensiExportExcelView.as_view(), name='absensi_export_excel'),
+    re_path(r'^api/absensi/scan/?$', AbsensiScanView.as_view(), name='absensi_scan'),
+    re_path(r'^api/absensi/export-excel/?$', AbsensiExportExcelView.as_view(), name='absensi_export_excel'),
 
     # User Profile Endpoints
     path('api/users/me/', UserMeView.as_view(), name='user_me'),

@@ -800,3 +800,32 @@ class LPMDashboardStatsView(APIView):
 
         return Response(stats, status=status.HTTP_200_OK)
 
+# --- System Health Check ---
+from django.db import connection
+
+class HealthCheckView(APIView):
+    """
+    Diagnostic endpoint to check DB connectivity and environment setup.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        status_info = {
+            "status": "active",
+            "database": "unknown",
+            "environment": {
+                "DEBUG": os.getenv('DEBUG', 'False'),
+                "ALLOWED_HOSTS": os.getenv('ALLOWED_HOSTS', 'Not Set'),
+                "DATABASE_URL_SET": bool(os.getenv('DATABASE_URL')),
+                "KIOSK_API_KEY_SET": bool(os.getenv('KIOSK_API_KEY')),
+            }
+        }
+        
+        try:
+            # Check DB
+            connection.ensure_connection()
+            status_info["database"] = "connected"
+        except Exception as e:
+            status_info["database"] = f"error: {str(e)}"
+            
+        return Response(status_info)

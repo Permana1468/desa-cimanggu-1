@@ -13,7 +13,7 @@
       "destination": "api/index.py"
     },
     {
-      "source": "/users/(.*)",
+      "source": "/users/api/(.*)",
       "destination": "api/index.py"
     },
     {
