@@ -34,17 +34,18 @@ class SupabaseStorage(Storage):
         upload_headers = self.headers.copy()
         upload_headers['Content-Type'] = mime_type
         
-        # Upload using requests
+        # 1. Try to upload (POST)
         response = requests.post(upload_url, headers=upload_headers, data=file_data)
         
-        # If the file already exists, Supabase returns 400. Let's just return the name 
-        # so Django knows the URL. Alternatively we could do upsert.
+        # 2. If it already exists (400 Duplicate), try to overwrite (PUT)
+        if response.status_code == 400 and 'Duplicate' in response.text:
+            # Note: For some Supabase versions, overwrite is handled via x-upsert header or PUT
+            # We'll use PUT which is common for updates
+            response = requests.put(upload_url, headers=upload_headers, data=file_data)
+        
         if response.status_code not in (200, 201):
-            if response.status_code == 400 and 'Duplicate' in response.text:
-                pass # Already exists
-            else:
-                # Fallback to raising exception if real error
-                print(f"Supabase upload failed: {response.status_code} {response.text}")
+            # Log failure but don't necessarily crash everything if it's non-critical
+            print(f"Supabase storage error: {response.status_code} - {response.text}")
                 
         return clean_name
 

@@ -101,11 +101,9 @@ class LandingPageSettingViewSet(viewsets.ModelViewSet):
     serializer_class = LandingPageSettingSerializer
 
     def get_queryset(self):
-        # Always return the single active setting record
-        # If none exists, create default
-        if not LandingPageSetting.objects.exists():
-            LandingPageSetting.objects.create(is_active=True, title='DESA CIMANGGU I')
-        return LandingPageSetting.objects.all()
+        # Always ensure ID 1 exists and return it
+        obj, created = LandingPageSetting.objects.get_or_create(id=1, defaults={'is_active': True, 'title': 'DESA CIMANGGU I'})
+        return LandingPageSetting.objects.filter(id=1)
 
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
@@ -113,10 +111,8 @@ class LandingPageSettingViewSet(viewsets.ModelViewSet):
         return [IsAdminUser()]
 
     def get_object(self):
-        # Ensure we always interact with the most recent setting
-        obj = LandingPageSetting.objects.last()
-        if not obj:
-            obj = LandingPageSetting.objects.create(is_active=True, title='DESA CIMANGGU I')
+        # Force interaction with ID 1 only
+        obj, created = LandingPageSetting.objects.get_or_create(id=1, defaults={'is_active': True, 'title': 'DESA CIMANGGU I'})
         return obj
 
 # ----------------------------------------------------

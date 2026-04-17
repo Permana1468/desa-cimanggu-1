@@ -89,7 +89,20 @@ const HeroCarouselForm = () => {
             alert("Pengaturan Hero & Carousel berhasil disimpan!");
         } catch (error) {
             console.error("Error saving hero settings:", error);
-            alert("Gagal menyimpan pengaturan Hero & Carousel.");
+            
+            let errorMsg = "Gagal menyimpan pengaturan Hero & Carousel.";
+            if (error.response) {
+                // Server responded with non-2xx code
+                const detail = error.response.data?.detail || error.response.data?.error || JSON.stringify(error.response.data);
+                errorMsg += `\n\nDetail: ${error.response.status} - ${detail}`;
+            } else if (error.request) {
+                // Request was made but no response received
+                errorMsg += "\n\nDetail: Tidak ada respon dari server. Periksa koneksi internet Anda.";
+            } else {
+                errorMsg += `\n\nDetail: ${error.message}`;
+            }
+            
+            alert(errorMsg);
         } finally {
             setIsLoading(false);
         }
