@@ -57,7 +57,7 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-start md:justify-center relative font-sans overflow-x-hidden pt-16 md:pt-0">
+        <div className="min-h-screen flex flex-col items-center justify-start md:justify-center relative font-sans overflow-x-hidden pt-6 md:pt-0">
             {/* Background Carousel */}
             <div className="absolute inset-0 z-0 bg-black">
                 {heroImages.map((src, index) => (
@@ -72,25 +72,25 @@ const Login = () => {
                     </div>
                 ))}
                 {/* Overlay Gelap Gradasi */}
-                <div className="absolute inset-0 z-20 bg-gradient-to-br from-[#0b1120]/90 via-[#0b1120]/60 to-transparent backdrop-blur-[2px]"></div>
+                <div className="absolute inset-0 z-20 bg-gradient-to-br from-[#0b1120]/95 via-[#0b1120]/70 to-[#0b1120]/40 backdrop-blur-[2px]"></div>
             </div>
 
             {/* Back to Home Button */}
-            <Link to="/" className="absolute top-4 left-4 md:top-8 md:left-8 z-50 flex items-center gap-2 px-4 py-2 bg-black/40 hover:bg-white/20 backdrop-blur-xl border border-white/20 rounded-full text-white transition-all shadow-xl group">
-                <Home size={16} className="group-hover:-translate-x-1 transition-transform" />
-                <span className="text-xs md:text-sm font-bold tracking-tight">Kembali ke Beranda</span>
+            <Link to="/" className="absolute top-4 left-4 md:top-8 md:left-8 z-50 flex items-center gap-2 px-3 py-1.5 bg-black/50 hover:bg-white/20 backdrop-blur-xl border border-white/20 rounded-full text-white transition-all shadow-xl group">
+                <Home size={14} className="group-hover:-translate-x-1 transition-transform" />
+                <span className="text-[10px] md:text-xs font-bold tracking-tight">Kembali</span>
             </Link>
 
             {/* Login Form Container */}
-            <div className="relative z-30 w-full max-w-[92%] sm:max-w-sm mx-auto animate-fade-in-up md:perspective-1000 my-8">
+            <div className="relative z-30 w-full max-w-[92%] sm:max-w-sm mx-auto animate-fade-in-up md:perspective-1000 my-4 md:my-8">
                 {/* Floating Card */}
-                <div className="p-6 md:p-8 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[2rem] shadow-[0_25px_60px_rgba(0,0,0,0.6)] relative overflow-hidden group">
+                <div className="p-6 md:p-10 bg-[#1e293b]/50 backdrop-blur-3xl border border-white/20 rounded-[2.5rem] shadow-[0_25px_60px_rgba(0,0,0,0.7)] relative overflow-hidden group">
                     
                     {/* Glowing Accent */}
                     <div className="absolute -top-24 -right-24 w-48 h-48 bg-yellow-500/20 rounded-full blur-[60px] pointer-events-none"></div>
 
                     <div className="relative z-10">
-                        <div className="text-center mb-6">
+                        <div className="text-center mb-8">
                             <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-white/10 p-2 shadow-2xl border border-white/20 mb-4 backdrop-blur-md transform -rotate-3 hover:rotate-0 transition-transform">
                                 <img src="/images/logo-bogor.png" alt="Logo" className="w-full h-full object-contain drop-shadow-md" />
                             </div>
@@ -143,9 +143,9 @@ const Login = () => {
 
                             {/* CAPTCHA SECTION */}
                             <div className="bg-white/5 border border-white/10 rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-between gap-3 group/captcha transition-all hover:bg-white/10">
-                                <div className="flex-1 w-full sm:w-auto">
+                                <div className="flex-1 w-full sm:w-auto text-center sm:text-left">
                                     <p className="text-[9px] uppercase tracking-widest text-yellow-500 font-black mb-1 opacity-70">Verifikasi Captcha</p>
-                                    <div className="flex items-center justify-between sm:justify-start gap-3">
+                                    <div className="flex items-center justify-center sm:justify-start gap-3">
                                         <span className="text-xl font-black text-white italic tracking-[0.1em] select-none bg-black/30 px-3 py-1.5 rounded-lg border border-white/5 shadow-inner min-w-[100px] text-center">
                                             {captcha.question || "---"}
                                         </span>
@@ -188,7 +188,7 @@ const Login = () => {
                             </button>
                         </form>
 
-                        <div className="mt-8 text-center border-t border-white/10 pt-6">
+                        <div className="mt-10 text-center border-t border-white/10 pt-8 pb-4">
                             <p className="text-slate-300 text-sm mb-4">
                                 Belum punya akun? <Link to="/register" className="text-yellow-400 font-black hover:underline tracking-tight">Daftar Sekarang</Link>
                             </p>
