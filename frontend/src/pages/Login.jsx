@@ -154,7 +154,7 @@ const Login = () => {
                                         </span>
                                         <button 
                                             type="button" onClick={fetchCaptcha}
-                                            className="p-1 text-slate-400 hover:text-white transition-all"
+                                            className="p-1 text-slate-400 hover:text-white transition-all relative z-10"
                                         >
                                             <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} />
                                         </button>

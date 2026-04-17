@@ -44,17 +44,20 @@ class CaptchaView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        # Generate random alphanumeric string (length 6)
-        chars = string.ascii_uppercase + string.digits
-        captcha_str = ''.join(random.choice(chars) for _ in range(6))
+        # Generate random math question
+        num1 = random.randint(1, 10)
+        num2 = random.randint(1, 10)
+        question = f"Berapa {num1} + {num2}?"
+        answer = str(num1 + num2)
         
         # Sign the answer into a token
-        token = signing.dumps(captcha_str)
+        token = signing.dumps(answer)
         
         return Response({
-            "question": captcha_str,
+            "question": question,
             "captcha_token": token
         })
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
