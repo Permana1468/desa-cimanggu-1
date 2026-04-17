@@ -220,7 +220,7 @@ const LayarAbsensi = () => {
 
                 </div>
 
-                <div className="absolute bottom-6 text-gray-600 text-xs font-medium tracking-wider w-full text-center">
+                <div className="hidden md:block absolute bottom-6 text-gray-600 text-xs font-medium tracking-wider w-full text-center">
                     Gunakan Scanner Fisik · Tekan F11 untuk Layar Penuh (Fullscreen)
                 </div>
             </div>
