@@ -166,9 +166,13 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Only add frontend/dist to STATICFILES_DIRS if it exists (build-time)
+# Add frontend/dist to STATICFILES_DIRS.
 _frontend_dist = os.path.join(BASE_DIR, 'frontend', 'dist')
-STATICFILES_DIRS = [_frontend_dist] if os.path.exists(_frontend_dist) else []
+if DEBUG:
+    STATICFILES_DIRS = [_frontend_dist] if os.path.exists(_frontend_dist) else []
+else:
+    # Always include in production as it will be built during deployment
+    STATICFILES_DIRS = [_frontend_dist]
 
 # WhiteNoise: serve frontend/dist files at root URL (for Vite assets)
 WHITENOISE_ROOT = _frontend_dist

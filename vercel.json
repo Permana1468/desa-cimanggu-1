@@ -1,14 +1,22 @@
 {
   "version": 2,
   "functions": {
-    "backend/wsgi.py": {
+    "index.py": {
       "runtime": "@vercel/python"
     }
   },
   "routes": [
     {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/media/(.*)",
+      "dest": "/media/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "backend/wsgi.py"
+      "dest": "index.py"
     }
   ]
 }
