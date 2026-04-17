@@ -19,7 +19,7 @@
       "destination": "/static/$1"
     },
     {
-      "source": "/((?!api|admin|users|static).*)",
+      "source": "/((?!api|admin|users|static|images|assets|favicon.ico|robots.txt|manifest.json).*)",
       "destination": "/index.html"
     }
   ]
