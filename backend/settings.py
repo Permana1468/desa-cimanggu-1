@@ -234,6 +234,13 @@ SIMPLE_JWT = {
 # Custom User Model
 AUTH_USER_MODEL = 'users.CustomUser'
 
-# Media files (Uploaded images, etc.)
-MEDIA_URL = '/media/'
+# Supabase Storage Configuration
+SUPABASE_URL = 'https://yupabeqtuqiajxgnvkup.supabase.co'
+SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1cGFiZXF0dXFpYWp4Z252a3VwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjM4NzI4MywiZXhwIjoyMDkxOTYzMjgzfQ.CBvRd78y61TikljmlZZZPNSBWWSBGKLII9tjkMa9NDc')
+
+# Use Supabase Storage for all file uploads unconditionally (bypasses Vercel read-only filesystem crash)
+DEFAULT_FILE_STORAGE = 'users.storage.SupabaseStorage'
+
+# Media files (Local fallback if storage not used, though it won't be used now)
+MEDIA_URL = f"{SUPABASE_URL}/storage/v1/object/public/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
