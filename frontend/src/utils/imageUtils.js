@@ -41,11 +41,11 @@ export const compressImage = (file, maxWidth = 1600, maxHeight = 1600, quality =
                         return reject(new Error('Canvas toBlob failed'));
                     }
                     const compressedFile = new File([blob], file.name, {
-                        type: 'image/jpeg',
+                        type: file.type, // Gunakan tipe original (image/png atau image/jpeg)
                         lastModified: Date.now(),
                     });
                     resolve(compressedFile);
-                }, 'image/jpeg', quality);
+                }, file.type, quality);
             };
             img.onerror = (err) => reject(err);
         };

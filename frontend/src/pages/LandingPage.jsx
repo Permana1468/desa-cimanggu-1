@@ -471,9 +471,9 @@ const LandingPage = () => {
                             <h2 className="text-3xl md:text-5xl font-extrabold text-white">Profil {siteData?.title || "Cimanggu I"}</h2>
                         </div>
                         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl flex flex-col lg:flex-row gap-12 items-center">
-                            <div className="w-full lg:w-2/5 aspect-video lg:aspect-square bg-slate-800 rounded-3xl overflow-hidden border border-white/10 relative group">
+                            <div className="w-full lg:w-2/5 aspect-video lg:aspect-square bg-slate-900/40 backdrop-blur-sm rounded-3xl overflow-hidden border border-white/10 relative group">
                                 <img
-                                    src="https://images.unsplash.com/photo-1590088925586-7a8df0bbee59?q=80&w=1200&auto=format&fit=crop"
+                                    src={siteData?.about_image || "https://images.unsplash.com/photo-1590088925586-7a8df0bbee59?q=80&w=1200&auto=format&fit=crop"}
                                     alt="Kantor Desa"
                                     className="object-cover w-full h-full opacity-80 group-hover:scale-110 transition-transform duration-1000"
                                 />
@@ -484,7 +484,9 @@ const LandingPage = () => {
                                 </div>
                             </div>
                             <div className="w-full lg:w-3/5 text-slate-300 space-y-8">
-                                <h4 className="text-3xl font-bold text-white text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">Sekilas Pandang</h4>
+                                <h4 className="text-3xl font-bold text-white text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+                                    {siteData?.about_title || "Sekilas Pandang"}
+                                </h4>
                                 <p className="leading-relaxed text-lg font-light text-slate-400 whitespace-pre-wrap">
                                     {siteData?.about_text || "Desa Cimanggu I merupakan salah satu desa unggulan bagian dari program digitalisasi..."}
                                 </p>

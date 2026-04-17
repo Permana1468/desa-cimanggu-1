@@ -37,7 +37,12 @@ class LandingPageSetting(models.Model):
     description = models.TextField(blank=True, null=True)
     hero_title = models.CharField(max_length=255, blank=True, null=True)
     hero_subtitle = models.CharField(max_length=255, blank=True, null=True)
+    
+    # Profil Desa (Tentang Kami)
+    about_title = models.CharField(max_length=255, default='Sekilas Pandang')
     about_text = models.TextField(blank=True, null=True)
+    about_image = models.ImageField(upload_to='about/', blank=True, null=True)
+
     contact_email = models.EmailField(blank=True, null=True)
     contact_phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
