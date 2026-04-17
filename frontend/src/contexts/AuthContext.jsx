@@ -31,10 +31,12 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
-    const loginUser = async (username, password) => {
+    const loginUser = async (username, password, captcha_token, captcha_answer) => {
         const response = await api.post('/users/api/token/', {
             username,
             password,
+            captcha_token,
+            captcha_answer
         });
 
         const tokens = response.data;

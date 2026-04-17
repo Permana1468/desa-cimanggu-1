@@ -39,9 +39,10 @@ else:
 
 # Allow local and Vercel domains
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.vercel.app').split(',')
+
+# CSRF Trusted Origins - auto-add Vercel domains
 _raw_origins = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in _raw_origins if o.strip()]
-# Add vercel domains to trusted origins automatically
 for host in ALLOWED_HOSTS:
     if host.strip() and not host.startswith(('localhost', '127.0.0.1')):
         CSRF_TRUSTED_ORIGINS.append(f"https://{host.strip().lstrip('.')}")
@@ -62,11 +63,9 @@ INSTALLED_APPS = [
     # Third-party apps
     'rest_framework',
     'rest_framework_simplejwt',
-    # 'rest_framework_gis', # Nonaktifkan sementara
 
     # Local apps
-    'users.apps.UsersConfig',
-    # 'gis.apps.GisConfig', # Nonaktifkan sementara
+    'backend.users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -115,38 +114,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
+# Database Configuration
+# Using dj-database-url to handle DATABASE_URL from environment variables (Supabase/Neon/etc)
+# Fallback to local SQLite if DATABASE_URL is not set.
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'desa_cimanggu_db'),
-        'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-    }
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+        conn_max_age=600
+    )
 }
 
-# Use DATABASE_URL for Production (e.g. Supabase/Neon/Vercel)
-db_from_env = dj_database_url.config(conn_max_age=600)
-if db_from_env:
-    DATABASES['default'].update(db_from_env)
 
-# Windows GeoDjango path (sesuaikan path OSGeo4W/PostgreSQL jika perlu)
-# import os
-# if os.name == 'nt':
-#     # Default OSGeo4W path on Windows
-#     OSGEO4W = r"C:\Users\fadjar\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OSGeo4W"
-#     
-#     # Path to OSGeo4W bin folder
-#     os.environ['PATH'] = os.path.join(OSGEO4W, r"bin") + ';' + os.environ['PATH']
-#     os.environ['PROJ_LIB'] = os.path.join(OSGEO4W, r"share\proj")
-#     
-#     # Geodjango required DLLs
-#     GEOS_LIBRARY_PATH = os.path.join(OSGEO4W, r"bin\geos_c.dll")
-#     GDAL_LIBRARY_PATH = os.path.join(OSGEO4W, r"bin\gdal310.dll") # Bisa gdal309, gdal308, dll tergantung versi. Cek isi C:\OSGeo4W\bin
+# GeoDjango Configuration (Disabled)
+# To enable GIS, install OSGeo4W and uncomment relevant sections.
 
 
 # Password validation

@@ -1,7 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Lock, ArrowRight, Home } from 'lucide-react';
+import { User, Lock, ArrowRight, Home, RefreshCw } from 'lucide-react';
+import axios from 'axios';
 
 const heroImages = [
     '/images/slide_1.png',
@@ -17,14 +18,25 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
 
+    const [captcha, setCaptcha] = useState({ question: '', token: '' });
+    const [captchaAnswer, setCaptchaAnswer] = useState('');
     const { loginUser } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    const fetchCaptcha = async () => {
+        try {
+            const res = await axios.get('/users/api/captcha/');
+            setCaptcha({
+                question: res.data.question,
+                token: res.data.captcha_token
+            });
+        } catch (err) {
+            console.error("Gagal mengambil captcha", err);
+        }
+    };
+
     useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentSlide((prev) => (prev === heroImages.length - 1 ? 0 : prev + 1));
-        }, 6000);
-        return () => clearInterval(timer);
+        fetchCaptcha();
     }, []);
 
     const handleLogin = async (e) => {
@@ -33,14 +45,12 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            await loginUser(username, password);
+            await loginUser(username, password, captcha.token, captchaAnswer);
             navigate('/dashboard');
         } catch (err) {
-            if (err.response && err.response.data.detail) {
-                setError(err.response.data.detail);
-            } else {
-                setError("Gagal login, silakan periksa kembali username dan password Anda.");
-            }
+            const msg = err.response?.data?.detail || "Gagal login, silakan periksa kembali data Anda.";
+            setError(msg);
+            fetchCaptcha(); // Refresh captcha on error
         } finally {
             setIsLoading(false);
         }
@@ -76,13 +86,13 @@ const Login = () => {
             {/* Login Form Container (Glassmorphism & Floating) */}
             <div className="relative z-30 w-full max-w-md mx-4 animate-fade-in-up perspective-1000">
                 {/* Floating Card */}
-                <div className="p-8 md:p-10 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-transform duration-500 hover:-translate-y-3 hover:shadow-[0_30px_60px_rgba(0,0,0,0.6)] relative overflow-hidden group">
+                <div className="p-6 md:p-8 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-transform duration-500 hover:-translate-y-3 hover:shadow-[0_30px_60px_rgba(0,0,0,0.6)] relative overflow-hidden group">
 
                     {/* Glow Effect Behind Card content */}
                     <div className="absolute -inset-1 bg-gradient-to-br from-yellow-500/20 via-transparent to-blue-500/20 rounded-3xl blur-2xl z-0 transition-all duration-700 group-hover:opacity-100 opacity-50"></div>
 
                     <div className="relative z-10">
-                        <div className="text-center mb-8 transform transition-transform duration-500">
+                        <div className="text-center mb-6 transform transition-transform duration-500">
                             <div className="inline-flex items-center justify-center w-17 h-17 rounded-full bg-white/10 p- shadow-lg border border-white/20 mb-4 group-hover:scale-110 group-hover:rotate 3 transition-transform duration-500 backdrop-blur-md">
                                 <img src="/images/logo-bogor.png" alt="Logo Kabupaten Bogor" className="w-full h-full object-contain drop-shadow-md" />
                             </div>
@@ -98,7 +108,7 @@ const Login = () => {
                             </div>
                         )}
 
-                        <form onSubmit={handleLogin} className="space-y-6">
+                        <form onSubmit={handleLogin} className="space-y-4">
                             <div className="space-y-1.5">
                                 <label className="block text-sm font-medium text-slate-200 ml-1 drop-shadow-md">Username</label>
                                 <div className="relative group/input">
@@ -133,6 +143,31 @@ const Login = () => {
                                 </div>
                             </div>
 
+                            {/* CAPTCHA SECTION */}
+                            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between gap-4 group/captcha transition-all hover:bg-white/10">
+                                <div className="flex-1">
+                                    <p className="text-[10px] uppercase tracking-widest text-yellow-400 font-bold mb-1 opacity-80">Security Check</p>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xl font-black text-white italic tracking-tighter drop-shadow-sm">
+                                            {captcha.question || "---"}
+                                        </span>
+                                        <button 
+                                            type="button" onClick={fetchCaptcha}
+                                            className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
+                                        >
+                                            <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="w-24">
+                                    <input 
+                                        type="number" required value={captchaAnswer} onChange={(e) => setCaptchaAnswer(e.target.value)}
+                                        className="w-full px-3 py-2.5 bg-slate-900/60 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-yellow-400 text-center font-bold placeholder-slate-600 outline-none" 
+                                        placeholder="?" 
+                                    />
+                                </div>
+                            </div>
+
                             <button
                                 type="submit"
                                 disabled={isLoading}
@@ -156,8 +191,11 @@ const Login = () => {
                         </form>
 
                         <div className="mt-8 text-center border-t border-white/10 pt-6">
-                            <p className="text-slate-300/60 text-xs tracking-wider">
-                                &copy; {new Date().getFullYear()} Pemerintah Desa Cimanggu 1.<br />All rights reserved.
+                            <p className="text-slate-300 text-sm mb-4">
+                                Belum punya akun? <Link to="/register" className="text-yellow-400 font-bold hover:underline">Daftar Sekarang</Link>
+                            </p>
+                            <p className="text-slate-300/40 text-[10px] tracking-wider uppercase">
+                                &copy; {new Date().getFullYear()} Pemerintah Desa Cimanggu 1.
                             </p>
                         </div>
                     </div>

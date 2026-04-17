@@ -1,14 +1,43 @@
 @import "tailwindcss";
 
+@theme {
+  /* ── COLOR TOKENS ──────────────────────────────────── */
+  --color-dark-base: #080e1e;
+  --color-dark-card: rgba(15, 23, 42, 0.55);
+  --color-dark-panel: rgba(15, 23, 42, 0.5);
+  --color-dark-sidebar: rgba(8, 14, 30, 0.72);
+  --color-dark-header: rgba(8, 14, 30, 0.55);
+  --color-dark-overlay: rgba(8, 14, 30, 0.92);
+
+  --color-gold: #f59e0b;
+  --color-gold-dark: #d97706;
+  --color-gold-light: rgba(245, 158, 11, 0.12);
+  --color-gold-border: rgba(245, 158, 11, 0.22);
+  --color-gold-glow: rgba(245, 158, 11, 0.35);
+
+  --color-border: rgba(255, 255, 255, 0.07);
+  --color-border-hover: rgba(255, 255, 255, 0.14);
+  --color-text-muted: rgba(255, 255, 255, 0.45);
+  --color-text-subtle: rgba(255, 255, 255, 0.3);
+  --color-text-faint: rgba(255, 255, 255, 0.2);
+
+  /* ── KEYFRAME NAMES ────────────────────────────────── */
+  --animate-fade-in: fade-in 0.5s ease both;
+  --animate-card-in: card-in 0.5s ease both;
+  --animate-bar-grow: bar-grow 0.8s ease both;
+  --animate-drop-in: drop-in 0.2s ease both;
+  --animate-pulse-dot: pulse-dot 1.8s infinite;
+  --animate-badge-pulse: badge-pulse 2.5s infinite;
+}
+
+/* ── BASE ────────────────────────────────────────────── */
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
+  background-color: #080e1e;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -17,4 +46,54 @@
 
 body {
   margin: 0;
+}
+
+/* ── GOOGLE FONTS ─────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ── CUSTOM SCROLLBAR ─────────────────────────────────── */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+.custom-scrollbar::-webkit-scrollbar { width: 3px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 99px; }
+
+/* ── KEYFRAMES ────────────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bar-grow {
+  from { height: 0 !important; }
+}
+
+@keyframes drop-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%     { opacity: 0.4; transform: scale(1.5); }
+}
+
+@keyframes badge-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.6; }
+}
+
+/* ── GRID PATTERN BACKGROUND ──────────────────────────── */
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 48px 48px;
 }

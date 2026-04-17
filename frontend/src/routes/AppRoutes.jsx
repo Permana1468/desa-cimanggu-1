@@ -1,32 +1,45 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
-import Layout from '../components/Layout';
+import Layout from '../components/Shared/Layout';
 import Login from '../pages/Login';
+import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
 import MapPage from '../pages/MapPage';
 import LandingPage from '../pages/LandingPage';
-import IdentitasProfilForm from '../components/admin/IdentitasProfilForm';
-import HeroCarouselForm from '../components/admin/HeroCarouselForm';
-import KelolaBerita from '../components/admin/KelolaBerita';
-import StrukturOrganisasi from '../components/admin/StrukturOrganisasi';
-import ManajemenPengguna from '../components/admin/ManajemenPengguna';
-import RekapAbsensi from '../components/admin/RekapAbsensi';
-import UsulanPembangunan from '../components/lpm/UsulanPembangunan';
-import VerifikasiUsulan from '../components/admin/VerifikasiUsulan';
-import RencanaAnggaran from '../components/admin/RencanaAnggaran';
-import RealisasiAnggaran from '../components/admin/RealisasiAnggaran';
-import ManajemenProyekFisik from '../components/admin/ManajemenProyekFisik';
-import RekapMusrenbang from '../components/admin/RekapMusrenbang';
-import DetailEngineering from '../components/admin/DetailEngineering';
-import DokumenPerencanaan from '../components/admin/DokumenPerencanaan';
-import AspirasiWargaLPM from '../components/lpm/AspirasiWargaLPM';
-import ProgramPembinaanLPM from '../components/lpm/ProgramPembinaanLPM';
-import JadwalGotongRoyongLPM from '../components/lpm/JadwalGotongRoyongLPM';
-import PantauProyekDesa from '../components/lpm/PantauProyekDesa';
-import BukuKegiatanLPM from '../components/lpm/BukuKegiatanLPM';
-import DataPengurusLPM from '../components/lpm/DataPengurusLPM';
-import ProfilAdminLPM from '../components/lpm/ProfilAdminLPM';
+
+// Admin Dashboards
+import IdentitasProfilForm from '../dashboards/Admin/IdentitasProfilForm';
+import HeroCarouselForm from '../dashboards/Admin/HeroCarouselForm';
+import KelolaBerita from '../dashboards/Admin/KelolaBerita';
+import StrukturOrganisasi from '../dashboards/Admin/StrukturOrganisasi';
+import ManajemenPengguna from '../dashboards/Admin/ManajemenPengguna';
+import RekapAbsensi from '../dashboards/Admin/RekapAbsensi';
+import VerifikasiUsulan from '../dashboards/Admin/VerifikasiUsulan';
+import RencanaAnggaran from '../dashboards/Admin/RencanaAnggaran';
+import RealisasiAnggaran from '../dashboards/Admin/RealisasiAnggaran';
+import ManajemenProyekFisik from '../dashboards/Admin/ManajemenProyekFisik';
+import RekapMusrenbang from '../dashboards/Admin/RekapMusrenbang';
+import DetailEngineering from '../dashboards/Admin/DetailEngineering';
+import DokumenPerencanaan from '../dashboards/Admin/DokumenPerencanaan';
+import DataKependudukan from '../dashboards/Admin/DataKependudukan';
+import InventarisAset from '../dashboards/Admin/InventarisAset';
+import BukuKasUmum from '../dashboards/Admin/BukuKasUmum';
+import DusunModule from '../dashboards/Admin/DusunModule';
+
+// LPM Dashboards
+import UsulanPembangunan from '../dashboards/LPM/UsulanPembangunan';
+import AspirasiWargaLPM from '../dashboards/LPM/AspirasiWargaLPM';
+import ProgramPembinaanLPM from '../dashboards/LPM/ProgramPembinaanLPM';
+import JadwalGotongRoyongLPM from '../dashboards/LPM/JadwalGotongRoyongLPM';
+import PantauProyekDesa from '../dashboards/LPM/PantauProyekDesa';
+import BukuKegiatanLPM from '../dashboards/LPM/BukuKegiatanLPM';
+import DataPengurusLPM from '../dashboards/LPM/DataPengurusLPM';
+import ProfilAdminLPM from '../dashboards/LPM/ProfilAdminLPM';
+import KeuanganLPM from '../dashboards/LPM/KeuanganLPM';
+import InventarisLPM from '../dashboards/LPM/InventarisLPM';
+import KaderLPM from '../dashboards/LPM/KaderLPM';
+
 import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 
@@ -80,6 +93,7 @@ const AppRoutes = () => {
         <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
             {/* Rute Kiosk Penuh (Tanpa Layout Admin) */}
             <Route path="/absensi" element={<LayarAbsensi />} />
@@ -111,12 +125,12 @@ const AppRoutes = () => {
                 {/* Grup Rute KAUR TU & UMUM */}
                 <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'KAUR_TU']} />}>
                     <Route path="/dashboard/buku-surat" element={<DummyPage title="Buku Surat Masuk & Keluar" />} />
-                    <Route path="/dashboard/inventaris-aset" element={<DummyPage title="Inventaris & Aset Desa" />} />
+                    <Route path="/dashboard/inventaris-aset" element={<InventarisAset />} />
                 </Route>
 
                 {/* Grup Rute KAUR KEUANGAN */}
                 <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'KAUR_KEUANGAN']} />}>
-                    <Route path="/dashboard/buku-kas" element={<DummyPage title="Buku Kas Umum" />} />
+                    <Route path="/dashboard/buku-kas" element={<BukuKasUmum />} />
                     <Route path="/dashboard/realisasi-anggaran" element={<RealisasiAnggaran />} />
                 </Route>
 
@@ -131,7 +145,7 @@ const AppRoutes = () => {
 
                 {/* Grup Rute KASI PEMERINTAHAN */}
                 <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'KASI_PEMERINTAHAN']} />}>
-                    <Route path="/dashboard/pemerintahan" element={<DummyPage title="Data Kependudukan" />} />
+                    <Route path="/dashboard/pemerintahan" element={<DataKependudukan />} />
                     <Route path="/dashboard/mutasi-warga" element={<DummyPage title="Buku Mutasi Warga" />} />
                     <Route path="/dashboard/peraturan-desa" element={<DummyPage title="Buku Peraturan Desa" />} />
                     <Route path="/dashboard/maps" element={<MapPage />} />
@@ -160,18 +174,27 @@ const AppRoutes = () => {
                     <Route path="/dashboard/kegiatan-lpm" element={<BukuKegiatanLPM />} />
                     <Route path="/dashboard/pengurus-lpm" element={<DataPengurusLPM />} />
                     <Route path="/dashboard/profil-saya" element={<ProfilAdminLPMWrapper />} />
+
+                    {/* New LPM Routes Using DummyPage scaffold */}
+                    <Route path="/dashboard/lpm/keuangan" element={<KeuanganLPM />} />
+                    <Route path="/dashboard/lpm/swadaya" element={<DummyPage title="Swadaya Masyarakat" icon="🤝" />} />
+                    <Route path="/dashboard/lpm/inventaris" element={<InventarisLPM />} />
+                    <Route path="/dashboard/lpm/peminjaman" element={<DummyPage title="Peminjaman Alat" icon="🔧" />} />
+                    <Route path="/dashboard/lpm/kader" element={<KaderLPM />} />
+                    <Route path="/dashboard/lpm/laporan" element={<DummyPage title="E-Reporting Digital" icon="📄" />} />
+                    <Route path="/dashboard/lpm/galeri" element={<DummyPage title="Galeri Proyek" icon="🖼️" />} />
                 </Route>
 
                 {/* Grup Rute KADUS (Kewilayahan) */}
                 <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'KADUS']} />}>
-                    <Route path="/dashboard/data-dusun-1" element={<DummyPage title="Data Warga Dusun I" icon="📍" />} />
-                    <Route path="/dashboard/laporan-dusun-1" element={<DummyPage title="Laporan Keamanan Dusun I" icon="📍" />} />
-                    <Route path="/dashboard/data-dusun-2" element={<DummyPage title="Data Warga Dusun II" icon="📍" />} />
-                    <Route path="/dashboard/laporan-dusun-2" element={<DummyPage title="Laporan Keamanan Dusun II" icon="📍" />} />
-                    <Route path="/dashboard/data-dusun-3" element={<DummyPage title="Data Warga Dusun III" icon="📍" />} />
-                    <Route path="/dashboard/laporan-dusun-3" element={<DummyPage title="Laporan Keamanan Dusun III" icon="📍" />} />
-                    <Route path="/dashboard/data-dusun-4" element={<DummyPage title="Data Warga Dusun IV" icon="📍" />} />
-                    <Route path="/dashboard/laporan-dusun-4" element={<DummyPage title="Laporan Keamanan Dusun IV" icon="📍" />} />
+                    <Route path="/dashboard/data-dusun-1" element={<DusunModule dusunName="Dusun I" rwRange="RW 01 - RW 02" />} />
+                    <Route path="/dashboard/laporan-dusun-1" element={<DusunModule dusunName="Dusun I" rwRange="RW 01 - RW 02" />} />
+                    <Route path="/dashboard/data-dusun-2" element={<DusunModule dusunName="Dusun II" rwRange="RW 03 - RW 04" />} />
+                    <Route path="/dashboard/laporan-dusun-2" element={<DusunModule dusunName="Dusun II" rwRange="RW 03 - RW 04" />} />
+                    <Route path="/dashboard/data-dusun-3" element={<DusunModule dusunName="Dusun III" rwRange="RW 05 - RW 06" />} />
+                    <Route path="/dashboard/laporan-dusun-3" element={<DusunModule dusunName="Dusun III" rwRange="RW 05 - RW 06" />} />
+                    <Route path="/dashboard/data-dusun-4" element={<DusunModule dusunName="Dusun IV" rwRange="RW 07 - RW 09" />} />
+                    <Route path="/dashboard/laporan-dusun-4" element={<DusunModule dusunName="Dusun IV" rwRange="RW 07 - RW 09" />} />
                 </Route>
 
             </Route>

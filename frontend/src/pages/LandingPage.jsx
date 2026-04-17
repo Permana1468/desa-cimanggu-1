@@ -280,8 +280,8 @@ const LandingPage = () => {
                         <div
                             className="absolute top-1.5 bottom-1.5 bg-white/10 rounded-full transition-all duration-300 ease-out z-0"
                             style={{
-                                left: `${pillStyle.left} px`,
-                                width: `${pillStyle.width} px`,
+                                left: `${pillStyle.left}px`,
+                                width: `${pillStyle.width}px`,
                                 opacity: pillStyle.opacity
                             }}
                         />

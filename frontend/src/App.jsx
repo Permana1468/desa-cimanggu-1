@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import AppRoutes from './routes/AppRoutes';
 
 function App() {
+  console.log("React App Mounting...");
   return (
     <AuthProvider>
       <Router>
