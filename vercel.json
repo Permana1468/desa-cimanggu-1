@@ -1,20 +1,16 @@
 {
   "version": 2,
-  "functions": {
-    "index.py": {
-      "runtime": "python3.12",
-      "maxDuration": 10,
-      "includeFiles": "frontend/**/*,staticfiles/**/*,backend/**/*,users/**/*,manage.py"
+  "builds": [
+    {
+      "src": "backend/wsgi.py",
+      "use": "@vercel/python",
+      "config": { "runtime": "python3.9" }
     }
-  },
+  ],
   "routes": [
     {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "index.py"
+      "dest": "backend/wsgi.py"
     }
   ]
 }
