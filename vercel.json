@@ -17,15 +17,15 @@
     },
     {
       "source": "/api/(.*)",
-      "destination": "/api/index"
+      "destination": "api/index.py"
     },
     {
       "source": "/users/api/(.*)",
-      "destination": "/api/index"
+      "destination": "api/index.py"
     },
     {
       "source": "/admin/(.*)",
-      "destination": "/api/index"
+      "destination": "api/index.py"
     },
     {
       "source": "/(.*)",
