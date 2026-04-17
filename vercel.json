@@ -17,18 +17,18 @@
     },
     {
       "source": "/api/(.*)",
-      "destination": "api/index.py"
+      "destination": "/api/index"
     },
     {
       "source": "/users/api/(.*)",
-      "destination": "api/index.py"
+      "destination": "/api/index"
     },
     {
       "source": "/admin/(.*)",
-      "destination": "api/index.py"
+      "destination": "/api/index"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api|admin|users|static|images|assets|favicon.ico|robots.txt|manifest.json).*)",
       "destination": "/index.html"
     }
   ]
