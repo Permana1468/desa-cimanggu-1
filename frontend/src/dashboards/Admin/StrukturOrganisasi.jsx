@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { QRCodeSVG } from 'qrcode.react';
 import { Printer } from 'lucide-react';
+import api from '../../services/api';
 import { compressImage } from '../../utils/imageUtils';
 
 const StrukturOrganisasi = () => {
@@ -18,15 +19,11 @@ const StrukturOrganisasi = () => {
         foto: null
     });
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
     const fetchPejabat = async () => {
         setIsLoading(true);
         try {
-            const token = localStorage.getItem('access_token');
-            const res = await axios.get(`${API_URL}/users/api/pejabat-desa/`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get('/users/api/pejabat-desa/');
             setPejabatList(res.data);
         } catch (error) {
             console.error("Gagal mengambil data pejabat", error);
@@ -62,19 +59,22 @@ const StrukturOrganisasi = () => {
                 const compressedFile = await compressImage(formData.foto);
                 data.append('foto', compressedFile);
             }
-            const token = localStorage.getItem('access_token');
-            await axios.post(`${API_URL}/users/api/pejabat-desa/`, data, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
+
+            await api.post('/users/api/pejabat-desa/', data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
             setIsModalOpen(false);
             setFormData({ nama: '', jabatan: '', level: '3', foto: null });
             fetchPejabat();
         } catch (error) {
             console.error("Gagal menyimpan data pejabat", error);
-            alert("Gagal menyimpan. Periksa koneksi atau console log.");
+            
+            let errorMsg = "Gagal menyimpan. Periksa koneksi atau console log.";
+            if (error.response) {
+                const detail = error.response.data?.detail || error.response.data?.error || JSON.stringify(error.response.data);
+                errorMsg += `\n\nDetail: ${error.response.status} - ${detail}`;
+            }
+            alert(errorMsg);
         } finally {
             setIsSaving(false);
         }
@@ -84,10 +84,7 @@ const StrukturOrganisasi = () => {
         if (!window.confirm("Apakah Anda yakin ingin menghapus pejabat ini?")) return;
 
         try {
-            const token = localStorage.getItem('access_token');
-            await axios.delete(`${API_URL}/users/api/pejabat-desa/${id}/`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/users/api/pejabat-desa/${id}/`);
             fetchPejabat();
         } catch (error) {
             console.error("Gagal menghapus pejabat", error);

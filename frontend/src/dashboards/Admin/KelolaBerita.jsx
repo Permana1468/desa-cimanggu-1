@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import api from '../../services/api';
 import { compressImage } from '../../utils/imageUtils';
 
 const KelolaBerita = () => {
@@ -16,15 +17,11 @@ const KelolaBerita = () => {
         gambar_cover: null
     });
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
     const fetchBerita = async () => {
         setIsLoading(true);
         try {
-            const token = localStorage.getItem('access_token');
-            const res = await axios.get(`${API_URL}/users/api/berita/`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get('/users/api/berita/');
             setBeritaList(res.data);
         } catch (error) {
             console.error("Gagal mengambil data berita", error);
@@ -60,19 +57,21 @@ const KelolaBerita = () => {
                 const compressedFile = await compressImage(formData.gambar_cover);
                 data.append('gambar_cover', compressedFile);
             }
-            const token = localStorage.getItem('access_token');
-            await axios.post(`${API_URL}/users/api/berita/`, data, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
+            await api.post('/users/api/berita/', data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
             setIsModalOpen(false);
             setFormData({ judul: '', kategori: 'Pengumuman', konten: '', gambar_cover: null });
             fetchBerita();
         } catch (error) {
             console.error("Gagal mengirim data berita", error);
-            alert("Gagal mempublikasikan berita. Periksa koneksi atau console log.");
+            
+            let errorMsg = "Gagal mempublikasikan berita. Periksa koneksi atau console log.";
+            if (error.response) {
+                const detail = error.response.data?.detail || error.response.data?.error || JSON.stringify(error.response.data);
+                errorMsg += `\n\nDetail: ${error.response.status} - ${detail}`;
+            }
+            alert(errorMsg);
         } finally {
             setIsSaving(false);
         }
@@ -82,10 +81,7 @@ const KelolaBerita = () => {
         if (!window.confirm("Apakah Anda yakin ingin menghapus berita ini?")) return;
 
         try {
-            const token = localStorage.getItem('access_token');
-            await axios.delete(`${API_URL}/users/api/berita/${id}/`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/users/api/berita/${id}//`);
             fetchBerita();
         } catch (error) {
             console.error("Gagal menghapus berita", error);
