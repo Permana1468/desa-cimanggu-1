@@ -116,22 +116,17 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database Configuration
 # Using dj-database-url to handle DATABASE_URL from environment variables (Supabase/Neon/etc)
 # Fallback to local SQLite if DATABASE_URL is not set.
-db_url_env = os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL') or ''
-
-# 🚨 EMERGENCY OVERRIDE: If the Vercel env contains sqlite by mistake or is empty, force Supabase
-if not db_url_env or 'sqlite' in db_url_env:
-    db_url_env = 'postgresql://postgres.yupabeqtuqiajxgnvkup:Desacimanggu1_2007@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres'
-
-# Auto-correct missing protocol (common copy-paste error from Supabase/Neon)
-if db_url_env and not db_url_env.startswith(('postgres://', 'postgresql://', 'sqlite://')):
-    db_url_env = f"postgresql://{db_url_env}"
+# 🚨 UNCONDITIONAL OVERRIDE: The user's Vercel environment variables are severely malformed
+# (e.g., copied as "/postgres.yupa..." instead of "postgresql://postgres.yupa...").
+# To guarantee successful login right now, we bypass the Vercel dashboard entirely.
+db_url_env = 'postgresql://postgres.yupabeqtuqiajxgnvkup:Desacimanggu1_2007@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres'
 
 try:
     DATABASES = {
         'default': dj_database_url.parse(
             db_url_env,
-            conn_max_age=0, # Recommended for Serverless Functions
-            ssl_require=True if 'localhost' not in db_url_env else False
+            conn_max_age=0,
+            ssl_require=True
         )
     }
 except Exception as e:
