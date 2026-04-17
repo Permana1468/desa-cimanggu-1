@@ -115,6 +115,20 @@ class LandingPageSettingViewSet(viewsets.ModelViewSet):
         obj, created = LandingPageSetting.objects.get_or_create(is_active=True)
         return obj
 
+    def update(self, request, *args, **kwargs):
+        try:
+            return super().update(request, *args, **kwargs)
+        except Exception as e:
+            import traceback
+            return Response({"error": str(e), "traceback": traceback.format_exc()}, status=500)
+
+    def partial_update(self, request, *args, **kwargs):
+        try:
+            return super().partial_update(request, *args, **kwargs)
+        except Exception as e:
+            import traceback
+            return Response({"error": str(e), "traceback": traceback.format_exc()}, status=500)
+
 # ----------------------------------------------------
 # Admin User Management API
 # ----------------------------------------------------
