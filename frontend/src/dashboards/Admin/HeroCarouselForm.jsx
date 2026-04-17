@@ -57,6 +57,49 @@ const HeroCarouselForm = () => {
         }
     };
 
+    const compressImage = (file) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1600; // Standar HD, cukup tajam tapi ringan
+                    const MAX_HEIGHT = 1600;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob((blob) => {
+                        const compressedFile = new File([blob], file.name, {
+                            type: 'image/jpeg',
+                            lastModified: Date.now(),
+                        });
+                        resolve(compressedFile);
+                    }, 'image/jpeg', 0.7); // Kualitas 70%, sangat optimal untuk web
+                };
+            };
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -68,10 +111,14 @@ const HeroCarouselForm = () => {
                 if (formData[key] !== null) submitData.append(key, formData[key]);
             });
 
-            // Image files
-            ['carousel_image_1', 'carousel_image_2', 'carousel_image_3'].forEach(key => {
-                if (imageFiles[key]) submitData.append(key, imageFiles[key]);
-            });
+            // Image files (with compression bypass for large files)
+            for (const key of ['carousel_image_1', 'carousel_image_2', 'carousel_image_3']) {
+                if (imageFiles[key]) {
+                    // Kompresi otomatis di browser sebelum dikirim
+                    const compressedFile = await compressImage(imageFiles[key]);
+                    submitData.append(key, compressedFile);
+                }
+            }
 
             if (formData.id) {
                 const res = await api.patch(`/users/api/landing-page/${formData.id}/`, submitData, {
