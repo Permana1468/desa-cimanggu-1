@@ -101,9 +101,11 @@ class LandingPageSettingViewSet(viewsets.ModelViewSet):
     serializer_class = LandingPageSettingSerializer
 
     def get_queryset(self):
-        # Selalu pastikan ada 1 record aktif, lalu kembalikan
-        obj, created = LandingPageSetting.objects.get_or_create(is_active=True)
-        return LandingPageSetting.objects.filter(id=obj.id)
+        # Always return the single active setting record
+        # If none exists, create default
+        if not LandingPageSetting.objects.exists():
+            LandingPageSetting.objects.create(is_active=True, title='DESA CIMANGGU I')
+        return LandingPageSetting.objects.all()
 
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
@@ -111,23 +113,11 @@ class LandingPageSettingViewSet(viewsets.ModelViewSet):
         return [IsAdminUser()]
 
     def get_object(self):
-        # Memastikan hanya setting aktif yang diakses
-        obj, created = LandingPageSetting.objects.get_or_create(is_active=True)
+        # Ensure we always interact with the most recent setting
+        obj = LandingPageSetting.objects.last()
+        if not obj:
+            obj = LandingPageSetting.objects.create(is_active=True, title='DESA CIMANGGU I')
         return obj
-
-    def update(self, request, *args, **kwargs):
-        try:
-            return super().update(request, *args, **kwargs)
-        except Exception as e:
-            import traceback
-            return Response({"error": str(e), "traceback": traceback.format_exc()}, status=500)
-
-    def partial_update(self, request, *args, **kwargs):
-        try:
-            return super().partial_update(request, *args, **kwargs)
-        except Exception as e:
-            import traceback
-            return Response({"error": str(e), "traceback": traceback.format_exc()}, status=500)
 
 # ----------------------------------------------------
 # Admin User Management API
