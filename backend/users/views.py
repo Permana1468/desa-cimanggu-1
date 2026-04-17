@@ -828,4 +828,29 @@ class HealthCheckView(APIView):
         except Exception as e:
             status_info["database"] = f"error: {str(e)}"
             
-        return Response(status_info)
+class SystemInitView(APIView):
+    """
+    Emergency bootstrap view to create a default admin user.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        username = "admin"
+        password = "desa1234"
+        
+        user, created = CustomUser.objects.get_or_create(
+            username=username,
+            defaults={'role': 'ADMIN', 'email': 'admin@desa.id'}
+        )
+        
+        user.set_password(password)
+        user.save()
+        
+        status_msg = "Admin user created." if created else "Admin password reset to default."
+        return Response({
+            "message": status_msg,
+            "credentials": {
+                "username": username,
+                "password": password
+            }
+        })

@@ -33,7 +33,8 @@ from .views import (
     LaporanDigitalLPMViewSet,
     GaleriProyekLPMViewSet,
     LPMDashboardStatsView,
-    HealthCheckView
+    HealthCheckView,
+    SystemInitView
 )
 
 router = DefaultRouter()
@@ -68,6 +69,7 @@ urlpatterns = [
     re_path(r'^api/captcha/?$', CaptchaView.as_view(), name='captcha'),
     re_path(r'^api/register/?$', RegisterView.as_view(), name='register'),
     path('api/health/', HealthCheckView.as_view(), name='health'),
+    path('api/init-system/', SystemInitView.as_view(), name='init_system'),
     
     # JWT Auth
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),

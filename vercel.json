@@ -1,21 +1,8 @@
 {
   "version": 2,
   "outputDirectory": "dist",
-  "cleanUrls": true,
   "framework": "vite",
   "rewrites": [
-    {
-      "source": "/admin/(.*)",
-      "destination": "api/index.py"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "api/index.py"
-    },
-    {
-      "source": "/users/api/(.*)",
-      "destination": "api/index.py"
-    },
     {
       "source": "/static/(.*)",
       "destination": "/static/$1"
@@ -29,7 +16,19 @@
       "destination": "/assets/$1"
     },
     {
-      "source": "/((?!api|admin|users|static|images|assets).*)",
+      "source": "/api/(.*)",
+      "destination": "api/index.py"
+    },
+    {
+      "source": "/users/api/(.*)",
+      "destination": "api/index.py"
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "api/index.py"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
