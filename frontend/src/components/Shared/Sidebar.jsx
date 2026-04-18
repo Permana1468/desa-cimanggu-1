@@ -169,7 +169,6 @@ const menuConfig = {
     ADMIN: [
         { group: 'Overview' },
         { title: 'Dashboard Utama', path: '/dashboard', icon: <Home /> },
-        { title: 'Manajemen Pengguna', path: '/dashboard/users', icon: <Users /> },
         { title: 'Presensi Kehadiran', path: '/dashboard/rekap-kehadiran', icon: <Clock />, badge: 'Live' },
 
         { group: 'Administrasi Desa' },
@@ -261,6 +260,7 @@ const menuConfig = {
         {
             title: 'Pengaturan Web', icon: <Settings />,
             subMenus: [
+                { title: 'Manajemen Pengguna', path: '/dashboard/users' },
                 { title: 'Identitas & Profil Desa', path: '/dashboard/landing-setting' },
                 { title: 'Banner & Hero Carousel', path: '/dashboard/hero-carousel' },
                 { title: 'Kelola Berita & Publikasi', path: '/dashboard/berita' },
