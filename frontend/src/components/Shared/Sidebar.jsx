@@ -5,7 +5,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import {
     Home, Clock, Wallet, FileText, Users, Settings, Activity,
     LogOut, ChevronDown, Pyramid, X, Menu, BarChart3, Database, Shield, Zap, Search,
-    Briefcase, Map, MapPin
+    Briefcase, Map, MapPin, ChevronLeft, ChevronRight, LayoutGrid
 } from 'lucide-react';
 import useRole from '../../hooks/useRole';
 
@@ -17,14 +17,6 @@ const Tooltip = ({ text, show }) => (
                     ${show ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'}`}>
         {text}
         <div className="absolute left-[-4px] top-1/2 -translate-y-1/2 w-2 h-2 bg-dark-overlay border-l border-b border-white/10 rotate-45" />
-    </div>
-);
-
-/* ─── NAV GROUP LABEL ──────────────────────────────────────────────────────── */
-const GroupLabel = ({ label, isCollapsed }) => (
-    <div className={`px-5 pt-4 pb-1.5 text-[10px] font-black tracking-[0.2em] uppercase text-text-tertiary select-none transition-opacity duration-300
-                    ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-        {label}
     </div>
 );
 
@@ -58,7 +50,7 @@ const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
         if (!item.icon) return null;
         const colorClass = active ? 'text-white' : (item.iconColor || 'text-text-quaternary');
         return React.cloneElement(item.icon, { 
-            size: 18, 
+            size: 19, 
             className: `transition-all duration-300 ${colorClass} ${!active && !isCollapsed ? 'opacity-80' : 'opacity-100'}`
         });
     };
@@ -67,7 +59,7 @@ const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
         w-full flex items-center gap-3 px-5 py-3 text-[13.5px] font-semibold 
         transition-all duration-300 group relative rounded-xl
         ${active 
-            ? 'bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white shadow-[0_4px_15px_rgba(59,130,246,0.35)]' 
+            ? 'sidebar-active-gradient text-white' 
             : 'text-text-muted hover:bg-white/[0.04] hover:text-text-main'}
         ${isCollapsed ? 'justify-center px-0' : ''}
     `;
@@ -175,10 +167,8 @@ const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
 /* ─── MENU CONFIGS ──────────────────────────────────────────────────────────── */
 const menuConfig = {
     ADMIN: [
-        { group: 'Overview' },
         { title: 'Dashboard Utama', path: '/dashboard', icon: <Home />, iconColor: 'text-blue-400' },
         { title: 'Presensi Kehadiran', path: '/dashboard/rekap-kehadiran', icon: <Clock />, iconColor: 'text-amber-400', badge: 'Live' },
-        { group: 'Administrasi Desa' },
         {
             title: 'Aparatur Desa', 
             icon: <Pyramid />,
@@ -217,13 +207,13 @@ const menuConfig = {
                 }
             ]
         },
-        { group: 'Konfigurasi Sistem' },
         {
             title: 'Pengaturan Web', icon: <Settings />, iconColor: 'text-purple-400',
             subMenus: [
                 { title: 'Manajemen Pengguna', path: '/dashboard/users' },
                 { title: 'Identitas Desa', path: '/dashboard/landing-setting' },
                 { title: 'Kelola Berita', path: '/dashboard/berita' },
+                { title: 'Struktur Organisasi', path: '/dashboard/organisasi' },
             ]
         },
     ]
@@ -242,12 +232,25 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
             className={`fixed md:relative top-0 left-0 z-[60] h-full flex flex-col
                 bg-dark-sidebar backdrop-blur-[28px] border-r border-white/10
                 shadow-[20px_0_60px_rgba(0,0,0,0.4)] overflow-hidden
-                transition-all duration-300 ease-in-out
+                transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
                 ${isCollapsed ? 'w-20' : 'w-[260px]'}
                 ${!isSidebarOpen ? '-translate-x-full md:w-0 md:opacity-0 md:border-none' : 'translate-x-0'}`}
         >
+            {/* ── Internal Sidebar Toggle (Only for Desktop) ── */}
+            <button
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className={`hidden md:flex absolute top-6 right-[-12px] w-6 h-6 items-center justify-center 
+                           bg-[#3b82f6] text-white rounded-full shadow-lg border border-white/20
+                           cursor-pointer z-[70] transition-all duration-500
+                           hover:scale-110 hover:bg-[#2563eb]
+                           ${isCollapsed ? 'translate-x-[0px]' : ''}`}
+                aria-label="Toggle Sidebar"
+            >
+                {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+            </button>
+
             {/* ── Brand Header ────────────────────────────────────── */}
-            <div className={`px-4 py-6 border-b border-white/[0.08] flex items-center justify-center shrink-0
+            <div className={`px-4 py-8 border-b border-white/[0.08] flex items-center justify-center shrink-0
                             bg-gradient-to-b from-white/[0.03] to-transparent transition-all duration-300
                             ${scrolled ? 'bg-dark-base shadow-lg' : ''}`}>
                 
@@ -283,27 +286,24 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
 
             {/* ── Navigation ──────────────────────────────────────── */}
             <nav 
-                className="flex-1 overflow-y-auto overflow-x-hidden py-6 space-y-1.5 custom-scrollbar scroll-smooth"
+                className="flex-1 overflow-y-auto overflow-x-hidden py-8 space-y-2 custom-scrollbar scroll-smooth"
                 onScroll={(e) => setScrolled(e.target.scrollTop > 10)}
             >
-                {menus.map((item, idx) => {
-                    if (item.group) {
-                        return <GroupLabel key={`g-${idx}`} label={item.group} isCollapsed={isCollapsed} />;
-                    }
-                    return <SidebarItem key={idx} item={item} isCollapsed={isCollapsed} />;
-                })}
+                {menus.map((item, idx) => (
+                    <SidebarItem key={idx} item={item} isCollapsed={isCollapsed} />
+                ))}
             </nav>
 
             {/* ── Footer ─────────────────────────────────── */}
-            <div className={`px-4 py-5 border-t border-white/[0.08] shrink-0 bg-white/[0.02] flex justify-center`}>
+            <div className={`px-4 py-6 border-t border-white/[0.08] shrink-0 bg-white/[0.02] flex justify-center`}>
                 <button
                     onClick={logoutUser}
                     className={`group flex items-center gap-3 w-full p-3 rounded-xl
                                bg-red-500/[0.03] border border-red-500/10 transition-all duration-300
                                hover:bg-red-500/10 hover:border-red-500/30
-                               ${isCollapsed ? 'justify-center' : ''}`}
+                               ${isCollapsed ? 'justify-center border-none bg-transparent' : ''}`}
                 >
-                    <div className="w-9 h-9 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all duration-300">
+                    <div className="w-9 h-9 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all duration-300 shadow-sm">
                         <LogOut size={16} />
                     </div>
                     {!isCollapsed && (

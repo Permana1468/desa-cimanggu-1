@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import Sidebar from './Sidebar';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { Menu, Bell, Search, ChevronDown, LogOut, User, Settings, Sun, Moon } from 'lucide-react';
+import { Menu, Bell, ChevronDown, LogOut, User, Settings, Sun, Moon } from 'lucide-react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import api from '../../services/api';
 
@@ -112,113 +112,74 @@ const Layout = ({ children }) => {
             />
 
             {/* ── Main ──────────────────────────────────────── */}
-            <main className={`flex-1 flex flex-col relative z-10 min-w-0 transition-all duration-300 ease-in-out
-                             ${isSidebarOpen ? (isSidebarCollapsed ? 'md:ml-0' : 'md:ml-0') : ''}`}>
+            <main className={`flex-1 flex flex-col relative z-10 min-w-0 transition-all duration-300 ease-in-out`}>
 
                 {/* ── Header ──────────────────────────────────── */}
                 <header className="h-16 bg-dark-header backdrop-blur-[24px]
                                    border-b border-white/[0.06] flex items-center justify-between
-                                   px-6 gap-4 shrink-0 relative z-20
-                                   after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0
-                                   after:h-px after:bg-gradient-to-r after:from-transparent after:via-amber-500/15 after:to-transparent">
+                                   px-6 gap-4 shrink-0 relative z-20">
 
-                    {/* Left: Toggle + Breadcrumb */}
+                    {/* Left: Mobile Toggle + Breadcrumb */}
                     <div className="flex items-center gap-3.5 min-w-0">
+                        {/* Show toggle ONLY on mobile */}
                         <button
-                            className="w-9 h-9 flex items-center justify-center rounded-[10px] shrink-0
+                            className="w-9 h-9 md:hidden flex items-center justify-center rounded-[10px] shrink-0
                                        bg-white/[0.04] border border-white/[0.07] text-white/50
                                        hover:bg-white/[0.08] hover:text-white hover:border-white/[0.14]
                                        cursor-pointer transition-all duration-300 ease-in-out"
-                            onClick={() => {
-                                if (window.innerWidth < 768) {
-                                    setIsSidebarOpen(v => !v);
-                                } else {
-                                    setIsSidebarCollapsed(v => !v);
-                                }
-                            }}
-                            id="sidebar-toggle-btn"
-                            aria-label="Toggle sidebar"
+                            onClick={() => setIsSidebarOpen(v => !v)}
                         >
-                            <Menu size={17} className={`transition-transform duration-300 ${isSidebarCollapsed ? 'rotate-90' : ''}`} />
+                            <Menu size={17} />
                         </button>
+                        
                         <div className="flex items-center min-w-0">
-                            <span className="text-[15px] font-bold text-text-main tracking-tight whitespace-nowrap">
+                            <span className="text-[15px] font-black text-white tracking-widest whitespace-nowrap drop-shadow-sm">
                                 CIMANGGU I
                             </span>
-                            <span className="text-text-subtle mx-2">›</span>
-                            <span className="text-[13.5px] font-medium text-text-muted whitespace-nowrap
-                                             overflow-hidden text-ellipsis">
+                            <span className="text-text-subtle mx-2 font-light opacity-50">/</span>
+                            <span className="text-[13px] font-semibold text-text-muted whitespace-nowrap
+                                             overflow-hidden text-ellipsis tracking-tight">
                                 {pageTitle}
                             </span>
                         </div>
                     </div>
 
-                    {/* Center: Search */}
-                    <div className="hidden md:flex items-center gap-2 bg-white/[0.04] border border-white/[0.07]
-                                    rounded-[10px] px-3 h-9 flex-1 max-w-[300px]
-                                    focus-within:border-gold-border focus-within:bg-white/[0.08]
-                                    focus-within:shadow-[0_0_0_3px_rgba(245,158,11,0.06)]
-                                    transition-all duration-200">
-                        <Search size={14} className="text-text-faint shrink-0" />
-                        <input
-                            className="bg-transparent border-none outline-none text-[13px] text-text-main
-                                       placeholder:text-text-faint w-full font-[Inter,system-ui,sans-serif]"
-                            placeholder="Cari menu atau data..."
-                            aria-label="Pencarian"
-                        />
-                    </div>
-
                     {/* Right: Notifications + User */}
-                    <div className="flex items-center gap-2.5 shrink-0" ref={userMenuRef}>
-
-                        {/* Theme Toggle (Mini) */}
-                        <div className="hidden sm:block">
-                             <button
-                                onClick={toggleTheme}
-                                className="w-9 h-9 flex items-center justify-center rounded-[10px]
-                                           bg-white/[0.04] border border-white/[0.07] text-white/50
-                                           hover:bg-white/[0.08] hover:text-amber-500 cursor-pointer transition-all duration-200"
-                                title={theme === 'dark' ? 'Toggle Light Mode' : 'Toggle Dark Mode'}
-                             >
-                                {theme === 'dark' ? <Moon size={16} /> : <Sun size={16} />}
-                             </button>
-                        </div>
+                    <div className="flex items-center gap-4 shrink-0" ref={userMenuRef}>
 
                         {/* Notification Bell */}
                         <div className="relative">
                             <button
-                                className="relative w-9 h-9 flex items-center justify-center rounded-[10px]
-                                           bg-white/[0.04] border border-white/[0.07] text-white/50
-                                           hover:bg-white/[0.08] hover:text-white cursor-pointer transition-all duration-200"
+                                className="relative w-10 h-10 flex items-center justify-center rounded-xl
+                                           bg-white/[0.04] border border-white/[0.07] text-amber-500
+                                           hover:bg-amber-500/10 hover:border-amber-500/30 cursor-pointer transition-all duration-300 shadow-sm"
                                 onClick={() => { setNotifOpen(v => !v); setUserMenuOpen(false); }}
-                                id="notif-btn"
-                                aria-label="Notifikasi"
                             >
-                                <Bell size={16} />
-                                <span className={`absolute top-[7px] right-[7px] w-2 h-2 rounded-full
+                                <Bell size={18} />
+                                <span className={`absolute top-[9px] right-[9px] w-2.5 h-2.5 rounded-full
                                                  bg-amber-500 border-2 border-dark-base
-                                                 animate-[pulse-dot_2s_infinite]`} />
+                                                 animate-[pulse-dot_1.8s_infinite] shadow-lg`} />
                             </button>
 
                             {notifOpen && (
-                                <div className="absolute top-[calc(100%+10px)] right-0 w-[300px]
-                                                bg-dark-overlay backdrop-blur-[20px]
+                                <div className="absolute top-[calc(100%+12px)] right-0 w-[320px]
+                                                bg-dark-overlay backdrop-blur-[24px]
                                                 border border-white/[0.08] rounded-2xl
-                                                shadow-[0_20px_60px_rgba(0,0,0,0.5)] z-[999]
-                                                animate-[drop-in_0.2s_ease_both] overflow-hidden">
-                                    <div className="px-4 pt-3.5 pb-2.5 border-b border-white/[0.06]
-                                                    text-xs font-bold text-text-main tracking-wide">
-                                        Notifikasi Terbaru
+                                                shadow-[0_20px_60px_rgba(0,0,0,0.6)] z-[999]
+                                                animate-[drop-in_0.3s_cubic-bezier(0.16,1,0.3,1)] overflow-hidden">
+                                    <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
+                                        <span className="text-xs font-black text-text-main tracking-widest uppercase">Pemberitahuan</span>
+                                        <span className="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full">Baru</span>
                                     </div>
-                                    <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+                                    <div className="max-h-[350px] overflow-y-auto custom-scrollbar">
                                         {notifications.map((n, i) => (
-                                            <div key={i} className="flex items-start gap-2.5 px-4 py-3
+                                            <div key={i} className="flex items-start gap-3.5 px-5 py-4
                                                                     border-b border-white/[0.04] last:border-b-0
                                                                     hover:bg-white/[0.04] cursor-pointer transition-colors duration-150">
-                                                <span className="text-base mt-0.5 shrink-0">{n.icon}</span>
+                                                <span className="text-lg mt-0.5 shrink-0">{n.icon}</span>
                                                 <div>
-                                                    <div className="text-xs text-text-main leading-relaxed">{n.msg}</div>
-                                                    <div className="text-[10.5px] text-text-muted mt-[3px]">{n.time} WIB</div>
+                                                    <div className="text-[12.5px] text-text-main leading-relaxed font-medium">{n.msg}</div>
+                                                    <div className="text-[10px] text-text-muted mt-1.5 font-semibold opacity-60 tracking-wider font-mono">{n.time} WIB</div>
                                                 </div>
                                             </div>
                                         ))}
@@ -230,81 +191,80 @@ const Layout = ({ children }) => {
                         {/* User Menu */}
                         <div className="relative">
                             <button
-                                className="flex items-center gap-2.5 bg-white/[0.04] border border-white/[0.07]
-                                           rounded-xl py-[5px] pl-[5px] pr-3 cursor-pointer
-                                           hover:bg-white/[0.08] hover:border-white/[0.14] transition-all duration-200"
+                                className="flex items-center gap-3 bg-white/[0.04] border border-white/[0.07]
+                                           rounded-xl py-1.5 pl-1.5 pr-4 cursor-pointer
+                                           hover:bg-white/[0.08] hover:border-white/[0.14] transition-all duration-300 shadow-sm"
                                 onClick={() => { setUserMenuOpen(v => !v); setNotifOpen(false); }}
-                                id="user-menu-btn"
                             >
                                 {/* Avatar */}
-                                <div className="relative w-8 h-8 rounded-[9px] bg-gradient-to-br from-amber-500 to-amber-600
-                                                flex items-center justify-center font-extrabold text-[13px] text-black
-                                                shadow-[0_0_12px_rgba(245,158,11,0.35)] shrink-0 overflow-hidden">
+                                <div className="relative w-9 h-9 rounded-[10px] bg-gradient-to-br from-amber-400 to-amber-600
+                                                flex items-center justify-center font-black text-[14px] text-black
+                                                shadow-[0_4px_12px_rgba(245,158,11,0.3)] shrink-0 overflow-hidden">
                                     {user?.foto_profil ? (
                                         <img src={user.foto_profil} alt="" className="w-full h-full object-cover" />
                                     ) : (
                                         user?.username?.charAt(0)?.toUpperCase() || 'A'
                                     )}
-                                    <span className="absolute -bottom-[1px] -right-[1px] w-[9px] h-[9px] rounded-full
-                                                     bg-green-500 border-2 border-dark-base" />
+                                    <span className="absolute -bottom-[0.5px] -right-[0.5px] w-[10px] h-[10px] rounded-full
+                                                     bg-green-500 border-2 border-dark-base shadow-[0_0_4px_rgba(34,197,94,1)]" />
                                 </div>
                                 {/* Info */}
                                 <div className="hidden md:flex flex-col items-start">
-                                    <span className="text-[12.5px] font-bold text-text-main leading-tight">
+                                    <span className="text-[13px] font-black text-white leading-none tracking-tight">
                                         {user?.nama_lengkap || user?.username || 'Admin'}
                                     </span>
-                                    <span className="text-[10px] text-amber-500 font-semibold uppercase tracking-[0.05em]">
+                                    <span className="text-[10px] text-amber-500 font-bold uppercase tracking-[0.1em] mt-1.5 opacity-80">
                                         {user?.role || 'Admin'}
                                     </span>
                                 </div>
-                                <ChevronDown size={13}
-                                    className={`text-text-faint transition-transform duration-200
+                                <ChevronDown size={14}
+                                    className={`text-text-faint transition-transform duration-300
                                                 ${userMenuOpen ? 'rotate-180' : ''}`} />
                             </button>
 
                             {userMenuOpen && (
-                                <div className="absolute top-[calc(100%+10px)] right-0 w-[220px]
-                                                bg-dark-overlay backdrop-blur-[20px]
+                                <div className="absolute top-[calc(100%+12px)] right-0 w-[240px]
+                                                bg-dark-overlay backdrop-blur-[24px]
                                                 border border-white/[0.08] rounded-2xl
-                                                shadow-[0_20px_60px_rgba(0,0,0,0.5)] z-[999]
-                                                animate-[drop-in_0.2s_ease_both] overflow-hidden">
+                                                shadow-[0_20px_60px_rgba(0,0,0,0.6)] z-[999]
+                                                animate-[drop-in_0.3s_cubic-bezier(0.16,1,0.3,1)] overflow-hidden">
                                     
-                                    {/* Theme Toggler inside Dropdown */}
-                                    <div className="px-4 py-3 border-b border-white/[0.04] flex items-center justify-between">
-                                        <span className="text-[11px] font-bold text-text-muted uppercase tracking-widest">Tema Visual</span>
+                                    {/* Theme Toggler (Power-style toggle switch) inside Dropdown */}
+                                    <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
+                                        <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Tema Visual</span>
                                         <button 
                                             onClick={toggleTheme}
-                                            className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] transition-all"
+                                            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.08] hover:bg-amber-500/10 hover:border-amber-500/30 transition-all duration-300"
                                         >
-                                            {theme === 'dark' ? <Moon size={12} className="text-amber-500" /> : <Sun size={12} className="text-amber-500" />}
-                                            <span className="text-[10px] font-black text-white uppercase">{theme === 'dark' ? 'Dark' : 'Light'}</span>
+                                            {theme === 'dark' ? <Moon size={14} className="text-amber-500" /> : <Sun size={14} className="text-amber-500" />}
+                                            <span className="text-[10px] font-black text-white uppercase tracking-tighter">{theme === 'dark' ? 'Dark' : 'Light'}</span>
                                         </button>
                                     </div>
 
                                     <button 
                                         onClick={() => { navigate('/dashboard/profile'); setUserMenuOpen(false); }}
-                                        className="flex items-center gap-2.5 w-full px-4 py-[11px]
-                                                       text-[13px] text-text-muted border-none bg-transparent
-                                                       cursor-pointer text-left font-[Inter,system-ui,sans-serif]
+                                        className="flex items-center gap-3 w-full px-5 py-[14px]
+                                                       text-[13.5px] text-text-muted border-none bg-transparent
+                                                       cursor-pointer text-left font-semibold
                                                        border-b border-white/[0.04]
-                                                       hover:bg-white/[0.05] hover:text-text-main transition-all duration-150">
-                                        <User size={14} /> Profil Saya
+                                                       hover:bg-white/[0.06] hover:text-white transition-all duration-200">
+                                        <User size={15} className="text-blue-400" /> Profil Saya
                                     </button>
                                     <button 
                                         onClick={() => { navigate('/dashboard/settings'); setUserMenuOpen(false); }}
-                                        className="flex items-center gap-2.5 w-full px-4 py-[11px]
-                                                       text-[13px] text-text-muted border-none bg-transparent
-                                                       cursor-pointer text-left font-[Inter,system-ui,sans-serif]
+                                        className="flex items-center gap-3 w-full px-5 py-[14px]
+                                                       text-[13.5px] text-text-muted border-none bg-transparent
+                                                       cursor-pointer text-left font-semibold
                                                        border-b border-white/[0.04]
-                                                       hover:bg-white/[0.05] hover:text-text-main transition-all duration-150">
-                                        <Settings size={14} /> Pengaturan
+                                                       hover:bg-white/[0.06] hover:text-white transition-all duration-200">
+                                        <Settings size={15} className="text-purple-400" /> Pengaturan
                                     </button>
-                                    <button className="flex items-center gap-2.5 w-full px-4 py-[11px]
-                                                       text-[13px] text-text-muted border-none bg-transparent
-                                                       cursor-pointer text-left font-[Inter,system-ui,sans-serif]
-                                                       hover:bg-red-500/[0.08] hover:text-red-400 transition-all duration-150"
+                                    <button className="flex items-center gap-3 w-full px-5 py-[14px]
+                                                       text-[13.5px] text-text-muted border-none bg-transparent
+                                                       cursor-pointer text-left font-black
+                                                       hover:bg-red-500/[0.08] hover:text-red-400 transition-all duration-200"
                                             onClick={handleLogout}>
-                                        <LogOut size={14} /> Keluar Sistem
+                                        <LogOut size={15} className="text-red-500" /> Log Out Sistem
                                     </button>
                                 </div>
                             )}
