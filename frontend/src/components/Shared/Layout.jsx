@@ -121,7 +121,7 @@ const Layout = ({ children }) => {
                 {/* ── Header ──────────────────────────────────── */}
                 <header className="h-16 bg-[rgba(8,14,30,0.55)] backdrop-blur-[24px]
                                    border-b border-white/[0.06] flex items-center justify-between
-                                   px-6 gap-4 shrink-0 relative
+                                   px-6 gap-4 shrink-0 relative z-20
                                    after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0
                                    after:h-px after:bg-gradient-to-r after:from-transparent after:via-amber-500/15 after:to-transparent">
 
