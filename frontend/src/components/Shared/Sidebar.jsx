@@ -322,16 +322,18 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                             bg-gradient-to-b from-white/[0.03] to-transparent transition-all duration-300
                             ${scrolled ? 'shadow-[0_4px_30px_rgba(0,0,0,0.5)] bg-[#080e1e]' : ''}`}>
                 <div className="flex items-center gap-4">
-                    {/* Logo Kabupaten Bogor with Living Glow */}
-                    <div className="relative group">
-                        <div className="absolute inset-0 bg-amber-500/20 rounded-xl blur-xl animate-pulse group-hover:bg-amber-500/40 transition-all duration-700"></div>
-                        <div className="w-11 h-11 rounded-xl bg-[#080e1e]/80 border border-white/10 p-1.5 
-                                        flex items-center justify-center shrink-0 relative z-10
-                                        shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                    {/* Logo Kabupaten Bogor with Direct Living Glow */}
+                    <div className="relative group shrink-0">
+                        {/* Recursive Pulse Glow */}
+                        <div className="absolute inset-0 bg-amber-500/30 rounded-full blur-2xl animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                        <div className="absolute inset-0 bg-amber-500/10 rounded-full blur-xl animate-pulse delay-700"></div>
+                        
+                        <div className="w-14 h-14 relative z-10 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
                             <img 
                                 src="/images/logo_kabupaten_bogor.png" 
                                 alt="Logo Bogor" 
-                                className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]"
+                                className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(245,158,11,0.5)]"
+                                style={{ filter: 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.3))' }}
                             />
                         </div>
                     </div>
