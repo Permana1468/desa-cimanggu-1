@@ -47,7 +47,20 @@ const UserProfile = () => {
             setMessage({ type: 'success', text: '✅ Profil berhasil diperbarui!' });
             refreshUser(); // Update navbar
         } catch (err) {
-            setMessage({ type: 'error', text: '❌ Gagal menyimpan profil.' });
+            const errorData = err.response?.data;
+            let errorMsg = '❌ Gagal menyimpan profil.';
+            
+            if (errorData) {
+                // If backend returns field-specific errors
+                const firstError = Object.values(errorData)[0];
+                if (Array.isArray(firstError)) {
+                    errorMsg = `❌ ${firstError[0]}`;
+                } else if (typeof firstError === 'string') {
+                    errorMsg = `❌ ${firstError}`;
+                }
+            }
+            
+            setMessage({ type: 'error', text: errorMsg });
         } finally {
             setSaving(false);
             setTimeout(() => setMessage(null), 4000);

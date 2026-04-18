@@ -453,7 +453,7 @@ class RencanaAnggaranViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(usulan__id=usulan_id)
         return queryset
 
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .models import DokumenDED
 from .serializers import DokumenDEDSerializer
 
@@ -652,7 +652,7 @@ class UserMeView(APIView):
     PATCH /api/users/me/ -> Update nama_lengkap, nomor_telepon, and/or email.
     """
     permission_classes = [permissions.IsAuthenticated]
-    parser_classes = (MultiPartParser, FormParser)
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
 
     def get(self, request):
         serializer = UserProfileSerializer(request.user)
