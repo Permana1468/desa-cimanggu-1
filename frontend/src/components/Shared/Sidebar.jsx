@@ -348,7 +348,6 @@ const menuConfig = {
             title: 'Pengaturan', icon: <Settings size={16} />,
             subMenus: [
                 { title: 'Data Pengurus', path: '/dashboard/pengurus-lpm' },
-                { title: 'Profil Saya', path: '/dashboard/profil-saya' },
             ]
         },
     ],

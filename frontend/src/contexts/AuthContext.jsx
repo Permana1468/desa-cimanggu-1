@@ -13,16 +13,18 @@ export const AuthProvider = ({ children }) => {
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
-                // Cek apakah token expired
                 if (decodedToken.exp * 1000 < Date.now()) {
                     logoutUser();
                 } else {
-                    setUser({
+                    const basicUser = {
                         id: decodedToken.user_id,
                         username: decodedToken.username,
                         role: decodedToken.role,
                         unit_detail: decodedToken.unit_detail
-                    });
+                    };
+                    setUser(basicUser);
+                    // Fetch extended data like foto_profil and nama_lengkap
+                    fetchFullUserData(basicUser);
                 }
             } catch (error) {
                 logoutUser();
@@ -30,6 +32,25 @@ export const AuthProvider = ({ children }) => {
         }
         setLoading(false);
     }, []);
+
+    const fetchFullUserData = async (basicUser) => {
+        try {
+            const res = await api.get('/users/api/users/me/');
+            setUser({
+                ...basicUser,
+                nama_lengkap: res.data.nama_lengkap,
+                foto_profil: res.data.foto_profil,
+                email: res.data.email,
+                nomor_telepon: res.data.nomor_telepon
+            });
+        } catch (e) {
+            console.error("Failed to fetch full user data", e);
+        }
+    };
+
+    const refreshUser = () => {
+        if (user) fetchFullUserData(user);
+    };
 
     const loginUser = async (username, password, captcha_token, captcha_answer) => {
         const response = await api.post('/users/api/token/', {
@@ -45,12 +66,14 @@ export const AuthProvider = ({ children }) => {
 
         // Decode token and set user state
         const decodedToken = jwtDecode(tokens.access);
-        setUser({
+        const basicUser = {
             id: decodedToken.user_id,
             username: decodedToken.username,
             role: decodedToken.role,
             unit_detail: decodedToken.unit_detail
-        });
+        };
+        setUser(basicUser);
+        await fetchFullUserData(basicUser);
 
         return tokens;
     };
@@ -62,7 +85,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, setUser, loginUser, logoutUser, loading }}>
+        <AuthContext.Provider value={{ user, setUser, loginUser, logoutUser, loading, refreshUser }}>
             {children}
         </AuthContext.Provider>
     );

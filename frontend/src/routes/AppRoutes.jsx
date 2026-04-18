@@ -35,7 +35,11 @@ import JadwalGotongRoyongLPM from '../dashboards/LPM/JadwalGotongRoyongLPM';
 import PantauProyekDesa from '../dashboards/LPM/PantauProyekDesa';
 import BukuKegiatanLPM from '../dashboards/LPM/BukuKegiatanLPM';
 import DataPengurusLPM from '../dashboards/LPM/DataPengurusLPM';
-import ProfilAdminLPM from '../dashboards/LPM/ProfilAdminLPM';
+// Shared Dashboards
+import UserProfile from '../dashboards/Shared/UserProfile';
+import UserSettings from '../dashboards/Shared/UserSettings';
+
+// LPM Dashboards (Restored)
 import KeuanganLPM from '../dashboards/LPM/KeuanganLPM';
 import InventarisLPM from '../dashboards/LPM/InventarisLPM';
 import KaderLPM from '../dashboards/LPM/KaderLPM';
@@ -46,17 +50,7 @@ import { AuthContext } from '../contexts/AuthContext';
 // Kiosk
 import LayarAbsensi from '../pages/LayarAbsensi';
 
-// Wrapper to pass user data from AuthContext into ProfilAdminLPM
-const ProfilAdminLPMWrapper = () => {
-    const { user } = useContext(AuthContext);
-    const userData = {
-        username: user?.username,
-        unitDetail: user?.unit_detail,
-    };
-    return <ProfilAdminLPM userData={userData} />;
-};
-
-// Placeholder untuk halaman lain
+// Dummy section for development
 const DummyPage = ({ title, icon = '📉' }) => (
     <div className="relative bg-[#1e293b]/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 md:p-12 min-h-[60vh] flex flex-col items-center justify-center shadow-[0_15px_40px_-10px_rgba(0,0,0,0.5)]">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-yellow-500/10 blur-[80px] rounded-full pointer-events-none"></div>
@@ -105,6 +99,8 @@ const AppRoutes = () => {
                 {/* Rute Dasar untuk semua role yang login */}
                 <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'KAUR_PERENCANAAN', 'KAUR_KEUANGAN', 'KASI_PEMERINTAHAN', 'KASI_KESEJAHTERAAN', 'KASI_PELAYANAN', 'POSYANDU', 'SEKDES', 'KAUR_TU', 'LPM', 'KADUS']} />}>
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/dashboard/profile" element={<UserProfile />} />
+                    <Route path="/dashboard/settings" element={<UserSettings />} />
                 </Route>
 
                 {/* Grup Rute ADMIN */}
@@ -173,7 +169,6 @@ const AppRoutes = () => {
                     <Route path="/dashboard/pantau-proyek" element={<PantauProyekDesa />} />
                     <Route path="/dashboard/kegiatan-lpm" element={<BukuKegiatanLPM />} />
                     <Route path="/dashboard/pengurus-lpm" element={<DataPengurusLPM />} />
-                    <Route path="/dashboard/profil-saya" element={<ProfilAdminLPMWrapper />} />
 
                     {/* New LPM Routes Using DummyPage scaffold */}
                     <Route path="/dashboard/lpm/keuangan" element={<KeuanganLPM />} />

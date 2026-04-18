@@ -44,6 +44,8 @@ const Layout = ({ children }) => {
         '/dashboard/laporan-dusun-3': 'Dusun III · Laporan Keamanan',
         '/dashboard/data-dusun-4': 'Dusun IV · Data Wilayah',
         '/dashboard/laporan-dusun-4': 'Dusun IV · Laporan Keamanan',
+        '/dashboard/profile': 'Profil Saya',
+        '/dashboard/settings': 'Pengaturan Akun',
     };
     const pageTitle = pageTitleMap[location.pathname] || 'Panel Administrasi';
 
@@ -221,15 +223,19 @@ const Layout = ({ children }) => {
                                 {/* Avatar */}
                                 <div className="relative w-8 h-8 rounded-[9px] bg-gradient-to-br from-amber-500 to-amber-600
                                                 flex items-center justify-center font-extrabold text-[13px] text-black
-                                                shadow-[0_0_12px_rgba(245,158,11,0.35)] shrink-0">
-                                    {user?.username?.charAt(0)?.toUpperCase() || 'A'}
+                                                shadow-[0_0_12px_rgba(245,158,11,0.35)] shrink-0 overflow-hidden">
+                                    {user?.foto_profil ? (
+                                        <img src={user.foto_profil} alt="" className="w-full h-full object-cover" />
+                                    ) : (
+                                        user?.username?.charAt(0)?.toUpperCase() || 'A'
+                                    )}
                                     <span className="absolute -bottom-[1px] -right-[1px] w-[9px] h-[9px] rounded-full
                                                      bg-green-500 border-2 border-dark-base" />
                                 </div>
                                 {/* Info */}
                                 <div className="hidden md:flex flex-col items-start">
                                     <span className="text-[12.5px] font-bold text-white leading-tight">
-                                        {user?.username || 'Admin'}
+                                        {user?.nama_lengkap || user?.username || 'Admin'}
                                     </span>
                                     <span className="text-[10px] text-amber-500 font-semibold uppercase tracking-[0.05em]">
                                         {user?.role || 'Admin'}
@@ -246,14 +252,18 @@ const Layout = ({ children }) => {
                                                 border border-white/[0.08] rounded-2xl
                                                 shadow-[0_20px_60px_rgba(0,0,0,0.5)] z-[999]
                                                 animate-[drop-in_0.2s_ease_both] overflow-hidden">
-                                    <button className="flex items-center gap-2.5 w-full px-4 py-[11px]
+                                    <button 
+                                        onClick={() => { navigate('/dashboard/profile'); setUserMenuOpen(false); }}
+                                        className="flex items-center gap-2.5 w-full px-4 py-[11px]
                                                        text-[13px] text-white/60 border-none bg-transparent
                                                        cursor-pointer text-left font-[Inter,system-ui,sans-serif]
                                                        border-b border-white/[0.04]
                                                        hover:bg-white/[0.05] hover:text-white transition-all duration-150">
                                         <User size={14} /> Profil Saya
                                     </button>
-                                    <button className="flex items-center gap-2.5 w-full px-4 py-[11px]
+                                    <button 
+                                        onClick={() => { navigate('/dashboard/settings'); setUserMenuOpen(false); }}
+                                        className="flex items-center gap-2.5 w-full px-4 py-[11px]
                                                        text-[13px] text-white/60 border-none bg-transparent
                                                        cursor-pointer text-left font-[Inter,system-ui,sans-serif]
                                                        border-b border-white/[0.04]
