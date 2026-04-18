@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Upload, Image as ImageIcon, CheckCircle } from 'lucide-react';
+import { Save, Upload, Image as ImageIcon, CheckCircle, Info, ShieldCheck } from 'lucide-react';
 import api from '../../services/api';
 import { compressImage } from '../../utils/imageUtils';
 
 const IdentitasProfilForm = () => {
     const [formData, setFormData] = useState({
         id: null,
-        title: 'Website Desa', // Nama Desa
-        about_title: 'Sekilas Pandang', // Judul Profil
-        description: '', // Deskripsi Singkat untuk SEO
-        about_text: '', // Profil Lengkap
+        title: 'Website Desa',
+        about_title: 'Sekilas Pandang',
+        description: '',
+        about_text: '',
         logo: null,
         about_image: null
     });
@@ -64,14 +64,10 @@ const IdentitasProfilForm = () => {
         setIsLoading(true);
         try {
             const submitData = new FormData();
-
-            // Text fields - Pastikan semua kolom terkirim
             ['title', 'description', 'about_title', 'about_text'].forEach(key => {
-                const val = formData[key] || '';
-                submitData.append(key, val);
+                submitData.append(key, formData[key] || '');
             });
 
-            // Image files
             if (imageFile) {
                 const compressedLogo = await compressImage(imageFile);
                 submitData.append('logo', compressedLogo);
@@ -91,150 +87,156 @@ const IdentitasProfilForm = () => {
                 });
             }
             alert("Identitas & Profil Desa berhasil disimpan!");
-            window.location.reload(); // Refresh untuk memastikan data terbaru tampil
+            window.location.reload();
         } catch (error) {
             console.error("Error saving settings:", error);
-            alert("Gagal menyimpan pengaturan. Silakan cek koneksi atau format file.");
+            alert("Gagal menyimpan pengaturan.");
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-100 tracking-tight flex items-center gap-3">
-                        Identitas & Profil
-                        <span className="text-[10px] bg-green-500/20 text-green-400 px-2 py-1 rounded-full border border-green-500/30 flex items-center gap-1 font-normal animate-pulse">
-                            <CheckCircle size={10} />
-                            SISTEM TERUPDATE
-                        </span>
-                    </h1>
-                    <p className="text-gray-400 mt-1">Kelola nama desa, logo, dan konten profil utama desa.</p>
+        <div className="space-y-10 animate-fade-in relative z-10 w-full mb-12">
+            {/* Unified Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-600/5 
+                                    border border-amber-500/30 flex items-center justify-center text-amber-500 shadow-lg shrink-0">
+                         <ShieldCheck size={32} />
+                    </div>
+                    <div>
+                        <h2 className="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+                            Identitas & Profil
+                            <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1 font-black animate-pulse uppercase tracking-widest">
+                                <CheckCircle size={10} /> Active
+                            </span>
+                        </h2>
+                        <p className="text-white/30 text-[13px] font-medium mt-1">Konfigurasi branding resmi dan narasi profil Desa Cimanggu I.</p>
+                    </div>
                 </div>
                 <button
                     onClick={handleSubmit}
                     disabled={isLoading}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg active:scale-95 ${isLoading
-                            ? 'bg-yellow-500/50 text-slate-900/50 cursor-not-allowed shadow-none'
-                            : 'bg-yellow-500 hover:bg-yellow-600 text-slate-900 shadow-yellow-500/20'
-                        }`}
+                    className={`group bg-amber-500 hover:bg-amber-400 text-black px-10 py-3.5 rounded-2xl font-black text-[14px] 
+                               transition-all duration-300 flex items-center gap-3 shadow-[0_10px_30px_rgba(245,158,11,0.2)] hover:-translate-y-1 active:scale-95`}
                 >
-                    <Save className="w-5 h-5" />
-                    {isLoading ? 'Menyimpan...' : 'Simpan Perubahan'}
+                    <Save size={18} className="group-hover:rotate-12 transition-transform" />
+                    {isLoading ? 'MENYIMPAN...' : 'SIMPAN PERUBAHAN'}
                 </button>
             </div>
 
-            <div className="bg-[#1e293b]/40 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-                <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl animate-fadeIn">
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* NAMA DESA */}
-                        <div className="space-y-6">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-300 mb-2">Nama Desa / Instansi</label>
+            {/* Main Content Area */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                
+                {/* Left Side: Branding & SEO */}
+                <div className="xl:col-span-1 space-y-8">
+                    <div className="bg-white/[0.02] backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 shadow-2xl relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-[60px] rounded-full" />
+                        
+                        <h3 className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em] mb-8 flex items-center gap-2">
+                             <ImageIcon size={14} className="text-amber-500" /> Branding Desa
+                        </h3>
+
+                        <div className="space-y-8">
+                            {/* NAMA DESA */}
+                            <div className="space-y-3">
+                                <label className="text-[11px] font-black text-white/40 tracking-[0.2em] uppercase">Nama Resmi Instansi</label>
                                 <input
-                                    type="text"
-                                    name="title"
-                                    value={formData.title || ''}
-                                    onChange={handleChange}
-                                    className="w-full bg-[#0f172a]/50 border border-white/10 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500 transition-all"
+                                    type="text" name="title" value={formData.title} onChange={handleChange}
+                                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 text-white text-[15px] font-bold outline-none focus:border-amber-500/50 transition-all"
                                     placeholder="Contoh: Desa Cimanggu I"
                                 />
                             </div>
 
-                            {/* LOGO */}
-                            <div className="space-y-4">
-                                <label className="block text-sm font-semibold text-gray-300">Logo Utama</label>
-                                <div className="flex items-center gap-5 p-4 rounded-2xl bg-white/5 border border-white/10">
-                                    <div className="w-20 h-20 rounded-lg bg-[#0f172a] border border-white/10 overflow-hidden flex items-center justify-center shrink-0">
+                            {/* LOGO PREVIEW & UPLOAD */}
+                            <div className="space-y-3">
+                                <label className="text-[11px] font-black text-white/40 tracking-[0.2em] uppercase">Logo Utama (PNG)</label>
+                                <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col items-center gap-6">
+                                    <div className="w-32 h-32 rounded-3xl bg-black/40 border-2 border-dashed border-white/10 overflow-hidden flex items-center justify-center group/logo relative shadow-inner">
                                         {formData.logo ? (
-                                            <img src={formData.logo} alt="Preview Logo" className="w-full h-full object-contain p-2" />
+                                            <img src={formData.logo} alt="Preview" className="w-full h-full object-contain p-4 transition-transform group-hover/logo:scale-110" />
                                         ) : (
-                                            <ImageIcon className="w-8 h-8 text-gray-600" />
+                                            <ImageIcon size={40} className="text-white/5" />
                                         )}
-                                    </div>
-                                    <div className="flex-1">
-                                        <label className="inline-flex items-center justify-center px-4 py-2 border border-white/10 rounded-lg bg-[#0f172a] text-gray-300 hover:bg-white/10 cursor-pointer transition-colors text-xs font-bold">
-                                            <Upload className="w-4 h-4 mr-2" />
-                                            GANTI LOGO
+                                        <label className="absolute inset-0 bg-black/80 opacity-0 group-hover/logo:opacity-100 transition-opacity cursor-pointer flex items-center justify-center text-[10px] font-black text-amber-500 tracking-widest">
+                                            UPLOAD NEW
                                             <input type="file" name="logo" accept="image/*" onChange={handleChange} className="hidden" />
                                         </label>
                                     </div>
+                                    <p className="text-[9px] text-white/20 font-bold uppercase tracking-widest text-center">Format PNG Transparan direkomendasikan</p>
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* DESKRIPSI SEO */}
-                        <div className="space-y-6">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-300 mb-2">Deskripsi Singkat (SEO/Footer)</label>
-                                <textarea
-                                    name="description"
-                                    value={formData.description || ''}
-                                    onChange={handleChange}
-                                    rows="5"
-                                    className="w-full bg-[#0f172a]/50 border border-white/10 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500 transition-all resize-none custom-scrollbar"
-                                    placeholder="Deskripsi untuk pencarian Google dan bagian bawah web..."
-                                ></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <div className="border-t border-white/5 pt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* PROFIL DESA SECTION */}
-                        <div className="space-y-6">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-300 mb-2">Judul Seksi Profil (Halaman Depan)</label>
-                                <input
-                                    type="text"
-                                    name="about_title"
-                                    value={formData.about_title || ''}
-                                    onChange={handleChange}
-                                    className="w-full bg-[#0f172a]/50 border border-white/10 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500 transition-all font-bold"
-                                    placeholder="Contoh: Sekilas Pandang / Sejarah Desa"
-                                />
-                            </div>
-
-                            <div className="space-y-4">
-                                <label className="block text-sm font-semibold text-gray-300">Foto Konten Profil (Kantor Desa / Ikon)</label>
-                                <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                                    <div className="aspect-video w-full rounded-xl bg-[#0f172a] border border-white/10 overflow-hidden mb-4 relative group">
-                                        {formData.about_image ? (
-                                            <img src={formData.about_image} alt="Preview Profil" className="w-full h-full object-cover" />
-                                        ) : (
-                                            <div className="w-full h-full flex flex-col items-center justify-center text-gray-600">
-                                                <ImageIcon size={40} strokeWidth={1} />
-                                                <span className="text-[10px] mt-2 font-bold opacity-50 uppercase tracking-widest">Belum Ada Foto</span>
-                                            </div>
-                                        )}
-                                        <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex flex-col items-center justify-center text-white text-xs font-bold gap-2 backdrop-blur-sm">
-                                            <Upload size={20} />
-                                            GANTI FOTO KONTEN
-                                            <input type="file" name="about_image" accept="image/*" onChange={handleChange} className="hidden" />
-                                        </label>
-                                    </div>
-                                    <p className="text-[10px] text-gray-500 italic text-center">Mendukung format PNG transparan & JPG. Maks 4MB.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* ABOUT TEXT */}
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-2">Narasi Profil Lengkap</label>
+                    <div className="bg-white/[0.02] backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 shadow-2xl">
+                         <h3 className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                             <Info size={14} className="text-blue-500" /> SEO & Meta Data
+                        </h3>
+                         <div className="space-y-3">
+                            <label className="text-[11px] font-black text-white/40 tracking-[0.2em] uppercase leading-relaxed">Deskripsi Global (Search Engine)</label>
                             <textarea
-                                name="about_text"
-                                value={formData.about_text || ''}
-                                onChange={handleChange}
-                                rows="12"
-                                className="w-full bg-[#0f172a]/50 border border-white/10 rounded-xl px-4 py-4 text-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500 transition-all resize-none custom-scrollbar leading-relaxed"
-                                placeholder="Tuliskan sejarah desa, visi misi, atau perkenalan desa secara detail di sini..."
+                                name="description" value={formData.description} onChange={handleChange} rows="5"
+                                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-5 text-white text-[13px] leading-relaxed outline-none focus:border-blue-500/50 transition-all resize-none custom-scrollbar"
+                                placeholder="Deskripsi untuk pencarian Google dan bagian bawah web..."
                             ></textarea>
                         </div>
                     </div>
+                </div>
 
-                </form>
+                {/* Right Side: About Narration */}
+                <div className="xl:col-span-2 space-y-8">
+                    <div className="bg-white/[0.02] backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 md:p-10 shadow-2xl h-full flex flex-col">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+                            <div>
+                                <h3 className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em] mb-3">Narasi Profil & Visual Konten</h3>
+                                <input
+                                    type="text" name="about_title" value={formData.about_title} onChange={handleChange}
+                                    className="bg-transparent border-none text-2xl md:text-3xl font-black text-white outline-none focus:text-amber-500 transition-all p-0 w-full"
+                                    placeholder="Judul Sekilas Pandang..."
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 flex-1">
+                            {/* Text Narration */}
+                            <div className="lg:col-span-7 space-y-3">
+                                <label className="text-[11px] font-black text-white/40 tracking-[0.2em] uppercase">Cerita Lengkap Desa</label>
+                                <textarea
+                                    name="about_text" value={formData.about_text} onChange={handleChange} rows="18"
+                                    className="w-full bg-white/[0.03] border border-white/10 rounded-[2rem] px-8 py-8 text-white text-[15px] leading-[1.8] outline-none focus:border-amber-500/40 transition-all resize-none shadow-inner custom-scrollbar"
+                                    placeholder="Tuliskan sejarah desa, visi misi, atau perkenalan desa secara detail di sini..."
+                                ></textarea>
+                            </div>
+
+                            {/* Image Content */}
+                            <div className="lg:col-span-5 space-y-6">
+                                <div className="space-y-3">
+                                    <label className="text-[11px] font-black text-white/40 tracking-[0.2em] uppercase">Foto Representasi Utama</label>
+                                    <div className="relative group/about rounded-[2rem] overflow-hidden border-2 border-white/5 bg-black/40 shadow-2xl aspect-[4/5] lg:aspect-auto h-full min-h-[400px]">
+                                        {formData.about_image ? (
+                                            <img src={formData.about_image} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover/about:scale-110" />
+                                        ) : (
+                                            <div className="w-full h-full flex flex-col items-center justify-center text-white/5">
+                                                <ImageIcon size={60} strokeWidth={1} />
+                                                <span className="text-[10px] mt-4 font-black tracking-widest uppercase">No Photo Content</span>
+                                            </div>
+                                        )}
+                                        <label className="absolute inset-0 bg-black/80 backdrop-blur-md opacity-0 group-hover/about:opacity-100 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-4">
+                                             <div className="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-500 shadow-2xl">
+                                                <Upload size={24} />
+                                             </div>
+                                             <span className="text-[11px] font-black text-white tracking-widest uppercase">Ganti Foto Konten</span>
+                                             <input type="file" name="about_image" accept="image/*" onChange={handleChange} className="hidden" />
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     );
