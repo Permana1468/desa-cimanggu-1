@@ -215,6 +215,7 @@ const LandingPage = () => {
                     <img
                         src={foto}
                         alt={name}
+                        loading="lazy"
                         className={`w-14 h-14 rounded-full mb-3 object-cover border-2 transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-1 ${isMain ? 'border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.3)]' : 'border-slate-700 group-hover:border-blue-500/50 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]'}`}
                     />
                 ) : (
@@ -475,6 +476,7 @@ const LandingPage = () => {
                                 <img
                                     src={siteData?.about_image || "https://images.unsplash.com/photo-1590088925586-7a8df0bbee59?q=80&w=1200&auto=format&fit=crop"}
                                     alt="Kantor Desa"
+                                    loading="lazy"
                                     className="object-cover w-full h-full opacity-80 group-hover:scale-110 transition-transform duration-1000"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 to-transparent mix-blend-multiply"></div>
@@ -787,7 +789,7 @@ const LandingPage = () => {
                                         >
                                             <div className={`w-64 md:w-80 h-96 rounded-2xl overflow-hidden shadow-2xl bg-slate-800 border-2 ${isCenter ? 'border-yellow-400 shadow-[0_0_30px_rgba(234,179,8,0.4)]' : 'border-white/10'} flex flex-col`}>
                                                 <div className="h-48 overflow-hidden relative">
-                                                    <img src={news.image} alt={news.title} className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
+                                                    <img src={news.image} alt={news.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
                                                     {isCenter && (
                                                         <div className="absolute top-3 left-3 px-3 py-1 bg-yellow-500 text-slate-900 text-xs font-bold rounded-full">
                                                             Terbaru

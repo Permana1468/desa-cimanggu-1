@@ -333,9 +333,11 @@ class UsulanMusrenbangViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        queryset = UsulanMusrenbang.objects.select_related('pengusul').prefetch_related('rab', 'rab__items')
+        
         if user.role in ['ADMIN', 'KAUR_PERENCANAAN', 'KAUR_KEUANGAN', 'KASI_KESEJAHTERAAN']:
-            return UsulanMusrenbang.objects.all()
-        return UsulanMusrenbang.objects.filter(pengusul=user)
+            return queryset.all()
+        return queryset.filter(pengusul=user)
 
     def perform_create(self, serializer):
         # Otomatis ambil lokasi dari unit_detail user (misal: "Dusun II")
@@ -725,7 +727,7 @@ class InventarisLPMViewSet(BaseLPMViewSet):
     serializer_class = InventarisLPMSerializer
 
 class PeminjamanAlatViewSet(BaseLPMViewSet):
-    queryset = PeminjamanAlat.objects.all()
+    queryset = PeminjamanAlat.objects.select_related('alat').all()
     serializer_class = PeminjamanAlatSerializer
 
 class KaderLPMViewSet(BaseLPMViewSet):
@@ -733,7 +735,7 @@ class KaderLPMViewSet(BaseLPMViewSet):
     serializer_class = KaderLPMSerializer
 
 class PresensiKegiatanLPMViewSet(BaseLPMViewSet):
-    queryset = PresensiKegiatanLPM.objects.all()
+    queryset = PresensiKegiatanLPM.objects.select_related('kegiatan', 'kader').all()
     serializer_class = PresensiKegiatanLPMSerializer
     parser_classes = (MultiPartParser, FormParser)
 
