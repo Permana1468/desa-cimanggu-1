@@ -1,11 +1,12 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import React, { useContext, useState, useEffect, useRef } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import {
     Home, Clock, Wallet, FileText, Users, Settings, Activity,
     LogOut, ChevronDown, Pyramid, X, Menu, BarChart3, Database, Shield, Zap, Search,
-    Briefcase, Map, MapPin, ChevronLeft, ChevronRight, LayoutGrid, Layers
+    Briefcase, Map, MapPin, ChevronLeft, ChevronRight, LayoutGrid, Layers, Bell,
+    User, Moon, Sun
 } from 'lucide-react';
 import useRole from '../../hooks/useRole';
 
@@ -48,17 +49,22 @@ const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
     const renderIcon = (active) => {
         if (!item.icon) return null;
         const colorClass = active ? 'text-white' : (item.iconColor || 'text-text-muted');
-        return React.cloneElement(item.icon, { 
-            size: 19, 
-            className: `transition-all duration-300 ${colorClass} ${!active && !isCollapsed ? 'opacity-90' : 'opacity-100'}`
-        });
+        return (
+            <div className={`transition-all duration-500 ease-out flex items-center justify-center
+                            ${isHovered ? 'scale-125 rotate-3 -translate-y-0.5' : 'scale-100'}`}>
+                {React.cloneElement(item.icon, { 
+                    size: 17, 
+                    className: `transition-all duration-300 ${colorClass} ${!active && !isCollapsed ? 'opacity-90' : 'opacity-100'}`
+                })}
+            </div>
+        );
     };
 
     const navClass = (active) => `
-        w-full flex items-center gap-3 px-5 py-3.5 text-[13.5px] font-bold 
+        w-full flex items-center gap-3 px-5 py-3 text-[13px] font-bold 
         transition-all duration-300 group relative rounded-xl
         ${active 
-            ? 'sidebar-active-gradient text-white scale-[1.02]' 
+            ? 'sidebar-active-gradient text-white shadow-lg' 
             : `text-text-muted hover:bg-white/[0.05] hover:text-text-main`}
         ${isCollapsed ? 'justify-center px-0' : ''}
     `;
@@ -72,7 +78,7 @@ const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
                     onMouseLeave={() => setIsHovered(false)}
                     className={navClass(isParentActive && level === 0)}
                 >
-                    <span className={`shrink-0 ${isCollapsed ? 'flex items-center justify-center w-11 h-11' : ''}`}>
+                    <span className={`shrink-0 ${isCollapsed ? 'flex items-center justify-center w-10 h-10' : ''}`}>
                         {renderIcon(isParentActive && level === 0)}
                     </span>
                     
@@ -80,7 +86,7 @@ const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
                         <>
                             <span className="flex-1 text-left truncate tracking-tight">{item.title}</span>
                             <ChevronDown
-                                size={15}
+                                size={14}
                                 className={`transition-transform duration-500 ${isOpen ? 'rotate-180' : ''} opacity-30 group-hover:opacity-60`}
                             />
                         </>
@@ -102,15 +108,15 @@ const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
                                     key={i}
                                     to={sub.path}
                                     className={({ isActive }) =>
-                                        `flex items-center gap-3 py-2.5 pl-8 pr-4 text-[12.5px] font-bold transition-all duration-300 group rounded-lg mx-2
+                                        `flex items-center gap-3 py-2.5 pl-8 pr-4 text-[12px] font-bold transition-all duration-300 group rounded-lg mx-2
                                          ${isActive 
-                                            ? 'text-[#3b82f6] bg-white/[0.04] shadow-[inset_0_0_12px_rgba(59,130,246,0.05)]' 
+                                            ? 'text-[#3b82f6] bg-white/[0.04]' 
                                             : 'text-text-subtle hover:text-text-main hover:bg-white/[0.02]'}`
                                     }
                                 >
                                     {({ isActive }) => (
                                         <>
-                                            <div className={`w-1.5 h-1.5 rounded-full border-2 transition-all duration-500
+                                            <div className={`w-1.5 h-1.5 rounded-full border transition-all duration-500
                                                 ${isActive ? 'bg-[#3b82f6] border-[#3b82f6] scale-125 shadow-[0_0_8px_rgba(59,130,246,1)]' : 'bg-white/10 border-white/5'}`} />
                                             <span className="truncate">{sub.title}</span>
                                         </>
@@ -135,7 +141,7 @@ const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
             >
                 {({ isActive }) => (
                     <>
-                        <span className={`shrink-0 ${isCollapsed ? 'flex items-center justify-center w-11 h-11' : ''}`}>
+                        <span className={`shrink-0 ${isCollapsed ? 'flex items-center justify-center w-10 h-10' : ''}`}>
                             {renderIcon(isActive)}
                         </span>
                         
@@ -144,7 +150,7 @@ const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
                         )}
 
                         {!isCollapsed && item.badge && !isActive && (
-                            <span className="text-[9px] font-black px-1.5 py-0.5 rounded shadow-sm
+                            <span className="text-[8px] font-black px-1.5 py-0.5 rounded shadow-sm
                                 bg-gold-light border border-gold-border text-gold uppercase tracking-tighter animate-pulse">
                                 {item.badge}
                             </span>
@@ -234,8 +240,32 @@ const menuConfig = {
 
 const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed }) => {
     const { user, logoutUser } = useContext(AuthContext);
+    const { theme, toggleTheme } = useTheme();
     const { role } = useRole();
+    const navigate = useNavigate();
     const [scrolled, setScrolled] = useState(false);
+    
+    // UI Local States
+    const [notifOpen, setNotifOpen] = useState(false);
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const footerRef = useRef(null);
+
+    const notifications = [
+        { msg: 'Siti Rahayu melakukan absensi masuk', time: '08:12', icon: '🟢' },
+        { msg: 'Realisasi anggaran Q1 siap direview', time: '09:00', icon: '📊' },
+        { msg: 'Usulan Musrenbang baru dari Dusun III', time: '09:30', icon: '📋' },
+    ];
+
+    useEffect(() => {
+        const handler = (e) => {
+            if (footerRef.current && !footerRef.current.contains(e.target)) {
+                setNotifOpen(false);
+                setUserMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, []);
 
     if (!user) return null;
     const menus = menuConfig[role] || menuConfig.ADMIN;
@@ -247,7 +277,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
                 shadow-[25px_0_70px_rgba(0,0,0,0.5)] overflow-visible
                 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
                 ${isCollapsed ? 'w-20' : 'w-[280px]'}
-                ${!isSidebarOpen ? '-translate-x-full md:w-0 md:opacity-0 md:border-none' : 'translate-x-0'}`}
+                ${!isSidebarOpen ? '-translate-x-full md:w-0' : 'translate-x-0'}`}
         >
             {/* ── Internal Sidebar Toggle Handle ── */}
             <div className={`hidden md:flex absolute top-10 right-[-14px] z-[100] transition-transform duration-500 ${isCollapsed ? 'translate-x-[2px]' : ''}`}>
@@ -256,53 +286,60 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
                     className="w-7 h-7 flex items-center justify-center
                                bg-[#3b82f6] text-white rounded-full shadow-[0_4px_12px_rgba(59,130,246,0.6)] 
                                border border-white/30 cursor-pointer 
-                               hover:scale-115 hover:shadow-[0_4px_20px_rgba(59,130,246,0.8)] transition-all"
-                    aria-label="Toggle Sidebar"
+                               hover:scale-115 transition-all"
                 >
                     {isCollapsed ? <ChevronRight size={15} strokeWidth={3} /> : <ChevronLeft size={15} strokeWidth={3} />}
                 </button>
             </div>
 
-            {/* ── Brand Header (Complex) ────────────────────────────────────── */}
+            {/* ── Mobile Close Button ── */}
+            <button 
+                className="md:hidden absolute top-4 right-4 text-white/40 hover:text-white"
+                onClick={() => setIsSidebarOpen(false)}
+            >
+                <X size={20} />
+            </button>
+
+            {/* ── Brand Header ────────────────────────────────────── */}
             <div className={`px-4 py-8 flex flex-col items-center justify-center shrink-0 relative
-                            transition-all duration-500 overflow-hidden
-                            ${scrolled ? 'bg-dark-base shadow-lg animate-fade-in' : ''}`}>
+                            transition-all duration-500
+                            ${scrolled ? 'bg-dark-base shadow-lg transition-colors' : ''}`}>
                 
                 <div className={`flex items-center gap-4 transition-all duration-500 ${isCollapsed ? 'flex-col gap-5' : ''}`}>
                     <div className="relative group shrink-0">
                         <div className="absolute inset-0 bg-gold/15 rounded-full blur-2xl animate-pulse opacity-0 group-hover:opacity-100"></div>
-                        <div className={`transition-all duration-500 ${isCollapsed ? 'w-11 h-11' : 'w-14 h-14'} 
+                        <div className={`transition-all duration-500 ${isCollapsed ? 'w-10 h-10' : 'w-14 h-14'} 
                                         relative z-10 flex items-center justify-center`}>
                             <img 
                                 src="/images/logo_kabupaten_bogor.png" 
                                 alt="Logo" 
                                 className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
+                                onClick={() => navigate('/dashboard')}
                             />
                         </div>
                     </div>
                     
                     {!isCollapsed && (
-                        <div className="transition-all duration-500 animate-fade-in">
-                            <div className="text-[17px] font-black text-text-main tracking-[0.08em] uppercase leading-none text-shadow-sm">
+                        <div className="transition-all duration-500 animate-fade-in translate-y-1">
+                            <div className="text-[16px] font-black text-text-main tracking-[0.08em] uppercase leading-none">
                                 CIMANGGU I
                             </div>
-                            <div className="text-[9px] text-gold font-black uppercase tracking-[0.25em] mt-2 opacity-80 flex items-center gap-1.5">
-                                <span className="w-1 h-1 rounded-full bg-gold animate-pulse shadow-gold-glow" />
+                            <div className="text-[8.5px] text-gold font-black uppercase tracking-[0.25em] mt-2 opacity-80 flex items-center gap-1.5">
+                                <span className="w-1 h-1 rounded-full bg-gold animate-pulse" />
                                 Digital Office
                             </div>
                         </div>
                     )}
                 </div>
 
-                {/* Bottom Border Complex */}
                 <div className="absolute bottom-0 left-0 right-0 px-6">
-                    <div className="complex-divider opacity-40"></div>
+                    <div className="complex-divider opacity-30"></div>
                 </div>
             </div>
 
             {/* ── Navigation ──────────────────────────────────────── */}
             <nav 
-                className="flex-1 overflow-y-auto overflow-x-hidden py-8 space-y-2.5 custom-scrollbar scroll-smooth"
+                className="flex-1 overflow-y-auto overflow-x-hidden py-8 space-y-1.5 custom-scrollbar scroll-smooth"
                 onScroll={(e) => setScrolled(e.target.scrollTop > 10)}
             >
                 {menus.map((item, idx) => (
@@ -310,30 +347,94 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
                 ))}
             </nav>
 
-            {/* ── Footer / Logout (Complex) ─────────────────────────────────── */}
-            <div className={`px-5 py-8 flex items-center justify-center shrink-0 relative bg-white/[0.01]`}>
-                {/* Top Border Complex */}
+            {/* ── Management Footer (Notifications & Profile) ────────────────── */}
+            <div className={`px-4 py-6 shrink-0 relative bg-white/[0.02] flex flex-col gap-3`} ref={footerRef}>
                 <div className="absolute top-0 left-0 right-0 px-6">
-                    <div className="complex-divider opacity-40"></div>
+                    <div className="complex-divider opacity-30"></div>
                 </div>
 
-                <button
-                    onClick={logoutUser}
-                    className={`group flex items-center gap-4 w-full p-4 rounded-2xl
-                               bg-red-500/[0.04] border border-red-500/10 transition-all duration-500
-                               hover:bg-red-500/15 hover:border-red-500/30 hover:shadow-[0_8px_30px_rgba(239,68,68,0.15)]
-                               ${isCollapsed ? 'justify-center border-none p-0 bg-transparent' : ''}`}
-                >
-                    <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all duration-500 shadow-sm">
-                        <LogOut size={18} strokeWidth={2.5} />
+                <div className={`flex items-center gap-3 ${isCollapsed ? 'flex-col' : ''}`}>
+                    {/* Notification Integrated */}
+                    <div className="relative">
+                        <button
+                            onClick={() => { setNotifOpen(!notifOpen); setUserMenuOpen(false); }}
+                            className={`relative flex items-center justify-center rounded-xl transition-all duration-300
+                                       ${isCollapsed ? 'w-11 h-11' : 'w-10 h-10'}
+                                       bg-white/[0.04] border border-white/[0.07] text-amber-500
+                                       hover:bg-amber-500/10 hover:border-amber-500/30`}
+                        >
+                            <Bell size={18} className={notifOpen ? 'animate-bounce' : ''} />
+                            <span className="absolute top-2 right-2 w-2 h-2 bg-amber-500 rounded-full border border-dark-base shadow-glow" />
+                        </button>
+
+                        {notifOpen && (
+                            <div className={`absolute bottom-full mb-3 left-0 z-[100] overflow-hidden
+                                            ${isCollapsed ? 'w-[280px]' : 'w-[260px]'}
+                                            bg-dark-overlay backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl
+                                            animate-[drop-in_0.3s_ease-out]`}>
+                                <div className="p-4 border-b border-white/5 flex justify-between items-center">
+                                    <span className="text-[10px] font-black uppercase text-text-main">Notifikasi</span>
+                                    <span className="text-[9px] bg-amber-500 text-black px-1.5 py-0.5 rounded font-black">NEW</span>
+                                </div>
+                                <div className="max-h-[280px] overflow-y-auto custom-scrollbar">
+                                    {notifications.map((n, i) => (
+                                        <div key={i} className="p-4 border-b border-white/[0.03] last:border-0 hover:bg-white/[0.05] cursor-pointer">
+                                            <div className="text-[12px] text-text-main font-medium leading-tight">{n.msg}</div>
+                                            <div className="text-[9px] text-text-muted mt-2 font-black opacity-50 uppercase">{n.time} WIB</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) }
                     </div>
-                    {!isCollapsed && (
-                        <div className="flex flex-col items-start translate-y-[1px] animate-fade-in">
-                            <span className="text-[13px] font-black text-red-500 tracking-tight">Logout</span>
-                            <span className="text-[9px] text-red-500/40 uppercase mt-1 font-extrabold tracking-widest">End Session</span>
-                        </div>
-                    )}
-                </button>
+
+                    {/* User Profile Integrated */}
+                    <div className="relative flex-1">
+                        <button
+                            onClick={() => { setUserMenuOpen(!userMenuOpen); setNotifOpen(false); }}
+                            className={`flex items-center gap-3 w-full rounded-xl transition-all duration-300
+                                       ${isCollapsed ? 'w-11 h-11 justify-center' : 'p-2 pr-4 bg-white/[0.03] border border-white/[0.07] hover:bg-white/[0.06]'}`}
+                        >
+                            <div className="relative w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-purple-600 
+                                            flex items-center justify-center font-black text-xs text-white shadow-lg overflow-hidden">
+                                {user?.foto_profil ? <img src={user.foto_profil} className="w-full h-full object-cover" alt="" /> : user?.username?.charAt(0).toUpperCase()}
+                                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-dark-base rounded-full" />
+                            </div>
+                            
+                            {!isCollapsed && (
+                                <div className="flex flex-col items-start min-w-0">
+                                    <span className="text-[12px] font-black text-text-main truncate max-w-full tracking-tight">{user?.nama_lengkap || user?.username}</span>
+                                    <span className="text-[9px] text-blue-500 font-bold uppercase tracking-widest">{user?.role}</span>
+                                </div>
+                            )}
+                        </button>
+
+                        {userMenuOpen && (
+                             <div className={`absolute bottom-full mb-3 left-0 z-[100] w-[240px]
+                                             bg-dark-overlay backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl
+                                             animate-[drop-in_0.3s_ease-out] overflow-hidden`}>
+                                <div className="p-4 border-b border-white/5 flex justify-between items-center">
+                                    <span className="text-[10px] font-black uppercase text-text-muted">Manajamen Akun</span>
+                                    <button onClick={toggleTheme} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10">
+                                        {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+                                    </button>
+                                </div>
+                                <div className="p-1">
+                                    <button onClick={() => { navigate('/dashboard/profile'); setUserMenuOpen(false); }} className="w-full flex items-center gap-3 p-3 text-[12.5px] font-bold text-text-muted hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                        <User size={15} className="text-blue-400" /> Profil Saya
+                                    </button>
+                                    <button onClick={() => { navigate('/dashboard/settings'); setUserMenuOpen(false); }} className="w-full flex items-center gap-3 p-3 text-[12.5px] font-bold text-text-muted hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                        <Settings size={15} className="text-purple-400" /> Pengaturan
+                                    </button>
+                                    <div className="h-px bg-white/5 my-1 mx-2" />
+                                    <button onClick={logoutUser} className="w-full flex items-center gap-3 p-3 text-[12.5px] font-black text-red-500 hover:bg-red-500/10 rounded-xl transition-all">
+                                        <LogOut size={15} /> Logout Sistem
+                                    </button>
+                                </div>
+                             </div>
+                        )}
+                    </div>
+                </div>
             </div>
         </aside>
     );

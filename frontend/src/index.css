@@ -157,7 +157,27 @@ body {
 /* ── SIDEBAR CINEMATIC GRADIENT ────────────────────────── */
 .sidebar-active-gradient {
   background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
+}
+
+/* ── ICON ALIVE ANIMATIONS ─────────────────────────── */
+@keyframes icon-wiggle {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(10deg) scale(1.1); }
+  75% { transform: rotate(-10deg) scale(1.1); }
+}
+
+.animate-icon-alive {
+  animation: icon-wiggle 1.5s ease-in-out infinite;
+}
+
+/* ── SHADOWS ─────────────────────────────────────── */
+.shadow-glow {
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.text-shadow-sm {
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 /* ── COMPLEX DIVIDER LINE ────────────────────────────── */
