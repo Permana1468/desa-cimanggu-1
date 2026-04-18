@@ -133,12 +133,12 @@ const Layout = ({ children }) => {
                         </button>
                         
                         <div className="flex items-center min-w-0">
-                            <span className="text-[15px] font-black text-white tracking-widest whitespace-nowrap drop-shadow-sm">
+                            <span className="text-[15px] font-black text-text-main tracking-widest whitespace-nowrap drop-shadow-sm transition-colors duration-300">
                                 CIMANGGU I
                             </span>
                             <span className="text-text-subtle mx-2 font-light opacity-50">/</span>
                             <span className="text-[13px] font-semibold text-text-muted whitespace-nowrap
-                                             overflow-hidden text-ellipsis tracking-tight">
+                                             overflow-hidden text-ellipsis tracking-tight transition-colors duration-300">
                                 {pageTitle}
                             </span>
                         </div>
@@ -210,7 +210,7 @@ const Layout = ({ children }) => {
                                 </div>
                                 {/* Info */}
                                 <div className="hidden md:flex flex-col items-start">
-                                    <span className="text-[13px] font-black text-white leading-none tracking-tight">
+                                    <span className="text-[13px] font-black text-text-main leading-none tracking-tight transition-colors duration-300">
                                         {user?.nama_lengkap || user?.username || 'Admin'}
                                     </span>
                                     <span className="text-[10px] text-amber-500 font-bold uppercase tracking-[0.1em] mt-1.5 opacity-80">
