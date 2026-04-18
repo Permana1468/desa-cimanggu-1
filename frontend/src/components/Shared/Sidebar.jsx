@@ -318,21 +318,29 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 ${!isSidebarOpen ? '-translate-x-full md:w-0 md:opacity-0 md:border-none' : 'translate-x-0'}`}
         >
             {/* ── Brand Header ────────────────────────────────────── */}
-            <div className={`px-6 py-5 border-b border-white/[0.08] flex items-center justify-between shrink-0
+            <div className={`px-6 py-6 border-b border-white/[0.08] flex items-center justify-between shrink-0
                             bg-gradient-to-b from-white/[0.03] to-transparent transition-all duration-300
                             ${scrolled ? 'shadow-[0_4px_30px_rgba(0,0,0,0.5)] bg-[#080e1e]' : ''}`}>
-                <div className="flex items-center gap-3.5">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600
-                                    flex items-center justify-center shrink-0
-                                    shadow-[0_0_25px_rgba(245,158,11,0.4)] border border-white/20
-                                    text-xl">
-                        🏛️
+                <div className="flex items-center gap-4">
+                    {/* Logo Kabupaten Bogor with Living Glow */}
+                    <div className="relative group">
+                        <div className="absolute inset-0 bg-amber-500/20 rounded-xl blur-xl animate-pulse group-hover:bg-amber-500/40 transition-all duration-700"></div>
+                        <div className="w-11 h-11 rounded-xl bg-[#080e1e]/80 border border-white/10 p-1.5 
+                                        flex items-center justify-center shrink-0 relative z-10
+                                        shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                            <img 
+                                src="/images/logo_kabupaten_bogor.png" 
+                                alt="Logo Bogor" 
+                                className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]"
+                            />
+                        </div>
                     </div>
                     <div>
-                        <div className="text-[15px] font-black text-white tracking-widest uppercase leading-none">
+                        <div className="text-[15px] font-black text-white tracking-[0.15em] uppercase leading-none drop-shadow-lg">
                             CIMANGGU I
                         </div>
-                        <div className="text-[9px] text-amber-500 font-black uppercase tracking-[0.15em] mt-1.5 opacity-80">
+                        <div className="text-[9px] text-amber-500 font-black uppercase tracking-[0.2em] mt-2 opacity-70 flex items-center gap-1.5">
+                            <span className="w-1 h-1 rounded-full bg-amber-500 animate-pulse" />
                             Digital Office
                         </div>
                     </div>
@@ -346,31 +354,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 </button>
             </div>
 
-            {/* ── User Profile Snapshot ───────────────────────────── */}
-            <div className="px-5 py-5 bg-gradient-to-r from-white/[0.04] to-transparent border-b border-white/[0.06]">
-                <div className="flex items-center gap-3.5">
-                    <div className="relative">
-                        <div className="w-10 h-10 rounded-full bg-slate-800 border-2 border-amber-500/20 overflow-hidden shadow-2xl">
-                            <img 
-                                src={user?.foto_profil || "https://ui-avatars.com/api/?name=" + user?.username} 
-                                className="w-full h-full object-cover"
-                                alt="user"
-                            />
-                        </div>
-                        <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#080e1e] rounded-full shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <div className="text-[13px] font-black text-white truncate leading-none uppercase tracking-tight">
-                            {user?.nama_lengkap || user?.username}
-                        </div>
-                        <div className="inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
-                            <span className="text-[9px] font-black text-amber-500 uppercase tracking-widest leading-none">
-                                {user?.role}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
 
             {/* ── Navigation ──────────────────────────────────────── */}
             <nav 
