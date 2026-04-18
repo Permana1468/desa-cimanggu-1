@@ -11,7 +11,8 @@ const Layout = ({ children }) => {
     const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Mobile overlay state
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false); // Desktop narrow state
     const [bgImages, setBgImages] = useState(['/bg-cimanggu.jpg']);
     const [currentBg, setCurrentBg] = useState(0);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -103,10 +104,16 @@ const Layout = ({ children }) => {
             <div className="absolute inset-0 z-[1] pointer-events-none bg-grid-pattern opacity-40 transition-opacity" />
 
             {/* ── Sidebar ───────────────────────────────────── */}
-            <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+            <Sidebar 
+                isSidebarOpen={isSidebarOpen} 
+                setIsSidebarOpen={setIsSidebarOpen} 
+                isCollapsed={isSidebarCollapsed}
+                setIsCollapsed={setIsSidebarCollapsed}
+            />
 
             {/* ── Main ──────────────────────────────────────── */}
-            <main className="flex-1 flex flex-col relative z-10 min-w-0 transition-all duration-300">
+            <main className={`flex-1 flex flex-col relative z-10 min-w-0 transition-all duration-300 ease-in-out
+                             ${isSidebarOpen ? (isSidebarCollapsed ? 'md:ml-0' : 'md:ml-0') : ''}`}>
 
                 {/* ── Header ──────────────────────────────────── */}
                 <header className="h-16 bg-dark-header backdrop-blur-[24px]
@@ -121,12 +128,18 @@ const Layout = ({ children }) => {
                             className="w-9 h-9 flex items-center justify-center rounded-[10px] shrink-0
                                        bg-white/[0.04] border border-white/[0.07] text-white/50
                                        hover:bg-white/[0.08] hover:text-white hover:border-white/[0.14]
-                                       cursor-pointer transition-all duration-200"
-                            onClick={() => setIsSidebarOpen(v => !v)}
+                                       cursor-pointer transition-all duration-300 ease-in-out"
+                            onClick={() => {
+                                if (window.innerWidth < 768) {
+                                    setIsSidebarOpen(v => !v);
+                                } else {
+                                    setIsSidebarCollapsed(v => !v);
+                                }
+                            }}
                             id="sidebar-toggle-btn"
                             aria-label="Toggle sidebar"
                         >
-                            <Menu size={17} />
+                            <Menu size={17} className={`transition-transform duration-300 ${isSidebarCollapsed ? 'rotate-90' : ''}`} />
                         </button>
                         <div className="flex items-center min-w-0">
                             <span className="text-[15px] font-bold text-text-main tracking-tight whitespace-nowrap">

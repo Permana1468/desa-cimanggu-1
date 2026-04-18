@@ -37,7 +37,7 @@
   --bg-base: #080e1e;
   --bg-card: rgba(15, 23, 42, 0.55);
   --bg-panel: rgba(15, 23, 42, 0.5);
-  --bg-sidebar: rgba(8, 14, 30, 0.72);
+  --bg-sidebar: rgba(8, 14, 30, 0.75);
   --bg-header: rgba(8, 14, 30, 0.55);
   --bg-overlay: rgba(8, 14, 30, 0.92);
 
@@ -55,8 +55,8 @@
   --border-color: rgba(255, 255, 255, 0.07);
   --border-hover: rgba(255, 255, 255, 0.14);
   
-  --glass-blur: 24px;
-  --grid-opacity: 0.018;
+  --glass-blur: 28px;
+  --grid-opacity: 0.02;
 
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -68,23 +68,24 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* DAYLIGHT FROST MODE */
 .light-mode {
-  --bg-base: #f1f5f9; /* Slate 100 */
+  --bg-base: #f1f5f9;
   --bg-card: rgba(255, 255, 255, 0.65);
   --bg-panel: rgba(255, 255, 255, 0.5);
   --bg-sidebar: rgba(255, 255, 255, 0.85);
   --bg-header: rgba(255, 255, 255, 0.7);
   --bg-overlay: rgba(241, 245, 249, 0.85);
 
-  --text-primary: #0f172a; /* Slate 900 */
+  --text-primary: #0f172a;
   --text-secondary: rgba(15, 23, 42, 0.6);
   --text-tertiary: rgba(15, 23, 42, 0.45);
   --text-quaternary: rgba(15, 23, 42, 0.3);
 
-  --accent-primary: #2563eb; /* Blue 600 for contrast */
+  --accent-primary: #2563eb;
   --accent-dark: #1d4ed8;
   --accent-light: rgba(37, 99, 235, 0.08);
   --accent-border: rgba(37, 99, 235, 0.15);
@@ -151,4 +152,16 @@ body {
     linear-gradient(var(--text-primary) var(--grid-opacity) 1px, transparent 1px),
     linear-gradient(90deg, var(--text-primary) var(--grid-opacity) 1px, transparent 1px);
   background-size: 48px 48px;
+}
+
+/* ── SIDEBAR GRADIENT ─────────────────────────────────── */
+.sidebar-active-gradient {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
+}
+
+/* ── TOOLTIP ANIMATION ─────────────────────────────── */
+@keyframes tooltip-in {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
 }

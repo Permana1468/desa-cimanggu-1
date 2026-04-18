@@ -4,23 +4,36 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import {
     Home, Clock, Wallet, FileText, Users, Settings, Activity,
-    LogOut, ChevronDown, Pyramid, X
+    LogOut, ChevronDown, Pyramid, X, Menu, BarChart3, Database, Shield, Zap, Search,
+    Briefcase, Map, MapPin
 } from 'lucide-react';
 import useRole from '../../hooks/useRole';
 
+/* ─── TOOLTIP COMPONENT ────────────────────────────────────────────────────── */
+const Tooltip = ({ text, show }) => (
+    <div className={`fixed left-[90px] px-3 py-1.5 bg-dark-overlay backdrop-blur-md 
+                    border border-white/10 rounded-lg text-white text-[11px] font-bold
+                    pointer-events-none transition-all duration-300 z-[100] whitespace-nowrap shadow-2xl
+                    ${show ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'}`}>
+        {text}
+        <div className="absolute left-[-4px] top-1/2 -translate-y-1/2 w-2 h-2 bg-dark-overlay border-l border-b border-white/10 rotate-45" />
+    </div>
+);
+
 /* ─── NAV GROUP LABEL ──────────────────────────────────────────────────────── */
-const GroupLabel = ({ label }) => (
-    <div className="px-5 pt-4 pb-1.5 text-[10px] font-black tracking-[0.2em] uppercase text-text-tertiary select-none">
+const GroupLabel = ({ label, isCollapsed }) => (
+    <div className={`px-5 pt-4 pb-1.5 text-[10px] font-black tracking-[0.2em] uppercase text-text-tertiary select-none transition-opacity duration-300
+                    ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
         {label}
     </div>
 );
 
 /* ─── NESTED ITEM COMPONENT ────────────────────────────────────────────────── */
-const SidebarItem = ({ item, level = 0 }) => {
+const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
     const location = useLocation();
     const [isOpen, setIsOpen] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
     
-    // Check if any child is active
     const isActiveLink = item.path && (
         item.path === '/dashboard' 
             ? location.pathname === '/dashboard' 
@@ -35,129 +48,127 @@ const SidebarItem = ({ item, level = 0 }) => {
 
     const isParentActive = hasActiveChild(item);
 
-    // Auto-open if child is active
     useEffect(() => {
-        if (isParentActive) setIsOpen(true);
-    }, [isParentActive]);
+        if (isParentActive && !isCollapsed) setIsOpen(true);
+        if (isCollapsed) setIsOpen(false);
+    }, [isParentActive, isCollapsed]);
 
-    // Recursive rendering for sub-categories
+    // Icon handling with multi-color support
+    const renderIcon = (active) => {
+        if (!item.icon) return null;
+        const colorClass = active ? 'text-white' : (item.iconColor || 'text-text-quaternary');
+        return React.cloneElement(item.icon, { 
+            size: 18, 
+            className: `transition-all duration-300 ${colorClass} ${!active && !isCollapsed ? 'opacity-80' : 'opacity-100'}`
+        });
+    };
+
+    const navClass = (active) => `
+        w-full flex items-center gap-3 px-5 py-3 text-[13.5px] font-semibold 
+        transition-all duration-300 group relative rounded-xl
+        ${active 
+            ? 'bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white shadow-[0_4px_15px_rgba(59,130,246,0.35)]' 
+            : 'text-text-muted hover:bg-white/[0.04] hover:text-text-main'}
+        ${isCollapsed ? 'justify-center px-0' : ''}
+    `;
+
     if (item.subCategories || item.subMenus) {
         return (
-            <div className="w-full">
+            <div className="w-full px-2">
                 <button
-                    onClick={() => setIsOpen(!isOpen)}
-                    className={`w-full flex items-center gap-3 px-5 py-2.5 text-[13px] font-medium 
-                        transition-all duration-300 group relative
-                        ${level > 0 ? 'pl-10 text-text-muted hover:text-text-main' : 'text-text-muted hover:text-text-main'}
-                        ${(isParentActive || isActiveLink) && level === 0 ? 'bg-gradient-to-r from-gold-light to-transparent' : ''}
-                    `}
+                    onClick={() => !isCollapsed && setIsOpen(!isOpen)}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                    className={navClass(isParentActive && level === 0)}
                 >
-                    {/* Active Indicator Bar (L1 only) */}
-                    {level === 0 && (isParentActive || isActiveLink) && (
-                        <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-gold rounded-r-full shadow-gold-glow" />
-                    )}
-
-                    {/* Icon */}
-                    {item.icon && (
-                        <span className={`flex items-center justify-center w-7 h-7 rounded-lg shrink-0 transition-all duration-500
-                            ${isParentActive || isActiveLink ? 'bg-gold-light text-gold shadow-gold-glow' : 'bg-white/[0.03] text-text-quaternary group-hover:bg-white/10 group-hover:text-text-secondary'}
-                        `}>
-                            {React.cloneElement(item.icon, { size: 15 })}
-                        </span>
-                    )}
-
-                    <span className={`flex-1 text-left ${isParentActive || isActiveLink ? 'text-text-main font-bold' : ''}`}>
-                        {item.title}
+                    <span className={`shrink-0 ${isCollapsed ? 'flex items-center justify-center w-10 h-10' : ''}`}>
+                        {renderIcon(isParentActive && level === 0)}
                     </span>
+                    
+                    {!isCollapsed && (
+                        <>
+                            <span className="flex-1 text-left truncate">{item.title}</span>
+                            <ChevronDown
+                                size={14}
+                                className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''} opacity-40`}
+                            />
+                        </>
+                    )}
 
-                    <ChevronDown
-                        size={14}
-                        className={`transition-transform duration-500 ${isOpen ? 'rotate-180' : ''} 
-                            ${isParentActive || isActiveLink ? 'text-gold' : 'text-text-quaternary'}`}
-                    />
+                    {isCollapsed && isHovered && <Tooltip text={item.title} show={true} />}
                 </button>
 
-                {/* Sub Menu Panel */}
-                <div 
-                    className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
-                        ${isOpen ? 'max-h-[1200px] opacity-100' : 'max-h-0 opacity-0'}
-                    `}
-                >
-                    <div className="mt-0.5 ml-0 space-y-0.5 relative">
-                        {/* Recursive Line */}
-                        <div className={`absolute left-[33px] top-0 bottom-4 w-px bg-white/10 ${level > 0 ? 'ml-4' : ''}`} />
+                {/* Sub Menu Panel - Only in Expanded State */}
+                {!isCollapsed && (
+                    <div 
+                        className={`overflow-hidden transition-all duration-500 ease-in-out
+                            ${isOpen ? 'max-h-[1200px] opacity-100' : 'max-h-0 opacity-0'}
+                        `}
+                    >
+                        <div className="mt-1 ml-4 space-y-1 relative border-l border-white/5">
+                            {item.subCategories?.map((sub, i) => (
+                                <SidebarItem key={i} item={sub} isCollapsed={isCollapsed} level={level + 1} />
+                            ))}
 
-                        {item.subCategories?.map((sub, i) => (
-                            <SidebarItem key={i} item={sub} level={level + 1} />
-                        ))}
-
-                        {item.subMenus?.map((sub, i) => (
-                            <NavLink
-                                key={i}
-                                to={sub.path}
-                                className={({ isActive }) =>
-                                    `flex items-center gap-3 py-2 pr-5 text-[12.5px] transition-all duration-300 group relative
-                                     ${level === 0 ? 'pl-11' : (level === 1 ? 'pl-16' : 'pl-20')}
-                                     ${isActive 
-                                        ? 'text-gold font-black bg-white/[0.04] shadow-[inset_0_0_20px_rgba(245,158,11,0.05)]' 
-                                        : 'text-text-quaternary hover:text-text-secondary hover:bg-white/[0.02]'
-                                     }
-                                    `
-                                }
-                            >
-                                {({ isActive }) => (
-                                    <>
-                                        <div className={`absolute left-[31px] ${level > 0 ? 'ml-4' : ''} w-1.5 h-1.5 rounded-full border border-white/10 transition-all duration-500
-                                            ${isActive ? 'bg-gold border-gold scale-110 shadow-gold-glow' : 'bg-white/10 group-hover:bg-white/30'}
-                                        `} />
-                                        <span className="truncate">{sub.title}</span>
-                                        {isActive && (
-                                            <div className="ml-auto w-1 h-1 rounded-full bg-gold animate-pulse" />
-                                        )}
-                                    </>
-                                )}
-                            </NavLink>
-                        ))}
+                            {item.subMenus?.map((sub, i) => (
+                                <NavLink
+                                    key={i}
+                                    to={sub.path}
+                                    className={({ isActive }) =>
+                                        `flex items-center gap-3 py-2.5 pl-8 pr-4 text-[12.5px] font-medium transition-all duration-300 group
+                                         ${isActive 
+                                            ? 'text-[#60a5fa] bg-white/[0.03]' 
+                                            : 'text-text-quaternary hover:text-text-secondary hover:bg-white/[0.02]'
+                                         }`
+                                    }
+                                >
+                                    {({ isActive }) => (
+                                        <>
+                                            <div className={`w-1.5 h-1.5 rounded-full border border-white/10 transition-all duration-500
+                                                ${isActive ? 'bg-[#3b82f6] border-[#60a5fa] shadow-[0_0_8px_rgba(59,130,246,1)] scale-110' : 'bg-white/10'}`} />
+                                            <span className="truncate">{sub.title}</span>
+                                        </>
+                                    )}
+                                </NavLink>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         );
     }
 
-    // Direct Link
     return (
-        <NavLink
-            to={item.path}
-            end={item.path === '/dashboard'}
-            className={({ isActive }) =>
-                `flex items-center gap-3 px-5 py-2.5 text-[13px] font-medium
-                 transition-all duration-500 group relative
-                 ${isActive
-                    ? 'text-text-main font-black bg-gradient-to-r from-gold-light to-transparent'
-                    : 'text-text-muted hover:text-text-main hover:bg-white/[0.03]'
-                 }`
-            }
-        >
-            {({ isActive }) => (
-                <>
-                    {isActive && (
-                        <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-gold rounded-r-full shadow-gold-glow" />
-                    )}
-
-                    <span className={`flex items-center justify-center w-7 h-7 rounded-lg shrink-0 transition-all duration-500
-                        ${isActive ? 'bg-gold-light text-gold shadow-gold-glow' : 'bg-white/[0.04] text-text-quaternary group-hover:bg-white/10 group-hover:text-text-secondary'}`}>
-                        {item.icon}
-                    </span>
-                    <span className="flex-1">{item.title}</span>
-                    {item.badge && (
-                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded
-                            bg-gold-light border border-gold-border text-gold uppercase tracking-tighter">
-                            {item.badge}
+        <div className="w-full px-2">
+            <NavLink
+                to={item.path}
+                end={item.path === '/dashboard'}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                className={({ isActive }) => navClass(isActive)}
+            >
+                {({ isActive }) => (
+                    <>
+                        <span className={`shrink-0 ${isCollapsed ? 'flex items-center justify-center w-10 h-10' : ''}`}>
+                            {renderIcon(isActive)}
                         </span>
-                    )}
-                </>
-            )}
-        </NavLink>
+                        
+                        {!isCollapsed && (
+                            <span className="flex-1 truncate">{item.title}</span>
+                        )}
+
+                        {!isCollapsed && item.badge && !isActive && (
+                            <span className="text-[9px] font-black px-1.5 py-0.5 rounded
+                                bg-gold-light border border-gold-border text-gold uppercase tracking-tighter">
+                                {item.badge}
+                            </span>
+                        )}
+
+                        {isCollapsed && isHovered && <Tooltip text={item.title} show={true} />}
+                    </>
+                )}
+            </NavLink>
+        </div>
     );
 };
 
@@ -165,12 +176,13 @@ const SidebarItem = ({ item, level = 0 }) => {
 const menuConfig = {
     ADMIN: [
         { group: 'Overview' },
-        { title: 'Dashboard Utama', path: '/dashboard', icon: <Home /> },
-        { title: 'Presensi Kehadiran', path: '/dashboard/rekap-kehadiran', icon: <Clock />, badge: 'Live' },
+        { title: 'Dashboard Utama', path: '/dashboard', icon: <Home />, iconColor: 'text-blue-400' },
+        { title: 'Presensi Kehadiran', path: '/dashboard/rekap-kehadiran', icon: <Clock />, iconColor: 'text-amber-400', badge: 'Live' },
         { group: 'Administrasi Desa' },
         {
             title: 'Aparatur Desa', 
             icon: <Pyramid />,
+            iconColor: 'text-orange-400',
             subCategories: [
                 {
                     title: 'Sekretariat',
@@ -178,23 +190,15 @@ const menuConfig = {
                         {
                             title: 'TU & Umum',
                             subMenus: [
-                                { title: 'Buku Surat Masuk/Keluar', path: '/dashboard/buku-surat' },
-                                { title: 'Inventaris & Aset Desa', path: '/dashboard/inventaris-aset' },
+                                { title: 'Buku Surat Masuk', path: '/dashboard/buku-surat' },
+                                { title: 'Inventaris Desa', path: '/dashboard/inventaris-aset' },
                             ]
                         },
                         {
                             title: 'Keuangan Desa',
                             subMenus: [
-                                { title: 'Buku Kas Umum (BKU)', path: '/dashboard/buku-kas' },
+                                { title: 'Buku Kas Umum', path: '/dashboard/buku-kas' },
                                 { title: 'Realisasi Anggaran', path: '/dashboard/realisasi-anggaran' },
-                            ]
-                        },
-                        {
-                            title: 'Perencanaan',
-                            subMenus: [
-                                { title: 'DED & Manajemen Proyek', path: '/dashboard/perencanaan' },
-                                { title: 'Penyusunan RAB', path: '/dashboard/rab' },
-                                { title: 'RPJMDes & RKPDes', path: '/dashboard/rpjmdes' },
                             ]
                         }
                     ]
@@ -205,39 +209,8 @@ const menuConfig = {
                         {
                             title: 'Pemerintahan',
                             subMenus: [
-                                { title: 'Data Kependudukan', path: '/dashboard/pemerintahan' },
+                                { title: 'Kependudukan', path: '/dashboard/pemerintahan' },
                                 { title: 'Maps Spasial', path: '/dashboard/maps' },
-                            ]
-                        },
-                        {
-                            title: 'Kesejahteraan',
-                            subMenus: [{ title: 'Proyek Fisik', path: '/dashboard/kesejahteraan' }]
-                        },
-                        {
-                            title: 'Pelayanan Umum',
-                            subMenus: [
-                                { title: 'Layanan Pengantar RT/RW', path: '/dashboard/pelayanan' },
-                                { title: 'E-KMS Posyandu', path: '/dashboard/e-kms' },
-                            ]
-                        }
-                    ]
-                },
-                {
-                    title: 'Wilayah Dusun',
-                    subCategories: [
-                        {
-                            title: 'Dusun I & II',
-                            subMenus: [
-                                { title: 'Monitoring Dusun I', path: '/dashboard/data-dusun-1' },
-                                { title: 'Laporan Dusun I', path: '/dashboard/laporan-dusun-1' },
-                                { title: 'Monitoring Dusun II', path: '/dashboard/data-dusun-2' },
-                            ]
-                        },
-                        {
-                            title: 'Dusun III & IV',
-                            subMenus: [
-                                { title: 'Monitoring Dusun III', path: '/dashboard/data-dusun-3' },
-                                { title: 'Monitoring Dusun IV', path: '/dashboard/data-dusun-4' },
                             ]
                         }
                     ]
@@ -246,22 +219,18 @@ const menuConfig = {
         },
         { group: 'Konfigurasi Sistem' },
         {
-            title: 'Pengaturan Web', icon: <Settings />,
+            title: 'Pengaturan Web', icon: <Settings />, iconColor: 'text-purple-400',
             subMenus: [
                 { title: 'Manajemen Pengguna', path: '/dashboard/users' },
-                { title: 'Identitas & Profil Desa', path: '/dashboard/landing-setting' },
-                { title: 'Banner & Hero Carousel', path: '/dashboard/hero-carousel' },
-                { title: 'Kelola Berita & Publikasi', path: '/dashboard/berita' },
-                { title: 'Struktur Organisasi', path: '/dashboard/organisasi' },
+                { title: 'Identitas Desa', path: '/dashboard/landing-setting' },
+                { title: 'Kelola Berita', path: '/dashboard/berita' },
             ]
         },
-    ],
-    // ... roles can be simplified or maintained
+    ]
 };
 
-const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
+const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed }) => {
     const { user, logoutUser } = useContext(AuthContext);
-    const { theme } = useTheme();
     const { role } = useRole();
     const [scrolled, setScrolled] = useState(false);
 
@@ -270,73 +239,79 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
     return (
         <aside
-            className={`fixed md:relative top-0 left-0 z-[60] h-full w-[280px] flex flex-col
-                bg-dark-sidebar backdrop-blur-[24px] border-r border-white/10
+            className={`fixed md:relative top-0 left-0 z-[60] h-full flex flex-col
+                bg-dark-sidebar backdrop-blur-[28px] border-r border-white/10
                 shadow-[20px_0_60px_rgba(0,0,0,0.4)] overflow-hidden
-                transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]
+                transition-all duration-300 ease-in-out
+                ${isCollapsed ? 'w-20' : 'w-[260px]'}
                 ${!isSidebarOpen ? '-translate-x-full md:w-0 md:opacity-0 md:border-none' : 'translate-x-0'}`}
         >
             {/* ── Brand Header ────────────────────────────────────── */}
-            <div className={`px-6 py-6 border-b border-white/[0.08] flex items-center justify-between shrink-0
+            <div className={`px-4 py-6 border-b border-white/[0.08] flex items-center justify-center shrink-0
                             bg-gradient-to-b from-white/[0.03] to-transparent transition-all duration-300
-                            ${scrolled ? 'shadow-[0_4px_30px_rgba(0,0,0,0.3)] bg-dark-base' : ''}`}>
-                <div className="flex items-center gap-4">
+                            ${scrolled ? 'bg-dark-base shadow-lg' : ''}`}>
+                
+                <div className={`flex items-center gap-3 transition-all duration-500 ${isCollapsed ? 'flex-col' : ''}`}>
                     <div className="relative group shrink-0">
-                        <div className="absolute inset-0 bg-gold/20 rounded-full blur-2xl animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                        <div className="w-14 h-14 relative z-10 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
+                        <div className="absolute inset-0 bg-gold/20 rounded-full blur-2xl animate-pulse opacity-0 group-hover:opacity-100"></div>
+                        <div className={`transition-all duration-500 ${isCollapsed ? 'w-10 h-10' : 'w-12 h-12'} 
+                                        relative z-10 flex items-center justify-center`}>
                             <img 
                                 src="/images/logo_kabupaten_bogor.png" 
-                                alt="Logo Bogor" 
-                                className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]"
+                                alt="Logo" 
+                                className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]"
                             />
                         </div>
                     </div>
-                    <div>
-                        <div className="text-[15px] font-black text-text-main tracking-[0.15em] uppercase leading-none drop-shadow-lg">
-                            CIMANGGU I
+                    
+                    {!isCollapsed && (
+                        <div className="transition-all duration-500 animate-fade-in">
+                            <div className="text-[14px] font-black text-text-main tracking-widest uppercase leading-none">
+                                CIMANGGU I
+                            </div>
+                            <div className="text-[8px] text-gold font-bold uppercase tracking-[0.2em] mt-1.5 opacity-60">
+                                Digital Office
+                            </div>
                         </div>
-                        <div className="text-[9px] text-gold font-black uppercase tracking-[0.2em] mt-2 opacity-70 flex items-center gap-1.5">
-                            <span className="w-1 h-1 rounded-full bg-gold animate-pulse" />
-                            Digital Office
-                        </div>
-                    </div>
+                    )}
+
+                    {isCollapsed && (
+                         <div className="h-px w-6 bg-white/10 mt-2" />
+                    )}
                 </div>
-                <button
-                    onClick={() => setIsSidebarOpen(false)}
-                    className="md:hidden p-2 rounded-xl bg-white/5 border border-white/10 text-text-muted hover:text-text-main transition-all"
-                >
-                    <X size={18} />
-                </button>
             </div>
 
             {/* ── Navigation ──────────────────────────────────────── */}
             <nav 
-                className="flex-1 overflow-y-auto overflow-x-hidden py-4 space-y-1 custom-scrollbar scroll-smooth"
+                className="flex-1 overflow-y-auto overflow-x-hidden py-6 space-y-1.5 custom-scrollbar scroll-smooth"
                 onScroll={(e) => setScrolled(e.target.scrollTop > 10)}
             >
                 {menus.map((item, idx) => {
                     if (item.group) {
-                        return <GroupLabel key={`g-${idx}`} label={item.group} />;
+                        return <GroupLabel key={`g-${idx}`} label={item.group} isCollapsed={isCollapsed} />;
                     }
-                    return <SidebarItem key={idx} item={item} />;
+                    return <SidebarItem key={idx} item={item} isCollapsed={isCollapsed} />;
                 })}
             </nav>
 
-            {/* ── Footer / Logout ─────────────────────────────────── */}
-            <div className="px-5 py-5 border-t border-white/[0.08] shrink-0 bg-white/[0.02]">
+            {/* ── Footer ─────────────────────────────────── */}
+            <div className={`px-4 py-5 border-t border-white/[0.08] shrink-0 bg-white/[0.02] flex justify-center`}>
                 <button
                     onClick={logoutUser}
-                    className="group flex items-center gap-3.5 w-full px-4 py-3 rounded-2xl
-                               bg-red-500/[0.03] border border-red-500/10 transition-all duration-500
-                               hover:bg-red-500/10 hover:border-red-500/30"
+                    className={`group flex items-center gap-3 w-full p-3 rounded-xl
+                               bg-red-500/[0.03] border border-red-500/10 transition-all duration-300
+                               hover:bg-red-500/10 hover:border-red-500/30
+                               ${isCollapsed ? 'justify-center' : ''}`}
                 >
-                    <div className="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all duration-500">
+                    <div className="w-9 h-9 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all duration-300">
                         <LogOut size={16} />
                     </div>
-                    <div className="flex flex-col items-start translate-y-[1px]">
-                        <span className="text-[13px] font-black text-red-500 group-hover:text-red-400 leading-none">Logout</span>
-                        <span className="text-[9px] text-red-500/30 uppercase mt-1 font-bold tracking-widest">Sesi Selesai</span>
-                    </div>
+                    {!isCollapsed && (
+                        <div className="flex flex-col items-start translate-y-[1px] animate-fade-in">
+                            <span className="text-[12px] font-black text-red-500">Logout</span>
+                            <span className="text-[8px] text-red-500/40 uppercase mt-1 font-bold">End Session</span>
+                        </div>
+                    )}
                 </button>
             </div>
         </aside>
