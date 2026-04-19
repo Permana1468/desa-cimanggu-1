@@ -48,8 +48,6 @@ const Layout = ({ children }) => {
         setIsSidebarOpen(false);
     }, [location.pathname]);
 
-    if (!user) return null;
-
     const role = user?.role || 'ADMIN';
     const isStaffRole = ['KAUR_PERENCANAAN', 'KAUR_TU', 'KAUR_KEUANGAN', 'KASI_PEMERINTAHAN', 'KASI_KESEJAHTERAAN', 'KASI_PELAYANAN'].includes(role);
     const menus = menuConfig?.[role] || (isStaffRole ? menuConfig?.STAF : menuConfig?.ADMIN) || [];

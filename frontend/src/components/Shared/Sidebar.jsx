@@ -210,8 +210,6 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
         return () => document.removeEventListener('mousedown', handler);
     }, []);
 
-    if (!user) return null;
-    
     // Fallback logic for staff roles that use a generic STAF menu
     const isStaffRole = ['KAUR_PERENCANAAN', 'KAUR_TU', 'KAUR_KEUANGAN', 'KASI_PEMERINTAHAN', 'KASI_KESEJAHTERAAN', 'KASI_PELAYANAN'].includes(role);
     const menus = menuConfig[role] || (isStaffRole ? menuConfig.STAF : menuConfig.ADMIN);
