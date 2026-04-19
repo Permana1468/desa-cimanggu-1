@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
-import Sidebar, { menuConfig } from './Sidebar';
+import Sidebar from './Sidebar';
+import { menuConfig } from './menuConfig';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Menu, Home, Settings, X, User, Bell, ChevronRight, LayoutGrid, LogOut, Sun, Moon } from 'lucide-react';
@@ -54,11 +55,19 @@ const Layout = ({ children }) => {
     const menus = menuConfig?.[role] || (isStaffRole ? menuConfig?.STAF : menuConfig?.ADMIN) || [];
 
     // Reorder menus for mobile: Push "Pengaturan Web" to bottom
-    const sortedMenus = Array.isArray(menus) ? [...menus].sort((a, b) => {
-        if (a.title === 'Pengaturan Web') return 1;
-        if (b.title === 'Pengaturan Web') return -1;
-        return 0;
-    }) : [];
+    const sortedMenus = React.useMemo(() => {
+        try {
+            if (!Array.isArray(menus)) return [];
+            return [...menus].sort((a, b) => {
+                if (a?.title === 'Pengaturan Web') return 1;
+                if (b?.title === 'Pengaturan Web') return -1;
+                return 0;
+            });
+        } catch (e) {
+            console.error("Menu sort error:", e);
+            return menus || [];
+        }
+    }, [menus]);
 
     return (
         <div className="relative flex h-screen overflow-hidden font-[Inter,system-ui,sans-serif] bg-dark-base transition-colors duration-500">
