@@ -116,6 +116,9 @@ const SidebarItem = ({ item, isCollapsed, setIsCollapsed, level = 0 }) => {
                                 <NavLink
                                     key={i}
                                     to={sub.path}
+                                    onClick={() => {
+                                        if (window.innerWidth < 768) setIsSidebarOpen(false);
+                                    }}
                                     className={({ isActive }) =>
                                         `flex items-center gap-3 py-2.5 pl-8 pr-4 text-[12px] font-bold transition-all duration-300 group rounded-lg mx-2
                                          ${isActive 
@@ -146,6 +149,9 @@ const SidebarItem = ({ item, isCollapsed, setIsCollapsed, level = 0 }) => {
                 end={item.path === '/dashboard'}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
+                onClick={() => {
+                    if (window.innerWidth < 768) setIsSidebarOpen(false);
+                }}
                 className={({ isActive }) => navClass(isActive)}
             >
                 {({ isActive }) => (
@@ -304,10 +310,13 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
 
             {/* ── Mobile Close Button ── */}
             <button 
-                className="md:hidden absolute top-4 right-4 text-white/40 hover:text-white"
-                onClick={() => setIsSidebarOpen(false)}
+                className="md:hidden absolute top-4 right-4 z-[100] p-2 text-white/60 hover:text-white transition-all active:scale-95"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsSidebarOpen(false);
+                }}
             >
-                <X size={20} />
+                <X size={24} strokeWidth={2.5} />
             </button>
 
             {/* ── Brand Header ────────────────────────────────────── */}
@@ -432,10 +441,10 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
                                     </button>
                                 </div>
                                 <div className="p-1.5">
-                                    <button onClick={() => { navigate('/dashboard/profile'); setUserMenuOpen(false); }} className="w-full flex items-center gap-3 p-3 text-[12.5px] font-bold text-text-muted hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                    <button onClick={() => { navigate('/dashboard/profile'); setUserMenuOpen(false); if (window.innerWidth < 768) setIsSidebarOpen(false); }} className="w-full flex items-center gap-3 p-3 text-[12.5px] font-bold text-text-muted hover:bg-white/5 hover:text-white rounded-xl transition-all">
                                         <User size={15} className="text-blue-400" /> Profil Saya
                                     </button>
-                                    <button onClick={() => { navigate('/dashboard/settings'); setUserMenuOpen(false); }} className="w-full flex items-center gap-3 p-3 text-[12.5px] font-bold text-text-muted hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                    <button onClick={() => { navigate('/dashboard/settings'); setUserMenuOpen(false); if (window.innerWidth < 768) setIsSidebarOpen(false); }} className="w-full flex items-center gap-3 p-3 text-[12.5px] font-bold text-text-muted hover:bg-white/5 hover:text-white rounded-xl transition-all">
                                         <Settings size={15} className="text-purple-400" /> Pengaturan
                                     </button>
                                     <div className="h-px bg-white/[0.05] my-1 mx-2" />

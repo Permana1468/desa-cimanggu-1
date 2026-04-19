@@ -77,6 +77,14 @@ const Layout = ({ children }) => {
                 <Menu size={20} />
             </button>
 
+            {/* ── Mobile Backdrop Overlay ── */}
+            {isSidebarOpen && (
+                <div 
+                    className="fixed inset-0 z-[50] bg-black/40 backdrop-blur-sm md:hidden transition-opacity animate-in fade-in duration-300"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+
             {/* ── Sidebar ───────────────────────────────────── */}
             <Sidebar 
                 isSidebarOpen={isSidebarOpen} 
