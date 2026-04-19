@@ -24,8 +24,10 @@ const ManajemenPengguna = () => {
     });
 
     const roleOptions = [
-        'ADMIN', 'KAUR_PERENCANAAN', 'KASI_PEMERINTAHAN',
-        'POSYANDU', 'SEKDES', 'KAUR_TU', 'WARGA'
+        'ADMIN', 'SEKDES', 'KAUR_PERENCANAAN', 'KAUR_TU', 'KAUR_KEUANGAN',
+        'KASI_PEMERINTAHAN', 'KASI_KESEJAHTERAAN', 'KASI_PELAYANAN',
+        'KADUS', 'POSYANDU', 'LPM', 'RW', 'RT', 'KARANG_TARUNA',
+        'BUMDES', 'TP_PKK', 'PUSKESOS', 'WARGA'
     ];
 
     useEffect(() => {
