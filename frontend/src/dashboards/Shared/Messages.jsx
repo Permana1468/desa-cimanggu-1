@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
     Search, Plus, Send, MoreVertical, Phone, Video, 
-    Smile, Paperclip, ChevronLeft, Check, CheckCheck, Clock 
+    Smile, Paperclip, ChevronLeft, Check, CheckCheck, Clock, MessageSquare 
 } from 'lucide-react';
 
 const Messages = () => {
