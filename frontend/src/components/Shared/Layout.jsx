@@ -87,9 +87,9 @@ const Layout = ({ children }) => {
 
             {/* ── Main Content Area ─────────────────────────── */}
             <main className={`flex-1 flex flex-col relative z-10 min-w-0 h-screen overflow-hidden transition-all duration-500`}>
-                <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent">
-                    {/* Inner wrapper for padding/spacing */}
-                    <div className="min-h-full p-4 md:p-8 lg:p-10">
+                <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent h-full">
+                    {/* Inner wrapper for padding/spacing - Reduced to ensure edge-to-edge aesthetics */}
+                    <div className="min-h-full p-2 md:p-6 lg:p-8">
                         {children || <Outlet />}
                     </div>
                 </div>

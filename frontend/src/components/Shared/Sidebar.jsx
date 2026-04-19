@@ -282,7 +282,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
 
     return (
         <aside
-            className={`fixed md:relative top-0 left-0 z-[60] h-full flex flex-col
+            className={`fixed md:relative top-0 left-0 z-[60] h-screen flex flex-col
                 bg-dark-sidebar backdrop-blur-[32px] border-r border-white/10
                 shadow-[25px_0_70px_rgba(0,0,0,0.5)] overflow-visible
                 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
