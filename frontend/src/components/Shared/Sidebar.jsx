@@ -217,6 +217,19 @@ const menuConfig = {
                                 { title: 'Kependudukan', path: '/dashboard/pemerintahan' },
                                 { title: 'Maps Spasial', path: '/dashboard/maps' },
                             ]
+                        },
+                        {
+                            title: 'Kesejahteraan',
+                            subMenus: [
+                                { title: 'Proyek Fisik', path: '/dashboard/kesejahteraan' },
+                                { title: 'Bantuan Sosial', path: '/dashboard/bansos' },
+                            ]
+                        },
+                        {
+                            title: 'Pelayanan',
+                            subMenus: [
+                                { title: 'Layanan Pengantar', path: '/dashboard/pelayanan' },
+                            ]
                         }
                     ]
                 },
