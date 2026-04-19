@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Lock, Mail, Phone, UserCircle, Briefcase, MapPin, ArrowRight, Home, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { User, Lock, Mail, Phone, UserCircle, Briefcase, MapPin, ArrowRight, Home, RefreshCw, CheckCircle2, ChevronDown } from 'lucide-react';
 import axios from 'axios';
 
 const heroImages = [
