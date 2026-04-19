@@ -53,6 +53,13 @@ const Layout = ({ children }) => {
     const isStaffRole = ['KAUR_PERENCANAAN', 'KAUR_TU', 'KAUR_KEUANGAN', 'KASI_PEMERINTAHAN', 'KASI_KESEJAHTERAAN', 'KASI_PELAYANAN'].includes(role);
     const menus = menuConfig[role] || (isStaffRole ? menuConfig.STAF : menuConfig.ADMIN);
 
+    // Reorder menus for mobile: Push "Pengaturan Web" to bottom
+    const sortedMenus = [...menus].sort((a, b) => {
+        if (a.title === 'Pengaturan Web') return 1;
+        if (b.title === 'Pengaturan Web') return -1;
+        return 0;
+    });
+
     return (
         <div className="relative flex h-screen overflow-hidden font-[Inter,system-ui,sans-serif] bg-dark-base transition-colors duration-500">
 
@@ -80,82 +87,120 @@ const Layout = ({ children }) => {
 
             {/* ── Mobile UI Elements ────────────────────────────── */}
             
-            {/* 1. Mobile Bottom Navigation Bar (App Style) */}
-            <nav className="fixed bottom-0 left-0 right-0 z-[100] md:hidden bg-white dark:bg-[#0f172a] border-t border-gray-200 dark:border-white/5 h-20 px-6 flex items-center justify-between shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+            {/* 1. Mobile Bottom Navigation Bar (Polished & Alive) */}
+            <nav className="fixed bottom-0 left-0 right-0 z-[100] md:hidden bg-white/10 dark:bg-[#0f172a]/20 backdrop-blur-3xl border-t border-white/10 h-20 px-12 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
                 <button 
                     onClick={() => setIsSidebarOpen(true)}
-                    className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400 active:scale-95 transition-all"
+                    className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400 active:scale-95 transition-all group"
                 >
-                    <Menu size={24} />
-                    <span className="text-[10px] font-bold">Menu</span>
+                    <div className="p-1 rounded-lg group-active:bg-gold/10 group-active:animate-glow-pulse transition-all">
+                        <Menu size={24} />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-wider">Menu</span>
                 </button>
 
                 <button 
                     onClick={() => navigate('/dashboard')}
-                    className={`flex flex-col items-center justify-center w-14 h-14 -mt-10 rounded-full shadow-lg transition-all active:scale-90
-                                ${location.pathname === '/dashboard' ? 'bg-[#10b981] text-white shadow-[#10b981]/40' : 'bg-[#10b981] text-white shadow-[#10b981]/40'}`}
+                    className="relative flex flex-col items-center justify-center w-16 h-16 -mt-12 group"
                 >
-                    <LayoutGrid size={28} />
-                    <div className="absolute -bottom-6 text-[10px] font-bold text-gray-600 dark:text-gray-300">Dashboard</div>
+                    <div className="absolute inset-0 bg-[#10b981] rounded-full shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-breathing group-active:scale-90 transition-transform"></div>
+                    <div className="relative z-10 text-white animate-glow-pulse">
+                        <LayoutGrid size={32} />
+                    </div>
                 </button>
 
                 <button 
                     onClick={() => navigate('/dashboard/settings')}
-                    className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400 active:scale-95 transition-all"
+                    className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400 active:scale-95 transition-all group"
                 >
-                    <Settings size={24} />
-                    <span className="text-[10px] font-bold">Pengaturan</span>
+                    <div className="p-1 rounded-lg group-active:bg-purple-500/10 group-active:animate-glow-pulse transition-all">
+                        <Settings size={24} />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-wider">Pengaturan</span>
                 </button>
             </nav>
 
-            {/* 2. Mobile Menu Sheet (Bottom Sheet) */}
+            {/* 2. Mobile Menu Sheet (Premium Glassmorphism & Desktop Style) */}
             <div 
                 className={`fixed inset-0 z-[1000] md:hidden transition-all duration-500 flex flex-col justify-end
                            ${isSidebarOpen ? 'visible' : 'invisible pointer-events-none'}`}
             >
                 {/* Backdrop overlay */}
                 <div 
-                    className={`absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-500
+                    className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-500
                                ${isSidebarOpen ? 'opacity-100' : 'opacity-0'}`}
                     onClick={() => setIsSidebarOpen(false)}
                 />
                 
                 {/* Rolling Content Panel */}
                 <div 
-                    className={`relative w-full max-h-[85vh] bg-white dark:bg-[#1e293b] rounded-t-[2.5rem] flex flex-col overflow-hidden transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+                    className={`relative w-full max-h-[90vh] bg-white/10 dark:bg-[#0f172a]/80 backdrop-blur-3xl rounded-t-[3rem] border-t border-white/20 flex flex-col overflow-hidden transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+                               shadow-[0_-20px_60px_rgba(0,0,0,0.5)]
                                ${isSidebarOpen ? 'translate-y-0' : 'translate-y-full shadow-none'}`}
                 >
                     {/* Drag handle */}
-                    <div className="w-12 h-1 bg-gray-300 dark:bg-white/10 rounded-full mx-auto mt-4 shrink-0" />
+                    <div className="w-16 h-1.5 bg-white/20 rounded-full mx-auto mt-5 shrink-0" />
 
-                    {/* Header: Profile Info */}
-                    <div className="p-8 pb-4 flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-500 flex items-center justify-center text-white text-2xl font-black shadow-lg overflow-hidden shrink-0 border-2 border-white dark:border-white/5">
-                            {user?.foto_profil ? (
-                                <img src={user.foto_profil} className="w-full h-full object-cover" alt="" />
-                            ) : (
-                                <span>{user?.nama_lengkap?.[0] || user?.username?.[0]}</span>
-                            )}
+                    {/* Header: Desktop Style Profile Branding */}
+                    <div className="p-8 pb-2 flex flex-col items-center gap-4 text-center">
+                        <div className="relative group shrink-0">
+                            <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-2xl animate-pulse"></div>
+                            <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 via-emerald-500 to-emerald-400 
+                                            flex items-center justify-center text-white text-3xl font-black relative z-10 
+                                            shadow-[0_10px_30px_rgba(16,185,129,0.4)] border-4 border-white/10 overflow-hidden">
+                                {user?.foto_profil ? (
+                                    <img src={user.foto_profil} className="w-full h-full object-cover" alt="" />
+                                ) : (
+                                    <span>{user?.nama_lengkap?.[0] || user?.username?.[0]}</span>
+                                )}
+                                <div className="absolute bottom-0 right-0 w-5 h-5 bg-green-500 border-4 border-dark-base rounded-full" />
+                            </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate leading-tight">Admin Desa Cimanggu I</h3>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">desa.cimanggu-i.cibungbulang@dpmd.bogorkab.go.id</p>
-                            <span className="inline-block px-2.5 py-1 bg-[#10b981]/10 text-[#10b981] text-[10px] font-black rounded-lg mt-2 uppercase tracking-wide">
-                                Desa Cimanggu I
-                            </span>
+                        
+                        <div className="flex flex-col items-center">
+                            <h3 className="text-xl font-black text-white tracking-tight leading-tight">Admin Desa Cimanggu I</h3>
+                            <p className="text-[11px] text-white/50 font-medium truncate mt-1 tracking-wide">{user?.email || 'admin@cimanggu1.desa.id'}</p>
+                            
+                            <div className="flex items-center gap-2 mt-3">
+                                <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-black rounded-lg uppercase tracking-widest border border-emerald-500/30 shadow-glow">
+                                    Desa Cimanggu I
+                                </span>
+                                <span className="px-3 py-1 bg-gold/10 text-gold text-[10px] font-black rounded-lg uppercase tracking-widest border border-gold/30">
+                                    Digital Office
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="h-px bg-gray-100 dark:bg-white/5 mx-8" />
+                    {/* Feature Bar: Notifications, Theme, Profile */}
+                    <div className="flex items-center justify-center gap-6 py-4">
+                        <button 
+                            onClick={toggleTheme}
+                            className="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-2xl text-amber-500 hover:bg-white/10 transition-all shadow-lg active:scale-90"
+                        >
+                            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} className="text-blue-500" />}
+                        </button>
+                        <button className="relative w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-2xl text-amber-500 hover:bg-white/10 transition-all shadow-lg active:scale-90">
+                            <Bell size={20} />
+                            <span className="absolute top-3 right-3 w-2 h-2 bg-amber-500 rounded-full border border-dark-base" />
+                        </button>
+                        <button 
+                            onClick={() => { navigate('/dashboard/profile'); setIsSidebarOpen(false); }}
+                            className="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-2xl text-emerald-500 hover:bg-white/10 transition-all shadow-lg active:scale-90"
+                        >
+                            <User size={20} />
+                        </button>
+                    </div>
 
-                    {/* Body: Grid Menu Items */}
-                    <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 gap-3 custom-scrollbar h-full">
-                        {menus.map((item, idx) => {
-                             // Color variations based on title or index to match screenshot vibrancy
+                    <div className="h-px bg-white/10 mx-12 mb-2" />
+
+                    {/* Body: Grid Menu Items with Alive Effects */}
+                    <div className="flex-1 overflow-y-auto px-8 py-4 space-y-3 custom-scrollbar h-full">
+                        {sortedMenus.map((item, idx) => {
                              const bgColors = [
-                                'bg-blue-500', 'bg-emerald-500', 'bg-amber-500', 
-                                'bg-purple-500', 'bg-teal-500', 'bg-rose-500', 
-                                'bg-indigo-500', 'bg-[#475569]'
+                                'bg-blue-600', 'bg-emerald-500', 'bg-amber-500', 
+                                'bg-purple-600', 'bg-teal-500', 'bg-rose-500', 
+                                'bg-indigo-600', 'bg-gray-600'
                              ];
                              const bgColor = bgColors[idx % bgColors.length];
 
@@ -167,25 +212,36 @@ const Layout = ({ children }) => {
                                         else if (item.subMenus?.[0]?.path) navigate(item.subMenus[0].path);
                                         setIsSidebarOpen(false);
                                     }}
-                                    className={`flex items-center gap-5 p-3 rounded-2xl transition-all active:scale-95 group
-                                               ${location.pathname === item.path ? 'bg-[#10b981]/5 border border-[#10b981]/10' : 'hover:bg-gray-50 dark:hover:bg-white/5'}`}
+                                    className={`flex items-center gap-6 p-3 w-full rounded-3xl transition-all active:scale-95 group
+                                               ${location.pathname === item.path ? 'bg-white/10 shadow-xl border border-white/20' : 'hover:bg-white/5'}`}
                                 >
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg ${bgColor} shrink-0`}>
-                                        {React.cloneElement(item.icon, { size: 24, strokeWidth: 2 })}
+                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-[0_8px_25px_rgba(0,0,0,0.3)] ${bgColor} shrink-0 group-active:animate-breathing`}>
+                                        {React.cloneElement(item.icon, { size: 28, strokeWidth: 2, className: "group-active:animate-glow-pulse" })}
                                     </div>
-                                    <span className={`text-[15px] font-bold ${location.pathname === item.path ? 'text-[#10b981]' : 'text-gray-700 dark:text-white/80'}`}>
+                                    <span className={`text-[17px] font-black tracking-tight ${location.pathname === item.path ? 'text-white' : 'text-white/80'}`}>
                                         {item.title}
                                     </span>
                                 </button>
                              );
                         })}
+
+                        {/* Logout Link */}
+                        <button
+                            onClick={logoutUser}
+                            className="flex items-center gap-6 p-4 w-full rounded-3xl hover:bg-red-500/10 text-red-500 transition-all mt-4"
+                        >
+                            <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-red-500/10 border border-red-500/20 shrink-0">
+                                <LogOut size={28} />
+                            </div>
+                            <span className="text-[17px] font-black tracking-tight uppercase">Keluar Sistem</span>
+                        </button>
                     </div>
 
-                    {/* Footer: Tutup Button */}
-                    <div className="p-6 border-t border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-[#1e293b] shrink-0">
+                    {/* Footer: Close Button */}
+                    <div className="p-8 pb-10 bg-black/20 shrink-0">
                         <button 
                             onClick={() => setIsSidebarOpen(false)}
-                            className="w-full py-4 text-[16px] font-bold text-gray-500 dark:text-gray-400 active:text-[#10b981] transition-all"
+                            className="w-full py-4 text-[18px] font-black text-white/40 uppercase tracking-[0.2em] active:text-emerald-400 transition-all hover:text-white"
                         >
                             Tutup
                         </button>

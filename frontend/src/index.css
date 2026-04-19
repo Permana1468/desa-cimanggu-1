@@ -30,6 +30,8 @@
   --animate-pulse-dot: pulse-dot 1.8s infinite;
   --animate-badge-pulse: badge-pulse 2.5s infinite;
   --animate-logo-float: logo-float 4s ease-in-out infinite;
+  --animate-breathing: breathing 3s ease-in-out infinite;
+  --animate-glow-pulse: glow-pulse 2s ease-in-out infinite;
 }
 
 /* ── THEME VARIABLE DEFINITIONS ──────────────────────── */
@@ -143,6 +145,19 @@ body { margin: 0; transition: background-color 0.5s ease, color 0.5s ease; }
 .logo-cahaya:hover {
   filter: drop-shadow(0 0 15px var(--accent-glow));
 }
+
+/* ── BREATHING & GLOW PULSE ────────────────────────── */
+@keyframes breathing {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+@keyframes glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 5px var(--accent-glow)); opacity: 0.8; }
+  50% { filter: drop-shadow(0 0 15px var(--accent-glow)); opacity: 1; }
+}
+
+.animate-breathing { animation: breathing 3s ease-in-out infinite; }
+.animate-glow-pulse { animation: glow-pulse 2s ease-in-out infinite; }
 
 /* ── ICON ALIVE ANIMATIONS ─────────────────────────── */
 @keyframes icon-wiggle {
