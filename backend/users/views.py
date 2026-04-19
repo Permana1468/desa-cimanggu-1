@@ -337,6 +337,11 @@ class UsulanMusrenbangViewSet(viewsets.ModelViewSet):
         
         if user.role in ['ADMIN', 'KAUR_PERENCANAAN', 'KAUR_KEUANGAN', 'KASI_KESEJAHTERAAN']:
             return queryset.all()
+        
+        # RW Role: See all proposals from their RTs
+        if user.role == 'RW' and user.unit_detail:
+            return queryset.filter(lokasi__icontains=user.unit_detail)
+            
         return queryset.filter(pengusul=user)
 
     def perform_create(self, serializer):
@@ -523,7 +528,11 @@ class AspirasiWargaViewSet(viewsets.ModelViewSet):
         if user.role in ['ADMIN', 'KAUR_PERENCANAAN']:
             return AspirasiWarga.objects.all()
         
-        # LPM only sees their own territory
+        # RW Role: See all RTs in their RW
+        if user.role == 'RW' and user.unit_detail:
+            return AspirasiWarga.objects.filter(wilayah_tujuan__icontains=user.unit_detail)
+
+        # Other roles (RT, LPM, etc.): See only their explicit unit
         return AspirasiWarga.objects.filter(wilayah_tujuan=user.unit_detail)
 
     @action(detail=False, methods=['post'])

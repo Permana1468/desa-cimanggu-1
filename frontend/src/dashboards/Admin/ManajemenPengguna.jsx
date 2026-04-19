@@ -149,12 +149,13 @@ const ManajemenPengguna = () => {
     };
 
     const handleResetPassword = async (id, username) => {
-        if (!window.confirm(`Reset password user '${username}'?`)) return;
+        if (!window.confirm(`Reset password user '${username}' ke default 'desa1234'?`)) return;
         try {
-            await api.post(`/users/api/admin/users/${id}/reset-password/`, {});
-            alert("Password berhasil direset!");
+            await api.post(`/users/api/admin/users/${id}/reset-password/`, { new_password: 'desa1234' });
+            alert("Password berhasil direset ke: desa1234");
         } catch (error) {
             console.error("Gagal mereset password:", error);
+            alert("Gagal mereset password. Pastikan koneksi server stabil.");
         }
     };
 
@@ -354,7 +355,14 @@ const ManajemenPengguna = () => {
                         </div>
                     </div>
 
-                    <FormInput label="Keterangan Unit (Dusun/Jabatan)" name="unit_detail" value={formData.unit_detail} onChange={handleChange} placeholder="Contoh: Dusun 01 - RW 02" />
+                    <FormInput 
+                        label="Keterangan Unit (Wilayah/Jabatan)" 
+                        name="unit_detail" 
+                        value={formData.unit_detail} 
+                        onChange={handleChange} 
+                        placeholder={formData.role === 'RT' ? 'Contoh: RW 01 / RT 05' : 'Contoh: Dusun I'} 
+                        info="Format wajib RT/RW: RW 01 / RT 01"
+                    />
                 </form>
             </Modal>
         </div>

@@ -19,6 +19,17 @@ const DashboardUtamaKelembagaan = () => {
     };
 
     const currentRole = roleConfig[user?.role] || { title: "Dashboard Kelembagaan", subtitle: "Pusat kendali unit kerja desa", accent: "text-gold" };
+    
+    // Personalized Title for RT/RW
+    const getPersonalizedTitle = () => {
+        if (user?.role === 'RT' && user?.unit_detail) {
+            return `Dashboard Unit ${user.unit_detail}`;
+        }
+        if (user?.role === 'RW' && user?.unit_detail) {
+            return `Dashboard Wilayah ${user.unit_detail}`;
+        }
+        return currentRole.title;
+    };
 
     return (
         <div className="space-y-8 animate-fade-in relative z-10 w-full pb-10">
@@ -26,7 +37,7 @@ const DashboardUtamaKelembagaan = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
                     <h2 className="text-3xl font-black text-text-main tracking-tight flex items-center gap-3">
-                        {currentRole.title}
+                        {getPersonalizedTitle()}
                         <span className={`w-2 h-2 rounded-full bg-gold shadow-gold-glow animate-pulse`} />
                     </h2>
                     <p className="text-text-muted text-[13px] font-medium mt-1 uppercase tracking-wider">

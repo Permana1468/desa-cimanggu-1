@@ -534,7 +534,9 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
                                 <div className="flex flex-col items-start min-w-0">
                                     <span className="text-[12px] font-black text-text-main truncate max-w-full tracking-tight">{user?.nama_lengkap || user?.username}</span>
                                     <span className="text-[9px] text-blue-500 font-bold uppercase tracking-widest mt-0.5">
-                                        {user?.role?.replace('_', ' ')} AKTIF
+                                        {(user?.role === 'RT' || user?.role === 'RW') && user?.unit_detail
+                                            ? user.unit_detail
+                                            : user?.role?.replace('_', ' ')} AKTIF
                                     </span>
                                 </div>
                             )}
