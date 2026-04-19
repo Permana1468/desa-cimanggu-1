@@ -66,24 +66,24 @@ const Layout = ({ children }) => {
             {/* Grid pattern */}
             <div className="absolute inset-0 z-[1] pointer-events-none bg-grid-pattern opacity-[0.03] transition-opacity" />
 
-            {/* ── Mobile Burger Menu (Floating) ───────────────── */}
+            {/* ── Mobile Burger Menu (Floating Premium Glass) ───────────────── */}
             <button
-                className={`fixed top-6 left-6 z-[100] md:hidden w-11 h-11 flex items-center justify-center rounded-xl
-                           bg-dark-card backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 hover:border-white/10 transition-all group
-                           transition-all duration-300 hover:scale-110 active:scale-95
-                           ${!isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                className={`fixed top-6 left-6 z-[100] md:hidden w-12 h-12 flex items-center justify-center
+                           bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl
+                           transition-all duration-500 hover:bg-white/10 active:scale-90 group
+                           ${!isSidebarOpen ? 'opacity-100 translate-x-0 rotate-0' : 'opacity-0 -translate-x-12 -rotate-90 pointer-events-none'}`}
                 onClick={() => setIsSidebarOpen(true)}
             >
-                <Menu size={20} />
+                <Menu size={22} className="text-white group-hover:text-gold transition-colors" />
+                <div className="absolute inset-0 rounded-2xl bg-gold/5 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </button>
 
-            {/* ── Mobile Backdrop Overlay ── */}
-            {isSidebarOpen && (
-                <div 
-                    className="fixed inset-0 z-[50] bg-black/40 backdrop-blur-sm md:hidden transition-opacity animate-in fade-in duration-300"
-                    onClick={() => setIsSidebarOpen(false)}
-                />
-            )}
+            {/* ── Mobile Backdrop Overlay (Immersive) ── */}
+            <div 
+                className={`fixed inset-0 z-[50] bg-black/60 backdrop-blur-xl md:hidden transition-all duration-700 ease-in-out
+                           ${isSidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+                onClick={() => setIsSidebarOpen(false)}
+            />
 
             {/* ── Sidebar ───────────────────────────────────── */}
             <Sidebar 

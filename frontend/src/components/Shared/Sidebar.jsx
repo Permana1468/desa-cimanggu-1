@@ -398,11 +398,11 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
     return (
         <aside
             className={`fixed md:relative top-0 left-0 z-[60] h-screen flex flex-col
-                bg-dark-sidebar backdrop-blur-xl border-r border-white/10
-                shadow-[25px_0_70px_rgba(0,0,0,0.5)] overflow-visible
-                transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]
-                ${isCollapsed ? 'w-[68px]' : 'w-[280px]'}
-                ${!isSidebarOpen ? '-translate-x-full md:w-0' : 'translate-x-0'}`}
+                bg-dark-sidebar backdrop-blur-3xl border-r border-white/5
+                shadow-[25px_0_100px_rgba(0,0,0,0.6)] overflow-visible
+                transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
+                ${isCollapsed ? 'w-0 md:w-[68px]' : 'w-[280px]'}
+                ${!isSidebarOpen ? '-translate-x-full md:translate-x-0' : 'translate-x-0'}`}
         >
             {/* ── Internal Sidebar Toggle Handle ── */}
             <div className={`hidden md:flex absolute top-10 right-[-14px] z-[100] transition-transform duration-500 ${isCollapsed ? 'translate-x-[2px]' : ''}`}>
@@ -417,16 +417,19 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
                 </button>
             </div>
 
-            {/* ── Mobile Close Button ── */}
-            <button 
-                className="md:hidden absolute top-4 right-4 z-[100] p-2 text-white/60 hover:text-white transition-all active:scale-95"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    setIsSidebarOpen(false);
-                }}
-            >
-                <X size={24} strokeWidth={2.5} />
-            </button>
+            {/* ── Mobile Close Button (Premium Floating) ── */}
+            <div className={`md:hidden absolute top-6 right-[-60px] transition-all duration-700 delay-300 
+                            ${isSidebarOpen ? 'translate-x-0 opacity-100 rotate-0' : '-translate-x-10 opacity-0 -rotate-90'}`}>
+                <button 
+                    className="w-11 h-11 flex items-center justify-center bg-white/10 backdrop-blur-2xl border border-white/20 rounded-full text-white shadow-2xl active:scale-90 hover:bg-white/20 transition-all"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsSidebarOpen(false);
+                    }}
+                >
+                    <X size={20} strokeWidth={3} />
+                </button>
+            </div>
 
             {/* ── Brand Header ────────────────────────────────────── */}
             <div className={`px-4 py-8 flex flex-col items-center justify-center shrink-0 relative
