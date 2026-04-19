@@ -98,7 +98,7 @@ const AppRoutes = () => {
 
                 <Route element={<Layout />}>
                     {/* Rute Dasar untuk semua role yang login */}
-                    <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'KAUR_PERENCANAAN', 'KAUR_KEUANGAN', 'KASI_PEMERINTAHAN', 'KASI_KESEJAHTERAAN', 'KASI_PELAYANAN', 'POSYANDU', 'SEKDES', 'KAUR_TU', 'LPM', 'KADUS']} />}>
+                    <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'SEKDES', 'KADUS', 'KAUR_PERENCANAAN', 'KAUR_TU', 'KAUR_KEUANGAN', 'KASI_PEMERINTAHAN', 'KASI_KESEJAHTERAAN', 'KASI_PELAYANAN', 'POSYANDU', 'LPM', 'RW', 'RT', 'KARANG_TARUNA', 'BUMDES', 'TP_PKK', 'PUSKESOS', 'WARGA']} />}>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/dashboard/profile" element={<UserProfile />} />
                         <Route path="/dashboard/settings" element={<UserSettings />} />
