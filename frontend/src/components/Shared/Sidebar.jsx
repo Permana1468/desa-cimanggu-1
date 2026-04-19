@@ -6,7 +6,7 @@ import {
     Home, Clock, Wallet, FileText, Users, Settings, Activity,
     LogOut, ChevronDown, Pyramid, X, Menu, BarChart3, Database, Shield, Zap, Search,
     Briefcase, Map, MapPin, ChevronLeft, ChevronRight, LayoutGrid, Layers, Bell,
-    User, Moon, Sun, MessageSquare
+    User, Moon, Sun, MessageSquare, Calendar, RefreshCw
 } from 'lucide-react';
 import useRole from '../../hooks/useRole';
 
@@ -373,9 +373,9 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
     return (
         <aside
             className={`fixed md:relative top-0 left-0 z-[60] h-screen flex flex-col
-                bg-dark-sidebar backdrop-blur-[32px] border-r border-white/10
+                bg-dark-sidebar backdrop-blur-xl border-r border-white/10
                 shadow-[25px_0_70px_rgba(0,0,0,0.5)] overflow-visible
-                transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
+                transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]
                 ${isCollapsed ? 'w-[68px]' : 'w-[280px]'}
                 ${!isSidebarOpen ? '-translate-x-full md:w-0' : 'translate-x-0'}`}
         >

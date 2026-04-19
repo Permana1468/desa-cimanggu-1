@@ -48,7 +48,7 @@ const Layout = ({ children }) => {
             {bgImages.map((src, i) => (
                 <div
                     key={i}
-                    className="absolute inset-0 bg-cover bg-center blur-[12px] scale-[1.06] z-0 transition-opacity duration-[2000ms] ease-in-out"
+                    className="absolute inset-0 bg-cover bg-center blur-[8px] scale-[1.04] z-0 transition-opacity duration-[2000ms] ease-in-out"
                     style={{
                         backgroundImage: `url('${src}')`,
                         opacity: (i === currentBg) ? (theme === 'dark' ? 1 : 0.65) : 0,
@@ -69,7 +69,7 @@ const Layout = ({ children }) => {
             {/* ── Mobile Burger Menu (Floating) ───────────────── */}
             <button
                 className={`fixed top-6 left-6 z-[100] md:hidden w-11 h-11 flex items-center justify-center rounded-xl
-                           bg-dark-overlay backdrop-blur-xl border border-white/10 text-white shadow-2xl
+                           bg-dark-card backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 hover:border-white/10 transition-all group
                            transition-all duration-300 hover:scale-110 active:scale-95
                            ${!isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 onClick={() => setIsSidebarOpen(true)}

@@ -53,8 +53,8 @@ const DashboardUtamaKelembagaan = () => {
                 {/* Main Content Area */}
                 <div className="lg:col-span-2 space-y-8">
                     {/* Welcome Card */}
-                    <div className="relative group bg-dark-card backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 overflow-hidden shadow-2xl">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 blur-[80px] -mr-32 -mt-32"></div>
+                    <div className="relative group bg-dark-card backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 overflow-hidden shadow-2xl">
+                       <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 blur-[80px] -mr-32 -mt-32"></div>
                         <div className="relative z-10">
                             <h3 className="text-2xl font-black text-text-main leading-tight mb-4">
                                 Selamat Datang Kembali,<br />

@@ -35,7 +35,7 @@ const DashboardUtamaWarga = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* News / Updates area */}
                 <div className="lg:col-span-2 space-y-8">
-                    <div className="relative group bg-dark-card backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 overflow-hidden shadow-2xl min-h-[300px] flex flex-col justify-end">
+                    <div className="relative group bg-dark-card backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 overflow-hidden shadow-2xl min-h-[300px] flex flex-col justify-end">
                         <div className="absolute inset-0 z-0">
                             <img src="/images/slide_1.png" className="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-1000" />
                             <div className="absolute inset-0 bg-gradient-to-t from-dark-base via-dark-base/40 to-transparent"></div>
