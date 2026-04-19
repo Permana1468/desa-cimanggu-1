@@ -29,22 +29,23 @@
   --animate-drop-in: drop-in 0.2s ease both;
   --animate-pulse-dot: pulse-dot 1.8s infinite;
   --animate-badge-pulse: badge-pulse 2.5s infinite;
+  --animate-logo-float: logo-float 4s ease-in-out infinite;
 }
 
 /* ── THEME VARIABLE DEFINITIONS ──────────────────────── */
 :root {
   /* DARK CINEMATIC (DEFAULT) */
-  --bg-base: #080e1e;
+  --bg-base: #08101a;
   --bg-card: rgba(15, 23, 42, 0.55);
   --bg-panel: rgba(15, 23, 42, 0.5);
   --bg-sidebar: rgba(8, 14, 30, 0.75);
   --bg-header: rgba(8, 14, 30, 0.55);
-  --bg-overlay: rgba(8, 14, 30, 0.92);
+  --bg-overlay: rgba(8, 14, 30, 0.95);
 
   --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.55);
-  --text-tertiary: rgba(255, 255, 255, 0.35);
-  --text-quaternary: rgba(255, 255, 255, 0.25);
+  --text-secondary: rgba(255, 255, 255, 0.65);
+  --text-tertiary: rgba(255, 255, 255, 0.45);
+  --text-quaternary: rgba(255, 255, 255, 0.3);
 
   --accent-primary: #f59e0b;
   --accent-dark: #d97706;
@@ -56,7 +57,7 @@
   --border-hover: rgba(255, 255, 255, 0.15);
   
   --glass-blur: 32px;
-  --grid-opacity: 0.02;
+  --grid-opacity: 0.03;
 
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -71,38 +72,35 @@
   -webkit-text-size-adjust: 100%;
 }
 
-/* DAYLIGHT FROST MODE - Optimized for high visibility */
+/* DAYLIGHT FROST MODE */
 .light-mode {
   --bg-base: #f1f5f9;
   --bg-card: rgba(255, 255, 255, 0.7);
   --bg-panel: rgba(255, 255, 255, 0.6);
-  --bg-sidebar: rgba(255, 255, 255, 0.9);
+  --bg-sidebar: rgba(255, 255, 255, 0.95);
   --bg-header: rgba(255, 255, 255, 0.75);
   --bg-overlay: rgba(241, 245, 249, 0.9);
 
-  --text-primary: #0f172a;
-  --text-secondary: #334155; /* Higher contrast Slate 700 */
-  --text-tertiary: #475569; /* Higher contrast Slate 600 */
-  --text-quaternary: #64748b; /* Higher contrast Slate 500 */
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-tertiary: #64748b;
+  --text-quaternary: #94a3b8;
 
-  --accent-primary: #2563eb;
-  --accent-dark: #1d4ed8;
-  --accent-light: rgba(37, 99, 235, 0.1);
-  --accent-border: rgba(37, 99, 235, 0.2);
-  --accent-glow: rgba(37, 99, 235, 0.25);
+  --accent-primary: #3b82f6;
+  --accent-dark: #2563eb;
+  --accent-light: rgba(59, 130, 246, 0.1);
+  --accent-border: rgba(59, 130, 246, 0.2);
+  --accent-glow: rgba(59, 130, 246, 0.25);
 
-  --border-color: rgba(15, 23, 42, 0.12);
-  --border-hover: rgba(15, 23, 42, 0.2);
+  --border-color: rgba(30, 41, 59, 0.1);
+  --border-hover: rgba(30, 41, 59, 0.18);
   
   --grid-opacity: 0.04;
   color-scheme: light;
 }
 
 /* ── BASE ────────────────────────────────────────────── */
-body {
-  margin: 0;
-  transition: background-color 0.5s ease, color 0.5s ease;
-}
+body { margin: 0; transition: background-color 0.5s ease, color 0.5s ease; }
 
 /* ── GOOGLE FONTS ─────────────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -117,34 +115,11 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 99px; }
 
 /* ── KEYFRAMES ────────────────────────────────────────── */
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes card-in {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes bar-grow {
-  from { height: 0 !important; }
-}
-
-@keyframes drop-in {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%     { opacity: 0.4; transform: scale(1.5); }
-}
-
-@keyframes badge-pulse {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.6; }
-}
+@keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes card-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes drop-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.5); } }
+@keyframes logo-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
 /* ── GRID PATTERN ────────────────────────────────────── */
 .bg-grid-pattern {
@@ -157,28 +132,30 @@ body {
 /* ── SIDEBAR CINEMATIC GRADIENT ────────────────────────── */
 .sidebar-active-gradient {
   background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 8px 18px rgba(59, 130, 246, 0.5);
+}
+
+/* ── LOGO CAHAYA (GLOW) ─────────────────────────────── */
+.logo-cahaya {
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+  transition: all 0.5s ease;
+}
+.logo-cahaya:hover {
+  filter: drop-shadow(0 0 15px var(--accent-glow));
 }
 
 /* ── ICON ALIVE ANIMATIONS ─────────────────────────── */
 @keyframes icon-wiggle {
   0%, 100% { transform: rotate(0); }
-  25% { transform: rotate(10deg) scale(1.1); }
-  75% { transform: rotate(-10deg) scale(1.1); }
+  25% { transform: rotate(5deg) scale(1.15); }
+  75% { transform: rotate(-5deg) scale(1.15); }
 }
 
-.animate-icon-alive {
-  animation: icon-wiggle 1.5s ease-in-out infinite;
-}
+.animate-icon-alive { animation: icon-wiggle 1.5s ease-in-out infinite; }
 
 /* ── SHADOWS ─────────────────────────────────────── */
-.shadow-glow {
-  box-shadow: 0 0 15px var(--accent-glow);
-}
-
-.text-shadow-sm {
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
+.shadow-glow { box-shadow: 0 0 12px var(--accent-glow); }
+.text-shadow-sm { text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
 
 /* ── COMPLEX DIVIDER LINE ────────────────────────────── */
 .complex-divider {
@@ -189,16 +166,7 @@ body {
 .complex-divider::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 20%;
-  right: 20%;
-  height: 1px;
+  top: 0; left: 15%; right: 15%; height: 1px;
   background: linear-gradient(90deg, transparent, var(--accent-border), transparent);
-  opacity: 0.5;
-}
-
-/* ── TOOLTIP ANIMATION ─────────────────────────────── */
-@keyframes tooltip-in {
-  from { opacity: 0; transform: translateX(-10px); }
-  to   { opacity: 1; transform: translateX(0); }
+  opacity: 0.4;
 }

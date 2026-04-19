@@ -12,7 +12,7 @@ import useRole from '../../hooks/useRole';
 
 /* ─── TOOLTIP COMPONENT ────────────────────────────────────────────────────── */
 const Tooltip = ({ text, show }) => (
-    <div className={`fixed left-[85px] px-3 py-1.5 bg-dark-overlay backdrop-blur-xl 
+    <div className={`fixed left-[75px] px-3 py-1.5 bg-dark-overlay backdrop-blur-xl 
                     border border-white/15 rounded-lg text-white text-[11px] font-bold
                     pointer-events-none transition-all duration-300 z-[100] whitespace-nowrap shadow-2xl
                     ${show ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'}`}>
@@ -22,7 +22,7 @@ const Tooltip = ({ text, show }) => (
 );
 
 /* ─── NESTED ITEM COMPONENT ────────────────────────────────────────────────── */
-const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
+const SidebarItem = ({ item, isCollapsed, setIsCollapsed, level = 0 }) => {
     const location = useLocation();
     const [isOpen, setIsOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -53,11 +53,20 @@ const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
             <div className={`transition-all duration-500 ease-out flex items-center justify-center
                             ${isHovered ? 'scale-125 rotate-3 -translate-y-0.5' : 'scale-100'}`}>
                 {React.cloneElement(item.icon, { 
-                    size: 17, 
+                    size: isCollapsed ? 18 : 17, 
                     className: `transition-all duration-300 ${colorClass} ${!active && !isCollapsed ? 'opacity-90' : 'opacity-100'}`
                 })}
             </div>
         );
+    };
+
+    const handleParentClick = () => {
+        if (isCollapsed) {
+            setIsCollapsed(false);
+            setIsOpen(true);
+        } else {
+            setIsOpen(!isOpen);
+        }
     };
 
     const navClass = (active) => `
@@ -66,19 +75,19 @@ const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
         ${active 
             ? 'sidebar-active-gradient text-white shadow-lg' 
             : `text-text-muted hover:bg-white/[0.05] hover:text-text-main`}
-        ${isCollapsed ? 'justify-center px-0' : ''}
+        ${isCollapsed ? 'justify-center px-0 h-[48px] w-[48px] mx-auto' : ''}
     `;
 
     if (item.subCategories || item.subMenus) {
         return (
-            <div className="w-full px-2.5">
+            <div className={`w-full ${isCollapsed ? 'flex justify-center' : 'px-2.5'}`}>
                 <button
-                    onClick={() => !isCollapsed && setIsOpen(!isOpen)}
+                    onClick={handleParentClick}
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                     className={navClass(isParentActive && level === 0)}
                 >
-                    <span className={`shrink-0 ${isCollapsed ? 'flex items-center justify-center w-10 h-10' : ''}`}>
+                    <span className={`shrink-0 ${isCollapsed ? 'flex items-center justify-center' : ''}`}>
                         {renderIcon(isParentActive && level === 0)}
                     </span>
                     
@@ -100,7 +109,7 @@ const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
                                     ${isOpen ? 'max-h-[1200px] opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
                         <div className="ml-5 space-y-1 relative border-l-2 border-white/[0.05] py-1">
                             {item.subCategories?.map((sub, i) => (
-                                <SidebarItem key={i} item={sub} isCollapsed={isCollapsed} level={level + 1} />
+                                <SidebarItem key={i} item={sub} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} level={level + 1} />
                             ))}
 
                             {item.subMenus?.map((sub, i) => (
@@ -131,7 +140,7 @@ const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
     }
 
     return (
-        <div className="w-full px-2.5">
+        <div className={`w-full ${isCollapsed ? 'flex justify-center' : 'px-2.5'}`}>
             <NavLink
                 to={item.path}
                 end={item.path === '/dashboard'}
@@ -141,7 +150,7 @@ const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
             >
                 {({ isActive }) => (
                     <>
-                        <span className={`shrink-0 ${isCollapsed ? 'flex items-center justify-center w-10 h-10' : ''}`}>
+                        <span className={`shrink-0 ${isCollapsed ? 'flex items-center justify-center' : ''}`}>
                             {renderIcon(isActive)}
                         </span>
                         
@@ -276,7 +285,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
                 bg-dark-sidebar backdrop-blur-[32px] border-r border-white/10
                 shadow-[25px_0_70px_rgba(0,0,0,0.5)] overflow-visible
                 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
-                ${isCollapsed ? 'w-20' : 'w-[280px]'}
+                ${isCollapsed ? 'w-[68px]' : 'w-[280px]'}
                 ${!isSidebarOpen ? '-translate-x-full md:w-0' : 'translate-x-0'}`}
         >
             {/* ── Internal Sidebar Toggle Handle ── */}
@@ -305,15 +314,15 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
                             transition-all duration-500
                             ${scrolled ? 'bg-dark-base shadow-lg transition-colors' : ''}`}>
                 
-                <div className={`flex items-center gap-4 transition-all duration-500 ${isCollapsed ? 'flex-col gap-5' : ''}`}>
+                <div className={`flex items-center gap-4 transition-all duration-500 ${isCollapsed ? 'flex-col gap-4' : ''}`}>
                     <div className="relative group shrink-0">
                         <div className="absolute inset-0 bg-gold/15 rounded-full blur-2xl animate-pulse opacity-0 group-hover:opacity-100"></div>
-                        <div className={`transition-all duration-500 ${isCollapsed ? 'w-10 h-10' : 'w-14 h-14'} 
-                                        relative z-10 flex items-center justify-center`}>
+                        <div className={`transition-all duration-500 ${isCollapsed ? 'w-11 h-11' : 'w-14 h-14'} 
+                                        relative z-10 flex items-center justify-center logo-cahaya animate-logo-float`}>
                             <img 
                                 src="/images/logo_kabupaten_bogor.png" 
                                 alt="Logo" 
-                                className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]"
+                                className="w-full h-full object-contain"
                                 onClick={() => navigate('/dashboard')}
                             />
                         </div>
@@ -325,7 +334,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
                                 CIMANGGU I
                             </div>
                             <div className="text-[8.5px] text-gold font-black uppercase tracking-[0.25em] mt-2 opacity-80 flex items-center gap-1.5">
-                                <span className="w-1 h-1 rounded-full bg-gold animate-pulse" />
+                                <span className="w-1 h-1 rounded-full bg-gold animate-pulse shadow-glow" />
                                 Digital Office
                             </div>
                         </div>
@@ -339,40 +348,41 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
 
             {/* ── Navigation ──────────────────────────────────────── */}
             <nav 
-                className="flex-1 overflow-y-auto overflow-x-hidden py-8 space-y-1.5 custom-scrollbar scroll-smooth"
+                className="flex-1 overflow-y-auto overflow-x-hidden py-8 space-y-2 custom-scrollbar scroll-smooth"
                 onScroll={(e) => setScrolled(e.target.scrollTop > 10)}
             >
                 {menus.map((item, idx) => (
-                    <SidebarItem key={idx} item={item} isCollapsed={isCollapsed} />
+                    <SidebarItem key={idx} item={item} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
                 ))}
             </nav>
 
             {/* ── Management Footer (Notifications & Profile) ────────────────── */}
-            <div className={`px-4 py-6 shrink-0 relative bg-white/[0.02] flex flex-col gap-3`} ref={footerRef}>
+            <div className={`px-4 py-6 shrink-0 relative bg-white/[0.02] flex flex-col gap-3 items-center`} ref={footerRef}>
                 <div className="absolute top-0 left-0 right-0 px-6">
                     <div className="complex-divider opacity-30"></div>
                 </div>
 
-                <div className={`flex items-center gap-3 ${isCollapsed ? 'flex-col' : ''}`}>
+                <div className={`flex items-center gap-3 w-full ${isCollapsed ? 'flex-col items-center' : ''}`}>
                     {/* Notification Integrated */}
                     <div className="relative">
                         <button
                             onClick={() => { setNotifOpen(!notifOpen); setUserMenuOpen(false); }}
                             className={`relative flex items-center justify-center rounded-xl transition-all duration-300
-                                       ${isCollapsed ? 'w-11 h-11' : 'w-10 h-10'}
+                                       ${isCollapsed ? 'w-10 h-10' : 'w-9 h-9'}
                                        bg-white/[0.04] border border-white/[0.07] text-amber-500
-                                       hover:bg-amber-500/10 hover:border-amber-500/30`}
+                                       hover:bg-amber-500/10 hover:border-amber-500/30 shadow-sm`}
                         >
-                            <Bell size={18} className={notifOpen ? 'animate-bounce' : ''} />
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-amber-500 rounded-full border border-dark-base shadow-glow" />
+                            <Bell size={17} className={notifOpen ? 'animate-bounce' : ''} />
+                            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-amber-500 rounded-full border border-dark-base shadow-glow" />
                         </button>
 
+                        {/* Dropup Logic... */}
                         {notifOpen && (
                             <div className={`absolute bottom-full mb-3 left-0 z-[100] overflow-hidden
-                                            ${isCollapsed ? 'w-[280px]' : 'w-[260px]'}
+                                            ${isCollapsed ? 'w-[260px]' : 'w-[250px]'}
                                             bg-dark-overlay backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl
                                             animate-[drop-in_0.3s_ease-out]`}>
-                                <div className="p-4 border-b border-white/5 flex justify-between items-center">
+                                <div className="p-4 border-b border-white/5 flex justify-between items-center text-shadow-sm">
                                     <span className="text-[10px] font-black uppercase text-text-main">Notifikasi</span>
                                     <span className="text-[9px] bg-amber-500 text-black px-1.5 py-0.5 rounded font-black">NEW</span>
                                 </div>
@@ -380,7 +390,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
                                     {notifications.map((n, i) => (
                                         <div key={i} className="p-4 border-b border-white/[0.03] last:border-0 hover:bg-white/[0.05] cursor-pointer">
                                             <div className="text-[12px] text-text-main font-medium leading-tight">{n.msg}</div>
-                                            <div className="text-[9px] text-text-muted mt-2 font-black opacity-50 uppercase">{n.time} WIB</div>
+                                            <div className="text-[9px] text-text-muted mt-2 font-black opacity-50 uppercase tracking-tighter">{n.time} WIB</div>
                                         </div>
                                     ))}
                                 </div>
@@ -389,44 +399,45 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
                     </div>
 
                     {/* User Profile Integrated */}
-                    <div className="relative flex-1">
+                    <div className="relative flex-1 w-full">
                         <button
                             onClick={() => { setUserMenuOpen(!userMenuOpen); setNotifOpen(false); }}
                             className={`flex items-center gap-3 w-full rounded-xl transition-all duration-300
-                                       ${isCollapsed ? 'w-11 h-11 justify-center' : 'p-2 pr-4 bg-white/[0.03] border border-white/[0.07] hover:bg-white/[0.06]'}`}
+                                       ${isCollapsed ? 'w-10 h-10 justify-center' : 'p-1.5 pr-3 bg-white/[0.03] border border-white/[0.07] hover:bg-white/[0.06] shadow-sm'}`}
                         >
-                            <div className="relative w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-purple-600 
-                                            flex items-center justify-center font-black text-xs text-white shadow-lg overflow-hidden">
+                            <div className={`relative w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600 to-purple-600 
+                                            flex items-center justify-center font-black text-[10px] text-white shadow-lg overflow-hidden shrink-0`}>
                                 {user?.foto_profil ? <img src={user.foto_profil} className="w-full h-full object-cover" alt="" /> : user?.username?.charAt(0).toUpperCase()}
-                                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-dark-base rounded-full" />
+                                <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 border border-dark-base rounded-full" />
                             </div>
                             
                             {!isCollapsed && (
                                 <div className="flex flex-col items-start min-w-0">
                                     <span className="text-[12px] font-black text-text-main truncate max-w-full tracking-tight">{user?.nama_lengkap || user?.username}</span>
-                                    <span className="text-[9px] text-blue-500 font-bold uppercase tracking-widest">{user?.role}</span>
+                                    <span className="text-[9px] text-blue-500 font-bold uppercase tracking-widest mt-0.5">Admin Aktif</span>
                                 </div>
                             )}
                         </button>
 
+                        {/* Dropup Logic... */}
                         {userMenuOpen && (
                              <div className={`absolute bottom-full mb-3 left-0 z-[100] w-[240px]
                                              bg-dark-overlay backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl
                                              animate-[drop-in_0.3s_ease-out] overflow-hidden`}>
-                                <div className="p-4 border-b border-white/5 flex justify-between items-center">
-                                    <span className="text-[10px] font-black uppercase text-text-muted">Manajamen Akun</span>
-                                    <button onClick={toggleTheme} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10">
-                                        {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+                                <div className="p-4 border-b border-white/5 flex justify-between items-center text-shadow-sm">
+                                    <span className="text-[10px] font-black uppercase text-text-muted">Profil Saya</span>
+                                    <button onClick={toggleTheme} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                                        {theme === 'dark' ? <Sun size={14} className="text-amber-500" /> : <Moon size={14} className="text-blue-500" />}
                                     </button>
                                 </div>
-                                <div className="p-1">
+                                <div className="p-1.5">
                                     <button onClick={() => { navigate('/dashboard/profile'); setUserMenuOpen(false); }} className="w-full flex items-center gap-3 p-3 text-[12.5px] font-bold text-text-muted hover:bg-white/5 hover:text-white rounded-xl transition-all">
                                         <User size={15} className="text-blue-400" /> Profil Saya
                                     </button>
                                     <button onClick={() => { navigate('/dashboard/settings'); setUserMenuOpen(false); }} className="w-full flex items-center gap-3 p-3 text-[12.5px] font-bold text-text-muted hover:bg-white/5 hover:text-white rounded-xl transition-all">
                                         <Settings size={15} className="text-purple-400" /> Pengaturan
                                     </button>
-                                    <div className="h-px bg-white/5 my-1 mx-2" />
+                                    <div className="h-px bg-white/[0.05] my-1 mx-2" />
                                     <button onClick={logoutUser} className="w-full flex items-center gap-3 p-3 text-[12.5px] font-black text-red-500 hover:bg-red-500/10 rounded-xl transition-all">
                                         <LogOut size={15} /> Logout Sistem
                                     </button>
