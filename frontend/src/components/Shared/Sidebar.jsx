@@ -347,7 +347,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
                         >
                             <div className={`relative w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600 to-purple-600 
                                             flex items-center justify-center font-black text-[10px] text-white shadow-lg overflow-hidden shrink-0`}>
-                                {user?.foto_profil ? <img src={user.foto_profil} className="w-full h-full object-cover" alt="" /> : user?.username?.charAt(0).toUpperCase()}
+                                {user?.foto_profil ? <img src={user.foto_profil} className="w-full h-full object-cover" alt="" /> : (user?.username?.charAt(0)?.toUpperCase() || 'U')}
                                 <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 border border-dark-base rounded-full" />
                             </div>
                             
