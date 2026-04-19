@@ -205,6 +205,16 @@ const menuConfig = {
                                 { title: 'Buku Kas Umum', path: '/dashboard/buku-kas' },
                                 { title: 'Realisasi Anggaran', path: '/dashboard/realisasi-anggaran' },
                             ]
+                        },
+                        {
+                            title: 'Perencanaan',
+                            subMenus: [
+                                { title: 'Rencana Kerja (RAB)', path: '/dashboard/rab' },
+                                { title: 'Musrenbang Desa', path: '/dashboard/rekap-musrenbang' },
+                                { title: 'DED Proyek', path: '/dashboard/perencanaan' },
+                                { title: 'Verifikasi Usulan', path: '/dashboard/verifikasi-usulan' },
+                                { title: 'RPJMDes / RKP', path: '/dashboard/rpjmdes' },
+                            ]
                         }
                     ]
                 },
