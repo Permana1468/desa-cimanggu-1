@@ -20,7 +20,9 @@ export const AuthProvider = ({ children }) => {
                         id: decodedToken.user_id,
                         username: decodedToken.username,
                         role: decodedToken.role,
-                        unit_detail: decodedToken.unit_detail
+                        unit_detail: decodedToken.unit_detail,
+                        status: decodedToken.status,
+                        is_verified: decodedToken.is_verified
                     };
                     setUser(basicUser);
                     // Fetch extended data like foto_profil and nama_lengkap
@@ -73,16 +75,19 @@ export const AuthProvider = ({ children }) => {
             id: decodedToken.user_id,
             username: decodedToken.username,
             role: decodedToken.role,
-            unit_detail: decodedToken.unit_detail
+            unit_detail: decodedToken.unit_detail,
+            status: decodedToken.status,
+            is_verified: decodedToken.is_verified
         };
         setUser(basicUser);
         const fullUser = await fetchFullUserData(basicUser);
 
         // Security Check: Institutional roles must be ACTIVE/VERIFIED
-        if (fullUser.role !== 'WARGA' && fullUser.role !== 'ADMIN' && fullUser.status === 'PENDING') {
+        const finalUser = fullUser || basicUser;
+        if (finalUser.role !== 'WARGA' && finalUser.role !== 'ADMIN' && finalUser.status === 'PENDING') {
             logoutUser();
             const error = new Error("Akun Kelembagaan belum diverifikasi.");
-            error.response = { data: { detail: "Akun Kelembagaan Anda belum disetujui oleh Admin Desa. Mohon tunggu proses verifikasi." } };
+            error.response = { data: { detail: "Akun Kelembagaan Anda belum disetujui oleh Admin Desa. Mohon tunggu proses verifikasi oleh Admin." } };
             throw error;
         }
 

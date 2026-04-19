@@ -23,6 +23,16 @@ class CustomUser(AbstractUser):
     )
 
     role = models.CharField(max_length=50, choices=ROLE_CHOICES, default='ADMIN')
+    is_verified = models.BooleanField(default=False)
+    status = models.CharField(
+        max_length=20, 
+        choices=(
+            ('PENDING', 'Pending'),
+            ('ACTIVE', 'Active'),
+            ('BLOCKED', 'Blocked'),
+        ), 
+        default='PENDING'
+    )
     unit_detail = models.CharField(max_length=255, blank=True, null=True, help_text="Misal: 'Mawar 1' atau 'RW 009'")
     nama_lengkap = models.CharField(max_length=255, blank=True, null=True, help_text="Nama lengkap operator/pengurus")
     nomor_telepon = models.CharField(max_length=20, blank=True, null=True, help_text="Nomor HP/WhatsApp aktif")

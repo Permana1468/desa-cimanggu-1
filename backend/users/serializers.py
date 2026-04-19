@@ -1,12 +1,13 @@
 from rest_framework import serializers
-from .models import CustomUser, LandingPageSetting, Berita, PejabatDesa, Kehadiran, UsulanMusrenbang, RencanaAnggaran, RencanaAnggaranItem, ProgramPembinaan, JadwalGotongRoyong, KegiatanLPM, PengurusLPM
+from .models import CustomUser, LandingPageSetting, Berita, PejabatDesa, Kehadiran, UsulanMusrenbang, RencanaAnggaran, RencanaAnggaranItem, ProgramPembinaan, JadwalGotongRoyong, KegiatanLPM, PengurusLPM, DokumenDED, DokumenPerencanaan, AspirasiWarga, CatatanKeuanganLPM, InventarisLPM, PeminjamanAlat, KaderLPM, PresensiKegiatanLPM, LaporanDigitalLPM, GaleriProyekLPM
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'email', 'role', 'unit_detail', 'password', 'foto_profil')
+        fields = ('id', 'username', 'email', 'role', 'unit_detail', 'password', 'foto_profil', 'status', 'is_verified')
 
     def create(self, validated_data):
         password = validated_data.pop('password', 'desa1234') # Password default
@@ -58,7 +59,7 @@ class RencanaAnggaranItemSerializer(serializers.ModelSerializer):
         read_only_fields = ('rab',)
 
 class RencanaAnggaranSerializer(serializers.ModelSerializer):
-    items = RencanaAnggaranItemSerializer(many=True)
+    items = RencanaAnggaranItemSerializer(many=True, required=False)
     usulan_id = serializers.CharField(source='usulan.usulan_id', read_only=True)
     usulan_detail = serializers.SerializerMethodField()
 
@@ -67,6 +68,7 @@ class RencanaAnggaranSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_usulan_detail(self, obj):
+        if not obj.usulan: return {}
         return {
             "judul": obj.usulan.judul,
             "lokasi": obj.usulan.lokasi,
@@ -75,13 +77,13 @@ class RencanaAnggaranSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        items_data = validated_data.pop('items')
+        items_data = validated_data.pop('items', [])
         rab = RencanaAnggaran.objects.create(**validated_data)
         for item_data in items_data:
             RencanaAnggaranItem.objects.create(rab=rab, **item_data)
         
         # State Machine Trigger
-        if rab.status == 'FINAL':
+        if rab.status == 'FINAL' and rab.usulan:
             rab.usulan.status = 'MENUNGGU_PENCAIRAN'
             rab.usulan.save()
             
@@ -94,20 +96,16 @@ class RencanaAnggaranSerializer(serializers.ModelSerializer):
         instance.save()
 
         if items_data is not None:
-            # Simple approach: delete existing items and recreate
-            # For better performance/tracking, one could do a smart update
             instance.items.all().delete()
             for item_data in items_data:
                 RencanaAnggaranItem.objects.create(rab=instance, **item_data)
         
         # State Machine Trigger
-        if instance.status == 'FINAL':
+        if instance.status == 'FINAL' and instance.usulan:
             instance.usulan.status = 'MENUNGGU_PENCAIRAN'
             instance.usulan.save()
             
         return instance
-
-from .models import CustomUser, UsulanMusrenbang, RencanaAnggaran, RencanaAnggaranItem, DokumenDED, DokumenPerencanaan, AspirasiWarga, ProgramPembinaan, JadwalGotongRoyong, KegiatanLPM, PengurusLPM
 
 class ProgramPembinaanSerializer(serializers.ModelSerializer):
     class Meta:
@@ -164,14 +162,12 @@ class PengurusLPMSerializer(serializers.ModelSerializer):
         read_only_fields = ('unit_lpm', 'created_at')
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    """Serializer for GET/PATCH /api/users/me/"""
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'email', 'role', 'unit_detail', 'nama_lengkap', 'nomor_telepon', 'foto_profil')
-        read_only_fields = ('id', 'username', 'role', 'unit_detail')
+        fields = ('id', 'username', 'email', 'role', 'unit_detail', 'nama_lengkap', 'nomor_telepon', 'foto_profil', 'status', 'is_verified')
+        read_only_fields = ('id', 'username', 'role', 'unit_detail', 'status', 'is_verified')
 
 class ChangePasswordSerializer(serializers.Serializer):
-    """Serializer for POST /api/users/change-password/"""
     password_lama = serializers.CharField(required=True, write_only=True)
     password_baru = serializers.CharField(required=True, write_only=True, min_length=6)
     konfirmasi_password = serializers.CharField(required=True, write_only=True)
@@ -181,21 +177,16 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({'konfirmasi_password': 'Password baru dan konfirmasi tidak cocok.'})
         return data
 
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-
-        # Tambahkan custom claims
         token['username'] = user.username
         token['role'] = user.role
         token['unit_detail'] = user.unit_detail
-
+        token['status'] = user.status
+        token['is_verified'] = user.is_verified
         return token
-
-from .models import CatatanKeuanganLPM, InventarisLPM, PeminjamanAlat, KaderLPM, PresensiKegiatanLPM, LaporanDigitalLPM, GaleriProyekLPM
 
 class CatatanKeuanganLPMSerializer(serializers.ModelSerializer):
     class Meta:
@@ -211,7 +202,6 @@ class InventarisLPMSerializer(serializers.ModelSerializer):
 
 class PeminjamanAlatSerializer(serializers.ModelSerializer):
     alat_nama = serializers.CharField(source='alat.nama_aset', read_only=True)
-    
     class Meta:
         model = PeminjamanAlat
         fields = '__all__'
@@ -226,7 +216,6 @@ class KaderLPMSerializer(serializers.ModelSerializer):
 class PresensiKegiatanLPMSerializer(serializers.ModelSerializer):
     kader_nama = serializers.CharField(source='kader.nama', read_only=True)
     kegiatan_judul = serializers.CharField(source='kegiatan.judul', read_only=True)
-
     class Meta:
         model = PresensiKegiatanLPM
         fields = '__all__'
@@ -240,7 +229,6 @@ class LaporanDigitalLPMSerializer(serializers.ModelSerializer):
 
 class GaleriProyekLPMSerializer(serializers.ModelSerializer):
     proyek_judul = serializers.CharField(source='proyek.judul', read_only=True)
-
     class Meta:
         model = GaleriProyekLPM
         fields = '__all__'
@@ -260,7 +248,24 @@ class RegisterSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        validated_data.pop('konfirmasi_password')
-        user = CustomUser.objects.create_user(**validated_data)
+        validated_data.pop('konfirmasi_password', None)
+        
+        username = validated_data.pop('username')
+        password = validated_data.pop('password')
+        email = validated_data.pop('email', '')
+        role = validated_data.get('role', 'WARGA')
+        
+        # Logic Verification Status
+        is_verified = (role == 'WARGA')
+        status = 'ACTIVE' if role == 'WARGA' else 'PENDING'
+        
+        # Create user explicitly via UserManager
+        user = CustomUser.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            is_verified=is_verified,
+            status=status,
+            **validated_data
+        )
         return user
-
