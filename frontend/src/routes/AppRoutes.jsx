@@ -20,6 +20,7 @@ const HeroCarouselForm = lazy(() => import('../dashboards/Admin/HeroCarouselForm
 const KelolaBerita = lazy(() => import('../dashboards/Admin/KelolaBerita'));
 const StrukturOrganisasi = lazy(() => import('../dashboards/Admin/StrukturOrganisasi'));
 const ManajemenPengguna = lazy(() => import('../dashboards/Admin/ManajemenPengguna'));
+const VerifikasiPengguna = lazy(() => import('../dashboards/Admin/VerifikasiPengguna'));
 const RekapAbsensi = lazy(() => import('../dashboards/Admin/RekapAbsensi'));
 const VerifikasiUsulan = lazy(() => import('../dashboards/Admin/VerifikasiUsulan'));
 const RencanaAnggaran = lazy(() => import('../dashboards/Admin/RencanaAnggaran'));
@@ -110,6 +111,7 @@ const AppRoutes = () => {
                         <Route path="/dashboard/hero-carousel" element={<HeroCarouselForm />} />
                         <Route path="/dashboard/berita" element={<KelolaBerita />} />
                         <Route path="/dashboard/users" element={<ManajemenPengguna />} />
+                        <Route path="/dashboard/verify-users" element={<VerifikasiPengguna />} />
                         <Route path="/dashboard/organisasi" element={<StrukturOrganisasi />} />
                     </Route>
 

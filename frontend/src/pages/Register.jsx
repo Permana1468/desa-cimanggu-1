@@ -53,6 +53,8 @@ const Register = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const isInstitutional = (role) => role !== 'WARGA';
+
     const handleRegister = async (e) => {
         e.preventDefault();
         setError('');
@@ -65,12 +67,15 @@ const Register = () => {
         }
 
         try {
+            const isWarga = formData.role === 'WARGA';
             await axios.post('/users/api/register/', {
                 ...formData,
+                is_verified: isWarga,
+                status: isWarga ? 'ACTIVE' : 'PENDING',
                 captcha_token: captcha.token
             });
             setSuccess(true);
-            setTimeout(() => navigate('/login'), 3000);
+            setTimeout(() => navigate('/login'), 5000);
         } catch (err) {
             let msg = "Terjadi kesalahan saat pendaftaran.";
             if (err.response?.data) {
@@ -98,6 +103,7 @@ const Register = () => {
         { value: 'TP_PKK', label: 'TP-PKK' },
         { value: 'POSYANDU', label: 'Petugas Posyandu' },
         { value: 'KADUS', label: 'Kepala Dusun' },
+        { value: 'SEKDES', label: 'Sekretaris Desa' },
         { value: 'WARGA', label: 'Warga' },
     ];
 
@@ -118,7 +124,11 @@ const Register = () => {
                             <CheckCircle2 className="text-yellow-400 w-10 h-10" />
                         </div>
                         <h2 className="text-3xl font-bold text-white mb-4">Pendaftaran Berhasil!</h2>
-                        <p className="text-slate-200 mb-8 leading-relaxed">Akun Anda telah berhasil dibuat. Silakan masuk menggunakan akun baru Anda.</p>
+                        <p className="text-slate-200 mb-8 leading-relaxed">
+                            {formData.role === 'WARGA' 
+                                ? 'Pendaftaran berhasil! Anda bisa langsung masuk ke sistem.' 
+                                : 'Akun Kelembagaan berhasil didaftarkan. Mohon tunggu verifikasi Admin Desa sebelum dapat login.'}
+                        </p>
                         <Link to="/login" className="text-yellow-400 font-bold hover:underline">Ke Halaman Login</Link>
                     </div>
                 </div>
@@ -176,10 +186,11 @@ const Register = () => {
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Briefcase size={16} className="text-slate-400" /></div>
                                         <select 
                                             name="role" value={formData.role} onChange={handleChange}
-                                            className="w-full pl-10 pr-4 py-2.5 bg-slate-900/40 border border-white/10 rounded-xl text-white text-sm focus:ring-2 focus:ring-yellow-400/50 transition-all appearance-none cursor-pointer outline-none"
+                                            className="w-full pl-10 pr-4 py-2.5 bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-xl text-white text-sm focus:ring-2 focus:ring-yellow-400/50 transition-all appearance-none cursor-pointer outline-none relative z-10"
                                         >
-                                            {roles.map(r => <option key={r.value} value={r.value} className="bg-slate-900">{r.label}</option>)}
+                                            {roles.map(r => <option key={r.value} value={r.value} className="bg-slate-900 border-none">{r.label}</option>)}
                                         </select>
+                                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400"><ChevronDown size={14} /></div>
                                     </div>
                                 </div>
 

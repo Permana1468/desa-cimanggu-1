@@ -268,6 +268,7 @@ const menuConfig = {
             title: 'Pengaturan Web', icon: <Settings />, iconColor: 'text-purple-400',
             subMenus: [
                 { title: 'Manajemen Pengguna', path: '/dashboard/users' },
+                { title: 'Verifikasi Pendaftaran', path: '/dashboard/verify-users' },
                 { title: 'Identitas Desa', path: '/dashboard/landing-setting' },
                 { title: 'Kelola Berita', path: '/dashboard/berita' },
                 { title: 'Struktur Organisasi', path: '/dashboard/organisasi' },
