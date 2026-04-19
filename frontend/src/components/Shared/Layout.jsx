@@ -87,36 +87,34 @@ const Layout = ({ children }) => {
 
             {/* ── Mobile UI Elements ────────────────────────────── */}
             
-            {/* 1. Mobile Bottom Navigation Bar (Polished & Alive) */}
-            <nav className="fixed bottom-0 left-0 right-0 z-[100] md:hidden bg-white/10 dark:bg-[#0f172a]/20 backdrop-blur-3xl border-t border-white/10 h-20 px-12 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
+            {/* 1. Mobile Bottom Navigation Bar (Minimalist & Precise) */}
+            <nav className="fixed bottom-0 left-0 right-0 z-[100] md:hidden bg-white/10 dark:bg-[#0f172a]/20 backdrop-blur-3xl border-t border-white/10 h-16 px-14 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
                 <button 
                     onClick={() => setIsSidebarOpen(true)}
-                    className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400 active:scale-95 transition-all group"
+                    className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 active:scale-95 transition-all group shrink-0"
                 >
-                    <div className="p-1 rounded-lg group-active:bg-gold/10 group-active:animate-glow-pulse transition-all">
+                    <div className="p-2 rounded-xl group-active:bg-gold/10 group-active:animate-glow-pulse transition-all">
                         <Menu size={24} />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-wider">Menu</span>
                 </button>
 
                 <button 
                     onClick={() => navigate('/dashboard')}
-                    className="relative flex flex-col items-center justify-center w-16 h-16 -mt-12 group"
+                    className="relative flex flex-col items-center justify-center w-14 h-14 -mt-10 group shrink-0"
                 >
                     <div className="absolute inset-0 bg-[#10b981] rounded-full shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-breathing group-active:scale-90 transition-transform"></div>
                     <div className="relative z-10 text-white animate-glow-pulse">
-                        <LayoutGrid size={32} />
+                        <LayoutGrid size={28} />
                     </div>
                 </button>
 
                 <button 
                     onClick={() => navigate('/dashboard/settings')}
-                    className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400 active:scale-95 transition-all group"
+                    className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 active:scale-95 transition-all group shrink-0"
                 >
-                    <div className="p-1 rounded-lg group-active:bg-purple-500/10 group-active:animate-glow-pulse transition-all">
-                        <Settings size={24} />
+                    <div className="p-2 rounded-xl group-active:bg-purple-500/10 group-active:animate-glow-pulse transition-all">
+                        <Settings size={22} />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-wider">Pengaturan</span>
                 </button>
             </nav>
 
@@ -141,58 +139,58 @@ const Layout = ({ children }) => {
                     {/* Drag handle */}
                     <div className="w-16 h-1.5 bg-white/20 rounded-full mx-auto mt-5 shrink-0" />
 
-                    {/* Header: Desktop Style Profile Branding */}
-                    <div className="p-8 pb-2 flex flex-col items-center gap-4 text-center">
+                    {/* Header: Compact Profile Branding */}
+                    <div className="p-6 pb-2 flex flex-col items-center gap-3 text-center">
                         <div className="relative group shrink-0">
                             <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-2xl animate-pulse"></div>
-                            <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 via-emerald-500 to-emerald-400 
-                                            flex items-center justify-center text-white text-3xl font-black relative z-10 
-                                            shadow-[0_10px_30px_rgba(16,185,129,0.4)] border-4 border-white/10 overflow-hidden">
+                            <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-blue-600 via-emerald-500 to-emerald-400 
+                                            flex items-center justify-center text-white text-2xl font-black relative z-10 
+                                            shadow-[0_8px_20px_rgba(16,185,129,0.4)] border-[3px] border-white/10 overflow-hidden">
                                 {user?.foto_profil ? (
                                     <img src={user.foto_profil} className="w-full h-full object-cover" alt="" />
                                 ) : (
                                     <span>{user?.nama_lengkap?.[0] || user?.username?.[0]}</span>
                                 )}
-                                <div className="absolute bottom-0 right-0 w-5 h-5 bg-green-500 border-4 border-dark-base rounded-full" />
+                                <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-[3px] border-dark-base rounded-full" />
                             </div>
                         </div>
                         
                         <div className="flex flex-col items-center">
-                            <h3 className="text-xl font-black text-white tracking-tight leading-tight">Admin Desa Cimanggu I</h3>
-                            <p className="text-[11px] text-white/50 font-medium truncate mt-1 tracking-wide">{user?.email || 'admin@cimanggu1.desa.id'}</p>
+                            <h3 className="text-lg font-black text-white tracking-tight leading-tight">Admin Desa Cimanggu I</h3>
+                            <p className="text-[10px] text-white/40 font-medium truncate mt-0.5 tracking-wide">{user?.email || 'admin@cimanggu1.desa.id'}</p>
                             
-                            <div className="flex items-center gap-2 mt-3">
-                                <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-black rounded-lg uppercase tracking-widest border border-emerald-500/30 shadow-glow">
+                            <div className="flex items-center gap-2 mt-2">
+                                <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[8px] font-black rounded-md uppercase tracking-widest border border-emerald-500/30">
                                     Desa Cimanggu I
                                 </span>
-                                <span className="px-3 py-1 bg-gold/10 text-gold text-[10px] font-black rounded-lg uppercase tracking-widest border border-gold/30">
+                                <span className="px-2 py-0.5 bg-gold/10 text-gold text-[8px] font-black rounded-md uppercase tracking-widest border border-gold/30">
                                     Digital Office
                                 </span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Feature Bar: Notifications, Theme, Profile */}
-                    <div className="flex items-center justify-center gap-6 py-4">
+                    {/* Feature Bar: Smaller Icons */}
+                    <div className="flex items-center justify-center gap-4 py-2">
                         <button 
                             onClick={toggleTheme}
-                            className="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-2xl text-amber-500 hover:bg-white/10 transition-all shadow-lg active:scale-90"
+                            className="w-10 h-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-amber-500 hover:bg-white/10 transition-all shadow-lg active:scale-90"
                         >
-                            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} className="text-blue-500" />}
+                            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} className="text-blue-500" />}
                         </button>
-                        <button className="relative w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-2xl text-amber-500 hover:bg-white/10 transition-all shadow-lg active:scale-90">
-                            <Bell size={20} />
-                            <span className="absolute top-3 right-3 w-2 h-2 bg-amber-500 rounded-full border border-dark-base" />
+                        <button className="relative w-10 h-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-amber-500 hover:bg-white/10 transition-all shadow-lg active:scale-90">
+                            <Bell size={18} />
+                            <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-amber-500 rounded-full border border-dark-base shadow-glow" />
                         </button>
                         <button 
                             onClick={() => { navigate('/dashboard/profile'); setIsSidebarOpen(false); }}
-                            className="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-2xl text-emerald-500 hover:bg-white/10 transition-all shadow-lg active:scale-90"
+                            className="w-10 h-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-emerald-500 hover:bg-white/10 transition-all shadow-lg active:scale-90"
                         >
-                            <User size={20} />
+                            <User size={18} />
                         </button>
                     </div>
 
-                    <div className="h-px bg-white/10 mx-12 mb-2" />
+                    <div className="h-px bg-white/10 mx-10 mb-1" />
 
                     {/* Body: Grid Menu Items with Alive Effects */}
                     <div className="flex-1 overflow-y-auto px-8 py-4 space-y-3 custom-scrollbar h-full">
@@ -215,10 +213,10 @@ const Layout = ({ children }) => {
                                     className={`flex items-center gap-6 p-3 w-full rounded-3xl transition-all active:scale-95 group
                                                ${location.pathname === item.path ? 'bg-white/10 shadow-xl border border-white/20' : 'hover:bg-white/5'}`}
                                 >
-                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-[0_8px_25px_rgba(0,0,0,0.3)] ${bgColor} shrink-0 group-active:animate-breathing`}>
-                                        {item.icon ? React.cloneElement(item.icon, { size: 28, strokeWidth: 2, className: "group-active:animate-glow-pulse" }) : <LayoutGrid size={28} />}
+                                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-white shadow-[0_6px_20px_rgba(0,0,0,0.3)] ${bgColor} shrink-0 group-active:animate-breathing`}>
+                                        {item.icon ? React.cloneElement(item.icon, { size: 22, strokeWidth: 2, className: "group-active:animate-glow-pulse" }) : <LayoutGrid size={22} />}
                                     </div>
-                                    <span className={`text-[17px] font-black tracking-tight ${location.pathname === item.path ? 'text-white' : 'text-white/80'}`}>
+                                    <span className={`text-[15px] font-black tracking-tight ${location.pathname === item.path ? 'text-white' : 'text-white/70'}`}>
                                         {item.title}
                                     </span>
                                 </button>
@@ -228,24 +226,17 @@ const Layout = ({ children }) => {
                         {/* Logout Link */}
                         <button
                             onClick={logoutUser}
-                            className="flex items-center gap-6 p-4 w-full rounded-3xl hover:bg-red-500/10 text-red-500 transition-all mt-4"
+                            className="flex items-center gap-4 p-3 w-full rounded-2xl hover:bg-red-500/10 text-red-500 transition-all mt-2"
                         >
-                            <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-red-500/10 border border-red-500/20 shrink-0">
-                                <LogOut size={28} />
+                            <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-red-500/10 border border-red-500/20 shrink-0">
+                                <LogOut size={22} />
                             </div>
-                            <span className="text-[17px] font-black tracking-tight uppercase">Keluar Sistem</span>
+                            <span className="text-[15px] font-black tracking-tight uppercase">Keluar Sistem</span>
                         </button>
                     </div>
 
-                    {/* Footer: Close Button */}
-                    <div className="p-8 pb-10 bg-black/20 shrink-0">
-                        <button 
-                            onClick={() => setIsSidebarOpen(false)}
-                            className="w-full py-4 text-[18px] font-black text-white/40 uppercase tracking-[0.2em] active:text-emerald-400 transition-all hover:text-white"
-                        >
-                            Tutup
-                        </button>
-                    </div>
+                    {/* Footer: Removed Close Button for Minimalism */}
+                    <div className="pb-8 bg-black/5 shrink-0" />
                 </div>
             </div>
 
