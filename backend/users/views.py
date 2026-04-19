@@ -47,7 +47,7 @@ class CaptchaView(APIView):
         # Generate random math question
         num1 = random.randint(1, 10)
         num2 = random.randint(1, 10)
-        question = f"Berapa {num1} + {num2}?"
+        question = f"{num1} + {num2}"
         answer = str(num1 + num2)
         
         # Sign the answer into a token
