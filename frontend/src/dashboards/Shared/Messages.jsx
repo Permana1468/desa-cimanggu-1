@@ -67,7 +67,7 @@ const Messages = () => {
                 {/* Header */}
                 <div className="p-6 border-b border-white/5">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-xl font-black text-white tracking-tight">Pesan Digital</h2>
+                        <h2 className="text-xl font-black text-text-main tracking-tight">Pesan Digital</h2>
                         <button className="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center border border-blue-500/20 hover:scale-105 transition-all">
                             <Plus size={20} />
                         </button>
@@ -79,7 +79,7 @@ const Messages = () => {
                         <input 
                             type="text" 
                             placeholder="Cari percakapan..."
-                            className="w-full bg-white/[0.04] border border-white/5 rounded-2xl py-3 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-blue-500/30 focus:bg-white/[0.08] transition-all placeholder:text-text-faint"
+                            className="w-full bg-white/[0.04] border border-white/5 rounded-2xl py-3 pl-11 pr-4 text-sm text-text-main focus:outline-none focus:border-blue-500/30 focus:bg-white/[0.08] transition-all placeholder:text-text-faint"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -110,7 +110,7 @@ const Messages = () => {
                             {/* Info */}
                             <div className="flex-1 min-w-0">
                                 <div className="flex justify-between items-start mb-0.5">
-                                    <h4 className={`text-[13.5px] font-black tracking-tight truncate ${selectedId === chat.id ? 'text-blue-400' : 'text-white'}`}>
+                                    <h4 className={`text-[13.5px] font-black tracking-tight truncate ${selectedId === chat.id ? 'text-blue-400' : 'text-text-main'}`}>
                                         {chat.name}
                                     </h4>
                                     <span className="text-[10px] text-text-faint font-bold uppercase tracking-tighter shrink-0">{chat.time}</span>
@@ -155,7 +155,7 @@ const Messages = () => {
                                 </div>
 
                                 <div className="min-w-0">
-                                    <h3 className="text-[14px] md:text-[15px] font-black text-white truncate leading-none mb-1">{activeChat.name}</h3>
+                                    <h3 className="text-[14px] md:text-[15px] font-black text-text-main truncate leading-none mb-1">{activeChat.name}</h3>
                                     <div className="flex items-center gap-2">
                                         <span className={`text-[9px] font-bold uppercase tracking-widest ${activeChat.online ? 'text-green-500' : 'text-text-muted'}`}>
                                             {activeChat.online ? 'Sedang Aktif' : 'Terakhir dilihat 2jam lalu'}
@@ -210,7 +210,7 @@ const Messages = () => {
                                 <input 
                                     type="text" 
                                     placeholder="Ketik pesan anda..."
-                                    className="flex-1 bg-transparent border-none focus:outline-none text-[13.5px] text-white py-2"
+                                    className="flex-1 bg-transparent border-none focus:outline-none text-[13.5px] text-text-main py-2"
                                     value={inputText}
                                     onChange={(e) => setInputText(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
@@ -231,7 +231,7 @@ const Messages = () => {
                         <div className="w-24 h-24 rounded-[32px] bg-white/[0.03] border border-white/10 flex items-center justify-center mb-8 shadow-2xl">
                              <MessageSquare className="w-10 h-10 text-blue-500 animate-pulse" />
                         </div>
-                        <h3 className="text-2xl font-black text-white mb-3">Selamat Datang di Hub Komunikasi</h3>
+                        <h3 className="text-2xl font-black text-text-main mb-3">Selamat Datang di Hub Komunikasi</h3>
                         <p className="text-sm text-text-muted max-w-sm leading-relaxed">
                             Hubungkan koordinasi antar perangkat desa Cimanggu I dalam satu platform manajemen digital yang terintegrasi.
                         </p>
