@@ -180,7 +180,7 @@ const SidebarItem = ({ item, isCollapsed, setIsCollapsed, level = 0 }) => {
 };
 
 /* ─── MENU CONFIGS ──────────────────────────────────────────────────────────── */
-const menuConfig = {
+export const menuConfig = {
     ADMIN: [
         { title: 'Dashboard Utama', path: '/dashboard', icon: <Home />, iconColor: 'text-blue-400' },
         { title: 'Presensi Kehadiran', path: '/dashboard/rekap-kehadiran', icon: <Clock />, iconColor: 'text-amber-400', badge: 'Live' },
@@ -397,12 +397,11 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
 
     return (
         <aside
-            className={`fixed md:relative top-0 left-0 z-[60] h-screen flex flex-col
+            className={`hidden md:flex md:relative top-0 left-0 z-[60] h-screen flex-col
                 bg-dark-sidebar backdrop-blur-3xl border-r border-white/5
                 shadow-[25px_0_100px_rgba(0,0,0,0.6)] overflow-visible
                 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
-                ${isCollapsed ? 'w-0 md:w-[68px]' : 'w-[280px]'}
-                ${!isSidebarOpen ? '-translate-x-full md:translate-x-0' : 'translate-x-0'}`}
+                ${isCollapsed ? 'w-0 md:w-[68px]' : 'w-[280px]'}`}
         >
             {/* ── Internal Sidebar Toggle Handle ── */}
             <div className={`hidden md:flex absolute top-10 right-[-14px] z-[100] transition-transform duration-500 ${isCollapsed ? 'translate-x-[2px]' : ''}`}>
