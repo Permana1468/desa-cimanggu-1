@@ -275,6 +275,66 @@ const menuConfig = {
             ]
         },
         { title: 'Komunikasi Pesan', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
+    ],
+    LPM: [
+        { title: 'Dashboard Utama', path: '/dashboard', icon: <Home />, iconColor: 'text-blue-400' },
+        { title: 'Usulan Pembangunan', path: '/dashboard/usulan-pembangunan', icon: <Pyramid />, iconColor: 'text-amber-400' },
+        { title: 'Pantau Proyek', path: '/dashboard/pantau-proyek', icon: <Activity />, iconColor: 'text-emerald-400' },
+        { title: 'Buku Keuangan LPM', path: '/dashboard/lpm/keuangan', icon: <Wallet />, iconColor: 'text-green-400' },
+        { title: 'Aspirasi Warga', path: '/dashboard/aspirasi-warga', icon: <MessageSquare />, iconColor: 'text-indigo-400' },
+        { title: 'Komunikasi Pesan', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
+    ],
+    RT: [
+        { title: 'Dashboard RT', path: '/dashboard', icon: <Home />, iconColor: 'text-blue-400' },
+        { title: 'Data Warga (Kependudukan)', path: '/dashboard/pemerintahan', icon: <Users />, iconColor: 'text-orange-400' },
+        { title: 'Mutasi Warga', path: '/dashboard/mutasi-warga', icon: <RefreshCw />, iconColor: 'text-amber-400' },
+        { title: 'Peta Spasial RT', path: '/dashboard/maps', icon: <MapPin />, iconColor: 'text-emerald-400' },
+        { title: 'E-Pelayanan', path: '/dashboard/pelayanan', icon: <FileText />, iconColor: 'text-indigo-400' },
+        { title: 'Komunikasi Pesan', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
+    ],
+    RW: [
+        { title: 'Dashboard RW', path: '/dashboard', icon: <Home />, iconColor: 'text-blue-400' },
+        { title: 'Monitoring Warga', path: '/dashboard/pemerintahan', icon: <Users />, iconColor: 'text-orange-400' },
+        { title: 'Rekap Mutasi', path: '/dashboard/mutasi-warga', icon: <RefreshCw />, iconColor: 'text-amber-400' },
+        { title: 'Spasial Wilayah', path: '/dashboard/maps', icon: <MapPin />, iconColor: 'text-emerald-400' },
+        { title: 'Komunikasi Pesan', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
+    ],
+    TP_PKK: [
+        { title: 'Dashboard PKK', path: '/dashboard', icon: <Home />, iconColor: 'text-pink-400' },
+        { title: 'Data Kader', path: '/dashboard/lpm/kader', icon: <Users />, iconColor: 'text-pink-400' },
+        { title: 'Kegiatan PKK', path: '/dashboard/kegiatan-lpm', icon: <Calendar />, iconColor: 'text-amber-400' },
+        { title: 'Komunikasi Pesan', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
+    ],
+    KARANG_TARUNA: [
+        { title: 'Dashboard Katar', path: '/dashboard', icon: <Home />, iconColor: 'text-red-400' },
+        { title: 'Program Kerja', path: '/dashboard/usulan-pembangunan', icon: <Zap />, iconColor: 'text-yellow-400' },
+        { title: 'Agenda Kegiatan', path: '/dashboard/gotong-royong', icon: <Calendar />, iconColor: 'text-blue-400' },
+        { title: 'Komunikasi Pesan', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
+    ],
+    BUMDES: [
+        { title: 'Dashboard Bumdes', path: '/dashboard', icon: <Home />, iconColor: 'text-emerald-400' },
+        { title: 'Laporan Keuangan', path: '/dashboard/buku-kas', icon: <Wallet />, iconColor: 'text-emerald-400' },
+        { title: 'Aset Bumdes', path: '/dashboard/inventaris-aset', icon: <Database />, iconColor: 'text-amber-400' },
+        { title: 'Komunikasi Pesan', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
+    ],
+    POSYANDU: [
+        { title: 'Dashboard Posyandu', path: '/dashboard', icon: <Home />, iconColor: 'text-rose-400' },
+        { title: 'E-KMS Posyandu', path: '/dashboard/e-kms', icon: <Activity />, iconColor: 'text-rose-400' },
+        { title: 'Deteksi Stunting', path: '/dashboard/stunting', icon: <Shield />, iconColor: 'text-blue-400' },
+        { title: 'Komunikasi Pesan', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
+    ],
+    PUSKESOS: [
+        { title: 'Dashboard Puskesos', path: '/dashboard', icon: <Home />, iconColor: 'text-blue-500' },
+        { title: 'Penyaluran Bansos', path: '/dashboard/bansos', icon: <Pyramid />, iconColor: 'text-orange-400' },
+        { title: 'Aspirasi Warga', path: '/dashboard/aspirasi-warga', icon: <MessageSquare />, iconColor: 'text-indigo-400' },
+        { title: 'Komunikasi Pesan', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
+    ],
+    WARGA: [
+        { title: 'Beranda Warga', path: '/dashboard', icon: <Home />, iconColor: 'text-blue-400' },
+        { title: 'Kirim Aspirasi', path: '/dashboard/aspirasi-warga', icon: <MessageSquare />, iconColor: 'text-indigo-400' },
+        { title: 'Profil Desa', path: '/dashboard/organisasi', icon: <FileText />, iconColor: 'text-amber-400' },
+        { title: 'Peta Desa', path: '/dashboard/maps', icon: <Map />, iconColor: 'text-emerald-400' },
+        { title: 'Chat Admin', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
     ]
 };
 
@@ -448,7 +508,9 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
                             {!isCollapsed && (
                                 <div className="flex flex-col items-start min-w-0">
                                     <span className="text-[12px] font-black text-text-main truncate max-w-full tracking-tight">{user?.nama_lengkap || user?.username}</span>
-                                    <span className="text-[9px] text-blue-500 font-bold uppercase tracking-widest mt-0.5">Admin Aktif</span>
+                                    <span className="text-[9px] text-blue-500 font-bold uppercase tracking-widest mt-0.5">
+                                        {user?.role?.replace('_', ' ')} AKTIF
+                                    </span>
                                 </div>
                             )}
                         </button>

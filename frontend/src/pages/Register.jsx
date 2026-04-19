@@ -102,11 +102,12 @@ const Register = () => {
         { value: 'BUMDES', label: 'Bumdes' },
         { value: 'TP_PKK', label: 'TP-PKK' },
         { value: 'POSYANDU', label: 'Petugas Posyandu' },
+        { value: 'PUSKESOS', label: 'Puskesos (Sosial)' },
         { value: 'KADUS', label: 'Kepala Dusun' },
         { value: 'SEKDES', label: 'Sekretaris Desa' },
         { value: 'WARGA', label: 'Warga' },
     ];
-
+ Greenland
     if (success) {
         return (
             <div className="min-h-screen flex items-center justify-center relative font-sans overflow-hidden">

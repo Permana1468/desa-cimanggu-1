@@ -41,8 +41,11 @@ export const AuthProvider = ({ children }) => {
                 nama_lengkap: res.data.nama_lengkap,
                 foto_profil: res.data.foto_profil,
                 email: res.data.email,
-                nomor_telepon: res.data.nomor_telepon
+                nomor_telepon: res.data.nomor_telepon,
+                status: res.data.status,
+                is_verified: res.data.is_verified
             });
+            return res.data;
         } catch (e) {
             console.error("Failed to fetch full user data", e);
         }
@@ -73,7 +76,15 @@ export const AuthProvider = ({ children }) => {
             unit_detail: decodedToken.unit_detail
         };
         setUser(basicUser);
-        await fetchFullUserData(basicUser);
+        const fullUser = await fetchFullUserData(basicUser);
+
+        // Security Check: Institutional roles must be ACTIVE/VERIFIED
+        if (fullUser.role !== 'WARGA' && fullUser.role !== 'ADMIN' && fullUser.status === 'PENDING') {
+            logoutUser();
+            const error = new Error("Akun Kelembagaan belum diverifikasi.");
+            error.response = { data: { detail: "Akun Kelembagaan Anda belum disetujui oleh Admin Desa. Mohon tunggu proses verifikasi." } };
+            throw error;
+        }
 
         return tokens;
     };
