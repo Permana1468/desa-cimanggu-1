@@ -18,150 +18,116 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
 
-    const [captcha, setCaptcha] = useState({ question: '', token: '' });
-    const [captchaAnswer, setCaptchaAnswer] = useState('');
-    const { loginUser } = useContext(AuthContext);
-    const navigate = useNavigate();
-
-    const fetchCaptcha = async () => {
-        try {
-            const res = await axios.get('/users/api/captcha');
-            setCaptcha({
-                question: res.data.question,
-                token: res.data.captcha_token
-            });
-        } catch (err) {
-            console.error("Gagal mengambil captcha", err);
-        }
-    };
-
-    useEffect(() => {
-        fetchCaptcha();
-        const timer = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % heroImages.length);
-        }, 8000);
-        return () => clearInterval(timer);
-    }, []);
-
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        setError('');
-        setIsLoading(true);
-
-        try {
-            await loginUser(username, password, captcha.token, captchaAnswer);
-            navigate('/dashboard');
-        } catch (err) {
-            const msg = err.response?.data?.detail || "Gagal login, silakan periksa kembali data Anda.";
-            setError(msg);
-            fetchCaptcha();
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     return (
-        <div className="min-h-screen flex items-center justify-center relative font-sans overflow-x-hidden p-4 py-12 md:py-0">
-            {/* Background Carousel */}
-            <div className="absolute inset-0 z-0 bg-black">
+        <div className="min-h-screen w-full relative font-sans flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+            {/* Background Carousel - Fixed to ensure full-screen coverage always */}
+            <div className="fixed inset-0 z-0 bg-black pointer-events-none">
                 {heroImages.map((src, index) => (
                     <div
                         key={index}
-                        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+                        className={`absolute inset-0 transition-opacity duration-[1500ms] ease-in-out ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
                     >
                         <div
-                            className={`w-full h-full bg-cover bg-center transition-transform duration-[10000ms] ease-linear ${index === currentSlide ? 'scale-110' : 'scale-100'}`}
+                            className={`w-full h-full bg-cover bg-center transition-transform duration-[12000ms] ease-linear ${index === currentSlide ? 'scale-110' : 'scale-100'}`}
                             style={{ backgroundImage: `url('${src}')` }}
                         ></div>
                     </div>
                 ))}
-                {/* Overlay Gelap Gradasi */}
-                <div className="absolute inset-0 z-20 bg-gradient-to-br from-[#0b1120]/80 via-[#0b1120]/50 to-transparent backdrop-blur-[2px]"></div>
+                {/* Enhanced High-End Overlay */}
+                <div className="absolute inset-0 z-20 bg-gradient-to-br from-[#020617]/95 via-[#020617]/70 to-[#020617]/30 backdrop-blur-[4px]"></div>
+                <div className="absolute inset-0 z-21 bg-[radial-gradient(circle_at_50%_50%,rgba(234,179,8,0.05),transparent_70%)]"></div>
             </div>
 
-            {/* Back to Home Button - Posisinya disesuaikan agar tidak tabrakan */}
-            <Link to="/" className="absolute top-4 left-4 sm:top-6 sm:left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-full text-white transition-all shadow-lg group">
-                <Home size={18} className="group-hover:-translate-x-1 transition-transform" />
-                <span className="text-sm font-medium">Kembali ke Beranda</span>
+            {/* Navigation Button */}
+            <Link to="/" className="fixed top-6 left-6 z-50 flex items-center gap-2.5 px-5 py-2.5 bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/10 rounded-full text-white/90 transition-all shadow-2xl group ring-1 ring-white/5">
+                <Home size={16} className="group-hover:-translate-x-1 transition-transform" />
+                <span className="text-xs font-black uppercase tracking-widest">Beranda</span>
             </Link>
 
-            {/* Login Form Container */}
-            <div className="relative z-30 w-full max-w-sm mx-auto animate-fade-in-up md:perspective-1000 mt-8 sm:mt-0">
-                {/* Floating Card */}
-                <div className="p-7 md:p-8 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-transform duration-500 hover:-translate-y-2 relative overflow-hidden group">
-
-                    {/* Glow Effect */}
-                    <div className="absolute -inset-1 bg-gradient-to-br from-yellow-500/10 via-transparent to-blue-500/10 rounded-3xl blur-2xl z-0 opacity-50"></div>
-
-                    <div className="relative z-10">
-                        <div className="text-center mb-6">
-                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 p-2 shadow-lg border border-white/20 mb-4 backdrop-blur-md">
-                                <img src="/images/logo-bogor.png" alt="Logo" className="w-full h-full object-contain drop-shadow-md" />
+            {/* Login Card */}
+            <div className="relative z-30 w-full max-w-[420px] animate-fade-in-up">
+                <div className="group relative">
+                    {/* Animated Outer Glow */}
+                    <div className="absolute -inset-1 bg-gradient-to-r from-gold/30 via-yellow-500/20 to-gold/30 rounded-[2.5rem] blur-2xl opacity-40 group-hover:opacity-60 transition duration-1000 group-hover:duration-200"></div>
+                    
+                    {/* Main Premium Card */}
+                    <div className="relative bg-[#0f172a]/40 backdrop-blur-[40px] border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] overflow-hidden">
+                        
+                        {/* Internal Light Effect */}
+                        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                        
+                        <div className="text-center mb-10">
+                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-white/5 border border-white/10 p-3 mb-6 shadow-2xl backdrop-blur-xl rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                                <img src="/images/logo-bogor.png" alt="Logo" className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
                             </div>
-                            <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-sm tracking-tight uppercase">
-                                DESA CIMANGGU I
+                            <h2 className="text-3xl font-black text-white tracking-tight uppercase leading-none">
+                                <span className="block text-gold mb-1">CIMANGGU I</span>
+                                <span className="text-[11px] text-text-subtle tracking-[0.4em] font-black opacity-80">DIREKTORAT DIGITAL</span>
                             </h2>
-                            <p className="text-slate-200 font-medium text-[11px] md:text-xs mt-2 opacity-80 uppercase tracking-widest">Sistem Digitalisasi Desa (SDD)</p>
                         </div>
 
                         {error && (
-                            <div className="bg-red-500/20 backdrop-blur-md border border-red-500/50 text-red-100 px-4 py-3 rounded-xl mb-6 text-sm text-center shadow-lg animate-shake">
+                            <div className="bg-red-500/10 border border-red-500/30 text-red-200 px-5 py-3.5 rounded-2xl mb-8 text-[13px] font-bold text-center flex items-center justify-center gap-3 animate-shake shadow-lg">
+                                <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
                                 {error}
                             </div>
                         )}
 
-                        <form onSubmit={handleLogin} className="space-y-4">
-                            <div className="space-y-1.5">
-                                <label className="block text-sm font-medium text-slate-200 ml-1">Username</label>
+                        <form onSubmit={handleLogin} className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-text-subtle uppercase tracking-[0.2em] ml-1">Kredensial Akses</label>
                                 <div className="relative group/input">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-transform group-focus-within/input:scale-110">
-                                        <User className="h-5 w-5 text-slate-300 group-focus-within/input:text-yellow-400 transition-colors" />
+                                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                        <User size={18} className="text-text-subtle group-focus-within/input:text-gold transition-colors" />
                                     </div>
                                     <input
                                         type="text"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         required
-                                        className="block w-full pl-11 pr-4 py-3.5 bg-slate-900/40 border border-white/10 rounded-2xl text-white placeholder-slate-400/70 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 transition-all shadow-inner backdrop-blur-sm"
-                                        placeholder="Masukkan username"
+                                        className="block w-full pl-14 pr-5 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-text-main text-[14.5px] font-bold placeholder-text-faint focus:outline-none focus:border-gold-border focus:bg-white/[0.06] transition-all shadow-inner"
+                                        placeholder="Username Anda"
                                     />
                                 </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="block text-sm font-medium text-slate-200 ml-1">Password</label>
-                                <div className="relative group/input">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-transform group-focus-within/input:scale-110">
-                                        <Lock className="h-5 w-5 text-slate-300 group-focus-within/input:text-yellow-400 transition-colors" />
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center px-1">
+                                    <label className="text-[10px] font-black text-text-subtle uppercase tracking-[0.2em]">Kode Rahasia</label>
+                                    <button type="button" className="text-[10px] text-gold hover:text-white font-bold transition-all">Lupa Sandi?</button>
+                                </div>
+                                <div className="relative group/input drop-shadow-sm">
+                                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                        <Lock size={18} className="text-text-subtle group-focus-within/input:text-gold transition-colors" />
                                     </div>
                                     <input
                                         type="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
-                                        className="block w-full pl-11 pr-4 py-3.5 bg-slate-900/40 border border-white/10 rounded-2xl text-white placeholder-slate-400/70 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 transition-all shadow-inner backdrop-blur-sm"
-                                        placeholder="Masukkan password"
+                                        className="block w-full pl-14 pr-5 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-text-main text-[14.5px] font-bold placeholder-text-faint focus:outline-none focus:border-gold-border focus:bg-white/[0.06] transition-all shadow-inner"
+                                        placeholder="••••••••"
                                     />
                                 </div>
                             </div>
 
-                            {/* CAPTCHA SECTION */}
-                            <div className="bg-white/5 border border-white/10 rounded-2xl p-3 flex items-center justify-between gap-4 group/captcha transition-all hover:bg-white/10">
-                                <div className="flex-1 text-left">
-                                    <p className="text-[9px] uppercase tracking-widest text-yellow-400 font-bold mb-1 opacity-70">Kode CAPTCHA</p>
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-xl font-black text-white italic tracking-[0.1em] select-none bg-white/5 px-2 py-1 rounded">
+                            {/* PREMIUN CAPTCHA BOX */}
+                            <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-4 flex items-center justify-between gap-6 hover:bg-white/[0.05] transition-all group/captcha">
+                                <div className="flex-1">
+                                    <p className="text-[9px] uppercase tracking-widest text-gold font-black mb-1.5 opacity-60">Security Check</p>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-2xl font-black text-white italic tracking-[0.1em] select-none">
                                             {captcha.question || "---"}
                                         </span>
-                                        <button type="button" onClick={fetchCaptcha} className="p-1 text-slate-400 hover:text-white transition-all">
+                                        <button type="button" onClick={fetchCaptcha} className="p-2 text-text-subtle hover:text-gold hover:rotate-180 transition-all duration-500 bg-white/5 rounded-xl">
                                             <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} />
                                         </button>
                                     </div>
                                 </div>
-                                <div className="w-28 text-right">
+                                <div className="w-28">
                                     <input 
                                         type="text" required value={captchaAnswer} onChange={(e) => setCaptchaAnswer(e.target.value)}
-                                        className="w-full px-2 py-2 bg-slate-900/60 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-yellow-400/50 text-center font-bold text-sm tracking-widest uppercase outline-none" 
+                                        className="w-full px-2 py-3 bg-slate-950/80 border border-white/10 rounded-xl text-gold text-center font-black text-[15px] tracking-widest uppercase outline-none focus:border-gold-border focus:ring-1 focus:ring-gold-border shadow-2xl" 
                                         placeholder="KODE" 
                                     />
                                 </div>
@@ -170,32 +136,32 @@ const Login = () => {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className={`w-full flex items-center justify-center gap-2 py-4 px-4 rounded-2xl text-slate-900 font-extrabold text-lg shadow-xl transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 mt-8 ${isLoading
-                                    ? 'bg-yellow-600/50 cursor-not-allowed scale-95'
-                                    : 'bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 hover:shadow-[0_0_20px_rgba(234,179,8,0.5)] bg-[length:200%_auto] hover:bg-right'
+                                className={`group relative w-full flex items-center justify-center gap-3 py-4.5 rounded-2xl text-black font-black text-sm uppercase tracking-[0.2em] overflow-hidden transition-all duration-500 ${isLoading
+                                    ? 'bg-gold/40 cursor-not-allowed opacity-50'
+                                    : 'bg-gold hover:bg-gold-dark shadow-[0_20px_40px_-12px_rgba(234,179,8,0.4)] hover:-translate-y-1.5'
                                     }`}
                             >
+                                <div className="absolute inset-x-0 top-0 h-1/2 bg-white/20 skew-y-[-2deg] origin-top-left -translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
                                 {isLoading ? (
-                                    <span className="flex items-center gap-2 uppercase tracking-widest text-sm">
-                                        <RefreshCw size={20} className="animate-spin" />
-                                        Memproses...
-                                    </span>
+                                    <RefreshCw size={20} className="animate-spin" />
                                 ) : (
                                     <>
-                                        <span>Masuk Aplikasi</span>
-                                        <ArrowRight size={22} className="stroke-[3] group-hover:translate-x-1 transition-transform" />
+                                        <span>Masuk Dashboard</span>
+                                        <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform stroke-[4px]" />
                                     </>
                                 )}
                             </button>
                         </form>
 
-                        <div className="mt-8 text-center border-t border-white/10 pt-6 pb-2">
-                            <p className="text-slate-300 text-sm mb-4">
-                                Belum punya akun? <Link to="/register" className="text-yellow-400 font-bold hover:underline">Daftar Sekarang</Link>
+                        <div className="mt-10 pt-8 border-t border-white/5 text-center">
+                            <p className="text-text-muted text-[13px] font-medium leading-relaxed">
+                                Belum terdaftar? <Link to="/register" className="text-gold font-black hover:text-white transition-all underline decoration-gold/30 hover:decoration-white underline-offset-4">Buat Akun Baru</Link>
                             </p>
-                            <p className="text-slate-400/50 text-[10px] tracking-wider uppercase">
-                                &copy; {new Date().getFullYear()} Pemerintah Desa Cimanggu 1.
-                            </p>
+                            <div className="flex items-center justify-center gap-6 mt-8 grayscale opacity-30 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+                                <div className="h-[1px] w-8 bg-white/20"></div>
+                                <span className="text-[9px] text-white font-black tracking-[0.3em] uppercase">Versi 2.4.0</span>
+                                <div className="h-[1px] w-8 bg-white/20"></div>
+                            </div>
                         </div>
                     </div>
                 </div>

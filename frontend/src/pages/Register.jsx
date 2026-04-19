@@ -144,81 +144,95 @@ const Register = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center relative font-sans overflow-hidden">
-            {/* Background Carousel */}
-            <div className="absolute inset-0 z-0 bg-black">
+        <div className="min-h-screen w-full relative font-sans flex flex-col items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
+            {/* Background Carousel - Fixed to ensure full-screen coverage */}
+            <div className="fixed inset-0 z-0 bg-black pointer-events-none">
                 {heroImages.map((src, index) => (
                     <div key={index} className={`absolute inset-0 transition-opacity duration-[1500ms] ease-in-out ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}>
-                        <div className={`w-full h-full bg-cover bg-center transition-transform duration-[10000ms] ease-linear ${index === currentSlide ? 'scale-110' : 'scale-100'}`} style={{ backgroundImage: `url('${src}')` }}></div>
+                        <div className={`w-full h-full bg-cover bg-center transition-transform duration-[12000ms] ease-linear ${index === currentSlide ? 'scale-110' : 'scale-100'}`} style={{ backgroundImage: `url('${src}')` }}></div>
                     </div>
                 ))}
-                <div className="absolute inset-0 z-20 bg-gradient-to-br from-[#0b1120]/90 via-[#0b1120]/60 to-transparent backdrop-blur-[3px]"></div>
+                {/* Enhanced High-End Overlay */}
+                <div className="absolute inset-0 z-20 bg-gradient-to-br from-[#020617]/95 via-[#020617]/75 to-[#020617]/40 backdrop-blur-[4px]"></div>
+                <div className="absolute inset-0 z-21 bg-[radial-gradient(circle_at_50%_0%,rgba(234,179,8,0.08),transparent_50%)]"></div>
             </div>
 
-            {/* Back Button */}
-            <Link to="/login" className="absolute top-6 left-6 z-40 flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-full text-white transition-all group">
-                <Home size={18} className="group-hover:-translate-x-1 transition-transform" />
-                <span className="text-sm font-medium">Masuk Aplikasi</span>
+            {/* Navigation Button */}
+            <Link to="/login" className="fixed top-6 left-6 z-50 flex items-center gap-2.5 px-5 py-2.5 bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/10 rounded-full text-white/90 transition-all shadow-2xl group ring-1 ring-white/5">
+                <Home size={16} className="group-hover:-translate-x-1 transition-transform" />
+                <span className="text-xs font-black uppercase tracking-widest">Halaman Login</span>
             </Link>
 
-            <div className="relative z-30 w-full max-w-md mx-4 my-8 animate-fade-in-up perspective-1000">
-                <div className="p-6 md:p-8 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl relative overflow-hidden group">
-                    <div className="absolute -inset-1 bg-gradient-to-br from-yellow-500/20 via-transparent to-teal-500/20 rounded-3xl blur-2xl z-0 opacity-50"></div>
+            {/* Register Card */}
+            <div className="relative z-30 w-full max-w-[580px] animate-fade-in-up">
+                <div className="group relative">
+                    {/* Animated Outer Glow */}
+                    <div className="absolute -inset-1 bg-gradient-to-r from-gold/20 via-yellow-500/10 to-gold/20 rounded-[2.5rem] blur-3xl opacity-30 group-hover:opacity-50 transition duration-1000"></div>
                     
-                    <div className="relative z-10">
-                        <div className="text-center mb-6">
-                            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white/10 p-2 shadow-lg border border-white/20 mb-3 backdrop-blur-md">
-                                <img src="/images/logo-bogor.png" alt="Logo" className="w-full h-full object-contain" />
+                    {/* Main Premium Card */}
+                    <div className="relative bg-[#0f172a]/50 backdrop-blur-[40px] border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] overflow-hidden">
+                        
+                        {/* Internal Light Effect */}
+                        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                        
+                        <div className="text-center mb-10">
+                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-[1.25rem] bg-white/5 border border-white/10 p-3 mb-5 shadow-2xl backdrop-blur-xl -rotate-2 group-hover:rotate-0 transition-transform duration-500">
+                                <img src="/images/logo-bogor.png" alt="Logo" className="w-full h-full object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" />
                             </div>
-                            <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 tracking-tight">DAFTAR AKUN SDD</h2>
-                            <p className="text-slate-200 text-[11px] font-medium opacity-80 mt-1 uppercase tracking-widest">Sistem Digitalisasi Desa Cimanggu I</p>
+                            <h2 className="text-3xl font-black text-white tracking-tight uppercase leading-none">
+                                <span className="block text-gold mb-1">DAFTAR AKUN</span>
+                                <span className="text-[10px] text-text-subtle tracking-[0.5em] font-black opacity-80">SISTEM DIGITALISASI DESA</span>
+                            </h2>
                         </div>
 
                         {error && (
-                            <div className="bg-red-500/20 border border-red-500/50 text-red-100 px-4 py-2 rounded-xl mb-4 text-xs text-center animate-shake">
+                            <div className="bg-red-500/10 border border-red-500/30 text-red-200 px-5 py-3.5 rounded-2xl mb-8 text-[12px] font-bold text-center flex items-center justify-center gap-3 animate-shake shadow-lg">
+                                <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
                                 {error}
                             </div>
                         )}
 
-                        <form onSubmit={handleRegister} className="space-y-3.5">
-                            <div className="grid grid-cols-1 gap-3.5">
-                                <RowInput label="Username" name="username" icon={<User size={16} />} value={formData.username} onChange={handleChange} placeholder="Username" />
-                                <RowInput label="Email" name="email" type="email" icon={<Mail size={16} />} value={formData.email} onChange={handleChange} placeholder="email@desa.com" />
-                                <RowInput label="Nama Lengkap" name="nama_lengkap" icon={<UserCircle size={16} />} value={formData.nama_lengkap} onChange={handleChange} placeholder="Nama Lengkap" />
-                                <RowInput label="Nomor Telepon" name="nomor_telepon" type="tel" icon={<Phone size={16} />} value={formData.nomor_telepon} onChange={handleChange} placeholder="081..." />
+                        <form onSubmit={handleRegister} className="space-y-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                                <RowInput label="ID Unik / Username" name="username" icon={<User size={16} />} value={formData.username} onChange={handleChange} placeholder="Username" />
+                                <RowInput label="Alamat Email" name="email" type="email" icon={<Mail size={16} />} value={formData.email} onChange={handleChange} placeholder="email@desa.com" />
+                                <RowInput label="Panggilan Lengkap" name="nama_lengkap" icon={<UserCircle size={16} />} value={formData.nama_lengkap} onChange={handleChange} placeholder="Nama Lengkap" />
+                                <RowInput label="Kontak WhatsApp" name="nomor_telepon" type="tel" icon={<Phone size={16} />} value={formData.nomor_telepon} onChange={handleChange} placeholder="081..." />
                                 
-                                <div className="space-y-1">
-                                    <label className="text-[11px] font-bold text-slate-300 ml-1 uppercase tracking-wider">Peran (Role)</label>
-                                    <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Briefcase size={16} className="text-slate-400" /></div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-text-subtle ml-1 uppercase tracking-[0.2em]">Otoritas (Role)</label>
+                                    <div className="relative group/input">
+                                        <div className="absolute inset-y-0 left-0 pl-4.5 flex items-center pointer-events-none z-20">
+                                            <Briefcase size={16} className="text-text-subtle group-focus-within/input:text-gold transition-colors" />
+                                        </div>
                                         <select 
                                             name="role" value={formData.role} onChange={handleChange}
-                                            className="w-full pl-10 pr-4 py-2.5 bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-xl text-white text-sm focus:ring-2 focus:ring-yellow-400/50 transition-all appearance-none cursor-pointer outline-none relative z-10"
+                                            className="w-full pl-12 pr-4 py-3.5 bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl text-text-main text-[13.5px] font-bold focus:border-gold-border transition-all appearance-none cursor-pointer outline-none relative z-10"
                                         >
-                                            {roles.map(r => <option key={r.value} value={r.value} className="bg-slate-900 border-none">{r.label}</option>)}
+                                            {roles.map(r => <option key={r.value} value={r.value} className="bg-[#0f172a] text-white border-none">{r.label}</option>)}
                                         </select>
-                                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400"><ChevronDown size={14} /></div>
+                                        <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-text-subtle z-20"><ChevronDown size={14} /></div>
                                     </div>
                                 </div>
 
-                                <RowInput label="Unit Detail (RW/RT/Dusun)" name="unit_detail" icon={<MapPin size={16} />} value={formData.unit_detail} onChange={handleChange} placeholder="Contoh: RW 02" />
-                                <RowInput label="Password" name="password" type="password" icon={<Lock size={16} />} value={formData.password} onChange={handleChange} placeholder="••••••••" />
-                                <RowInput label="Konfirmasi Password" name="konfirmasi_password" type="password" icon={<Lock size={16} />} value={formData.konfirmasi_password} onChange={handleChange} placeholder="••••••••" />
+                                <RowInput label="Unit / Dusun" name="unit_detail" icon={<MapPin size={16} />} value={formData.unit_detail} onChange={handleChange} placeholder="Contoh: RW 02" />
+                                <RowInput label="Sandi Baru" name="password" type="password" icon={<Lock size={16} />} value={formData.password} onChange={handleChange} placeholder="••••••••" />
+                                <RowInput label="Validasi Sandi" name="konfirmasi_password" type="password" icon={<Lock size={16} />} value={formData.konfirmasi_password} onChange={handleChange} placeholder="••••••••" />
                             </div>
 
-                            {/* CAPTCHA SECTION */}
-                            <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between gap-4">
+                            {/* PREMIUM CAPTCHA SECTION */}
+                            <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-4 flex items-center justify-between gap-6 hover:bg-white/[0.05] transition-all">
                                 <div className="flex-1">
-                                    <p className="text-[9px] uppercase tracking-widest text-yellow-400 font-bold mb-1 opacity-80">Kode CAPTCHA</p>
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-xl font-black text-white italic tracking-[0.2em] bg-white/5 px-2 py-1 rounded select-none">{captcha.question || "---"}</span>
-                                        <button type="button" onClick={fetchCaptcha} className="p-1 text-slate-400 hover:text-white transition-all"><RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} /></button>
+                                    <p className="text-[9px] uppercase tracking-[0.2em] text-gold font-black mb-1.5 opacity-60">Security Verification</p>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-2xl font-black text-white italic tracking-[0.1em] bg-white/5 px-2 py-1 rounded select-none">{captcha.question || "---"}</span>
+                                        <button type="button" onClick={fetchCaptcha} className="p-2 text-text-subtle hover:text-gold transition-all bg-white/5 rounded-xl"><RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} /></button>
                                     </div>
                                 </div>
                                 <div className="w-28">
                                     <input 
                                         name="captcha_answer" required type="text" value={formData.captcha_answer} onChange={handleChange}
-                                        className="w-full px-3 py-2 bg-slate-900/60 border border-white/10 rounded-lg text-white text-center font-bold tracking-widest uppercase outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        className="w-full px-3 py-3 bg-slate-950/80 border border-white/10 rounded-xl text-gold text-center font-black tracking-widest uppercase outline-none focus:border-gold-border focus:ring-1 focus:ring-gold-border shadow-2xl" 
                                         placeholder="KODE" 
                                     />
                                 </div>
@@ -226,21 +240,22 @@ const Register = () => {
 
                             <button
                                 type="submit" disabled={isLoading}
-                                className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-slate-900 font-black text-base shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${
-                                    isLoading ? 'bg-yellow-600/50 cursor-not-allowed scale-95' : 'bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 hover:shadow-[0_0_20px_rgba(234,179,8,0.4)]'
+                                className={`group relative w-full flex items-center justify-center gap-3 py-4.5 rounded-2xl text-black font-black text-sm uppercase tracking-[0.2em] overflow-hidden transition-all duration-500 ${
+                                    isLoading ? 'bg-gold/40 cursor-not-allowed opacity-50' : 'bg-gold hover:bg-gold-dark shadow-[0_20px_40px_-12px_rgba(234,179,8,0.4)] hover:-translate-y-1.5'
                                 }`}
                             >
-                                {isLoading ? 'Memproses...' : (
+                                <div className="absolute inset-x-0 top-0 h-1/2 bg-white/20 skew-y-[-1.5deg] origin-top-left -translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                                {isLoading ? <RefreshCw size={20} className="animate-spin" /> : (
                                     <>
-                                        Daftar Sekarang <ArrowRight size={18} className="stroke-[3]" />
+                                        Daftar Akun Digital <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform stroke-[4px]" />
                                     </>
                                 )}
                             </button>
                         </form>
 
-                        <div className="mt-6 text-center border-t border-white/10 pt-4">
-                            <p className="text-slate-400 text-xs">
-                                Sudah memiliki akun? <Link to="/login" className="text-yellow-400 font-bold hover:underline">Masuk di sini</Link>
+                        <div className="mt-8 text-center border-t border-white/5 pt-6">
+                            <p className="text-text-muted text-[13px] font-medium leading-relaxed">
+                                Sudah punya akses? <Link to="/login" className="text-gold font-black hover:text-white transition-all underline decoration-gold/30 hover:decoration-white underline-offset-4 tracking-tight">Login Sekarang</Link>
                             </p>
                         </div>
                     </div>
@@ -253,27 +268,26 @@ const Register = () => {
                     0% { opacity: 0; transform: translateY(30px) scale(0.98); }
                     100% { opacity: 1; transform: translateY(0) scale(1); }
                 }
-                .animate-fade-in-up { animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+                .animate-fade-in-up { animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
                 @keyframes shake {
                     0%, 100% { transform: translateX(0); }
                     10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
                     20%, 40%, 60%, 80% { transform: translateX(3px); }
                 }
                 .animate-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
-                .perspective-1000 { perspective: 1000px; }
             `}} />
         </div>
     );
 };
 
 const RowInput = ({ label, name, type = 'text', icon, value, onChange, placeholder }) => (
-    <div className="space-y-1">
-        <label className="text-[11px] font-bold text-slate-300 ml-1 uppercase tracking-wider">{label}</label>
-        <div className="relative group/input">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none group-focus-within/input:scale-110 transition-transform">{icon}</div>
+    <div className="space-y-2">
+        <label className="text-[10px] font-black text-text-subtle ml-1 uppercase tracking-[0.2em]">{label}</label>
+        <div className="relative group/input drop-shadow-sm">
+            <div className="absolute inset-y-0 left-0 pl-4.5 flex items-center pointer-events-none group-focus-within/input:scale-110 transition-transform">{React.cloneElement(icon, { size: 18, className: "text-text-subtle group-focus-within/input:text-gold transition-colors" })}</div>
             <input 
                 name={name} required type={type} value={value} onChange={onChange}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-900/40 border border-white/10 rounded-xl text-white text-sm placeholder-slate-500 focus:ring-2 focus:ring-yellow-400/50 outline-none transition-all shadow-inner backdrop-blur-sm" 
+                className="w-full pl-12.5 pr-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-2xl text-text-main text-[13.5px] font-bold placeholder-text-faint focus:outline-none focus:border-gold-border focus:bg-white/[0.06] transition-all shadow-inner" 
                 placeholder={placeholder} 
             />
         </div>
