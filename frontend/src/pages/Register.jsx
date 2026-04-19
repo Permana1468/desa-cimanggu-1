@@ -107,7 +107,7 @@ const Register = () => {
         { value: 'SEKDES', label: 'Sekretaris Desa' },
         { value: 'WARGA', label: 'Warga' },
     ];
- Greenland
+
     if (success) {
         return (
             <div className="min-h-screen flex items-center justify-center relative font-sans overflow-hidden">
