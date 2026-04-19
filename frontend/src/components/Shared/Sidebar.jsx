@@ -22,7 +22,7 @@ const Tooltip = ({ text, show }) => (
 );
 
 /* ─── NESTED ITEM COMPONENT ────────────────────────────────────────────────── */
-const SidebarItem = ({ item, isCollapsed, setIsCollapsed, level = 0 }) => {
+const SidebarItem = ({ item, isCollapsed, setIsCollapsed, setIsSidebarOpen, level = 0 }) => {
     const location = useLocation();
     const [isOpen, setIsOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -109,7 +109,7 @@ const SidebarItem = ({ item, isCollapsed, setIsCollapsed, level = 0 }) => {
                                     ${isOpen ? 'max-h-[1200px] opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
                         <div className="ml-5 space-y-1 relative border-l-2 border-white/[0.05] py-1">
                             {item.subCategories?.map((sub, i) => (
-                                <SidebarItem key={i} item={sub} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} level={level + 1} />
+                                <SidebarItem key={i} item={sub} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} setIsSidebarOpen={setIsSidebarOpen} level={level + 1} />
                             ))}
 
                             {item.subMenus?.map((sub, i) => (
@@ -473,7 +473,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
                 onScroll={(e) => setScrolled(e.target.scrollTop > 10)}
             >
                 {menus.map((item, idx) => (
-                    <SidebarItem key={idx} item={item} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+                    <SidebarItem key={idx} item={item} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} setIsSidebarOpen={setIsSidebarOpen} />
                 ))}
             </nav>
 

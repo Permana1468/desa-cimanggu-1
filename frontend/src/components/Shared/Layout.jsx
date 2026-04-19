@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import Sidebar, { menuConfig } from './Sidebar';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { Menu, Home, Settings, X, User, Bell, ChevronRight, LayoutGrid, LogOut } from 'lucide-react';
+import { Menu, Home, Settings, X, User, Bell, ChevronRight, LayoutGrid, LogOut, Sun, Moon } from 'lucide-react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 
@@ -49,16 +49,16 @@ const Layout = ({ children }) => {
 
     if (!user) return null;
 
-    const role = user.role || 'ADMIN';
+    const role = user?.role || 'ADMIN';
     const isStaffRole = ['KAUR_PERENCANAAN', 'KAUR_TU', 'KAUR_KEUANGAN', 'KASI_PEMERINTAHAN', 'KASI_KESEJAHTERAAN', 'KASI_PELAYANAN'].includes(role);
-    const menus = menuConfig[role] || (isStaffRole ? menuConfig.STAF : menuConfig.ADMIN);
+    const menus = menuConfig?.[role] || (isStaffRole ? menuConfig?.STAF : menuConfig?.ADMIN) || [];
 
     // Reorder menus for mobile: Push "Pengaturan Web" to bottom
-    const sortedMenus = [...menus].sort((a, b) => {
+    const sortedMenus = Array.isArray(menus) ? [...menus].sort((a, b) => {
         if (a.title === 'Pengaturan Web') return 1;
         if (b.title === 'Pengaturan Web') return -1;
         return 0;
-    });
+    }) : [];
 
     return (
         <div className="relative flex h-screen overflow-hidden font-[Inter,system-ui,sans-serif] bg-dark-base transition-colors duration-500">
@@ -216,7 +216,7 @@ const Layout = ({ children }) => {
                                                ${location.pathname === item.path ? 'bg-white/10 shadow-xl border border-white/20' : 'hover:bg-white/5'}`}
                                 >
                                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-[0_8px_25px_rgba(0,0,0,0.3)] ${bgColor} shrink-0 group-active:animate-breathing`}>
-                                        {React.cloneElement(item.icon, { size: 28, strokeWidth: 2, className: "group-active:animate-glow-pulse" })}
+                                        {item.icon ? React.cloneElement(item.icon, { size: 28, strokeWidth: 2, className: "group-active:animate-glow-pulse" }) : <LayoutGrid size={28} />}
                                     </div>
                                     <span className={`text-[17px] font-black tracking-tight ${location.pathname === item.path ? 'text-white' : 'text-white/80'}`}>
                                         {item.title}
