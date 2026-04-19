@@ -26,6 +26,14 @@ const Dashboard = () => {
             case 'TP_PKK':
             case 'POSYANDU':
             case 'PUSKESOS':
+            case 'KADUS':
+            case 'SEKDES':
+            case 'KAUR_PERENCANAAN':
+            case 'KAUR_TU':
+            case 'KAUR_KEUANGAN':
+            case 'KASI_PEMERINTAHAN':
+            case 'KASI_KESEJAHTERAAN':
+            case 'KASI_PELAYANAN':
                 return <DashboardUtamaKelembagaan />;
             default:
                 return <DashboardUtamaAdmin />;

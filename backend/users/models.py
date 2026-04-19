@@ -19,6 +19,7 @@ class CustomUser(AbstractUser):
         ('KARANG_TARUNA', 'Karang Taruna'),
         ('BUMDES', 'Bumdes'),
         ('TP_PKK', 'TP-PKK'),
+        ('PUSKESOS', 'Puskesos (Sosial)'),
         ('WARGA', 'Warga'),
     )
 

@@ -103,9 +103,15 @@ const Register = () => {
         { value: 'TP_PKK', label: 'TP-PKK' },
         { value: 'POSYANDU', label: 'Petugas Posyandu' },
         { value: 'PUSKESOS', label: 'Puskesos (Sosial)' },
-        { value: 'KADUS', label: 'Kepala Dusun' },
-        { value: 'SEKDES', label: 'Sekretaris Desa' },
-        { value: 'WARGA', label: 'Warga' },
+        { value: 'KADUS', label: 'Kepala Dusun / Wilayah' },
+        { value: 'SEKDES', label: 'Sekretaris Desa (Sekretariat)' },
+        { value: 'KAUR_PERENCANAAN', label: 'Kaur Perencanaan (Sekretariat)' },
+        { value: 'KAUR_TU', label: 'Kaur Tata Usaha & Umum (Sekretariat)' },
+        { value: 'KAUR_KEUANGAN', label: 'Kaur Keuangan (Sekretariat)' },
+        { value: 'KASI_PEMERINTAHAN', label: 'Kasi Pemerintahan (Teknis)' },
+        { value: 'KASI_KESEJAHTERAAN', label: 'Kasi Kesejahteraan (Teknis)' },
+        { value: 'KASI_PELAYANAN', label: 'Kasi Pelayanan (Teknis)' },
+        { value: 'WARGA', label: 'Warga Umum' },
     ];
 
     if (success) {

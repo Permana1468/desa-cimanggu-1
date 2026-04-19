@@ -335,6 +335,28 @@ const menuConfig = {
         { title: 'Profil Desa', path: '/dashboard/organisasi', icon: <FileText />, iconColor: 'text-amber-400' },
         { title: 'Peta Desa', path: '/dashboard/maps', icon: <Map />, iconColor: 'text-emerald-400' },
         { title: 'Chat Admin', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
+    ],
+    SEKDES: [
+        { title: 'Dashboard Sekdes', path: '/dashboard', icon: <Home />, iconColor: 'text-blue-400' },
+        { title: 'Presensi Seluruh Staff', path: '/dashboard/rekap-kehadiran', icon: <Clock />, iconColor: 'text-amber-400' },
+        { title: 'Inventaris Desa', path: '/dashboard/inventaris-aset', icon: <Database />, iconColor: 'text-amber-400' },
+        { title: 'Administrasi Umum', path: '/dashboard/buku-surat', icon: <FileText />, iconColor: 'text-blue-300' },
+        { title: 'RPJMDes / RKP', path: '/dashboard/rpjmdes', icon: <Pyramid />, iconColor: 'text-orange-400' },
+        { title: 'Komunikasi Pesan', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
+    ],
+    KADUS: [
+        { title: 'Dashboard Dusun', path: '/dashboard', icon: <Home />, iconColor: 'text-blue-400' },
+        { title: 'Monitoring Warga', path: '/dashboard/pemerintahan', icon: <Users />, iconColor: 'text-orange-400' },
+        { title: 'Usulan Musrenbang', path: '/dashboard/rekap-musrenbang', icon: <FileText />, iconColor: 'text-amber-400' },
+        { title: 'Buku Dusun', path: '/dashboard/data-dusun-1', icon: <Database />, iconColor: 'text-emerald-400' },
+        { title: 'Komunikasi Pesan', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
+    ],
+    STAF: [
+        { title: 'Dashboard Staff', path: '/dashboard', icon: <Home />, iconColor: 'text-blue-400' },
+        { title: 'Aparatur Desa', path: '/dashboard/organisasi', icon: <Pyramid />, iconColor: 'text-orange-400' },
+        { title: 'Administrasi Desa', path: '/dashboard/buku-kas', icon: <FileText />, iconColor: 'text-blue-300' },
+        { title: 'Musrenbang Desa', path: '/dashboard/rekap-musrenbang', icon: <FileText />, iconColor: 'text-amber-400' },
+        { title: 'Komunikasi Pesan', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
     ]
 };
 
@@ -368,7 +390,10 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
     }, []);
 
     if (!user) return null;
-    const menus = menuConfig[role] || menuConfig.ADMIN;
+    
+    // Fallback logic for staff roles that use a generic STAF menu
+    const isStaffRole = ['KAUR_PERENCANAAN', 'KAUR_TU', 'KAUR_KEUANGAN', 'KASI_PEMERINTAHAN', 'KASI_KESEJAHTERAAN', 'KASI_PELAYANAN'].includes(role);
+    const menus = menuConfig[role] || (isStaffRole ? menuConfig.STAF : menuConfig.ADMIN);
 
     return (
         <aside
