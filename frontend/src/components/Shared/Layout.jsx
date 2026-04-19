@@ -194,13 +194,24 @@ const Layout = ({ children }) => {
 
                     {/* Body: Grid Menu Items with Alive Effects */}
                     <div className="flex-1 overflow-y-auto px-8 py-4 space-y-3 custom-scrollbar h-full">
-                        {sortedMenus.map((item, idx) => {
+                        {sortedMenus?.map((item, idx) => {
+                             if (!item) return null;
                              const bgColors = [
                                 'bg-blue-600', 'bg-emerald-500', 'bg-amber-500', 
                                 'bg-purple-600', 'bg-teal-500', 'bg-rose-500', 
                                 'bg-indigo-600', 'bg-gray-600'
                              ];
                              const bgColor = bgColors[idx % bgColors.length];
+
+                             // Safely clone or render icon
+                             const renderMenuIcon = () => {
+                                if (!item.icon) return <LayoutGrid size={22} />;
+                                try {
+                                    return React.cloneElement(item.icon, { size: 22, strokeWidth: 2, className: "group-active:animate-glow-pulse" });
+                                } catch (e) {
+                                    return <LayoutGrid size={22} />;
+                                }
+                             };
 
                              return (
                                 <button
@@ -214,7 +225,7 @@ const Layout = ({ children }) => {
                                                ${location.pathname === item.path ? 'bg-white/10 shadow-xl border border-white/20' : 'hover:bg-white/5'}`}
                                 >
                                     <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-white shadow-[0_6px_20px_rgba(0,0,0,0.3)] ${bgColor} shrink-0 group-active:animate-breathing`}>
-                                        {item.icon ? React.cloneElement(item.icon, { size: 22, strokeWidth: 2, className: "group-active:animate-glow-pulse" }) : <LayoutGrid size={22} />}
+                                        {renderMenuIcon()}
                                     </div>
                                     <span className={`text-[15px] font-black tracking-tight ${location.pathname === item.path ? 'text-white' : 'text-white/70'}`}>
                                         {item.title}
