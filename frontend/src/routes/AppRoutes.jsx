@@ -48,6 +48,7 @@ const KaderLPM = lazy(() => import('../dashboards/LPM/KaderLPM'));
 // Shared Dashboards
 const UserProfile = lazy(() => import('../dashboards/Shared/UserProfile'));
 const UserSettings = lazy(() => import('../dashboards/Shared/UserSettings'));
+const Messages = lazy(() => import('../dashboards/Shared/Messages'));
 
 const DummyPage = ({ title, icon = '📉' }) => (
     <div className="relative bg-[#1e293b]/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 md:p-12 min-h-[60vh] flex flex-col items-center justify-center shadow-[0_15px_40px_-10px_rgba(0,0,0,0.5)]">
@@ -100,6 +101,7 @@ const AppRoutes = () => {
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/dashboard/profile" element={<UserProfile />} />
                         <Route path="/dashboard/settings" element={<UserSettings />} />
+                        <Route path="/dashboard/pesan" element={<Messages />} />
                     </Route>
 
                     {/* Grup Rute ADMIN */}

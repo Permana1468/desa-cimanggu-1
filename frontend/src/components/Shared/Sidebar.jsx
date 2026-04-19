@@ -6,7 +6,7 @@ import {
     Home, Clock, Wallet, FileText, Users, Settings, Activity,
     LogOut, ChevronDown, Pyramid, X, Menu, BarChart3, Database, Shield, Zap, Search,
     Briefcase, Map, MapPin, ChevronLeft, ChevronRight, LayoutGrid, Layers, Bell,
-    User, Moon, Sun
+    User, Moon, Sun, MessageSquare
 } from 'lucide-react';
 import useRole from '../../hooks/useRole';
 
@@ -244,6 +244,7 @@ const menuConfig = {
                 { title: 'Struktur Organisasi', path: '/dashboard/organisasi' },
             ]
         },
+        { title: 'Komunikasi Pesan', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
     ]
 };
 
