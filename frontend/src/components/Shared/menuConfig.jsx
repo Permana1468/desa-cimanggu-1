@@ -91,6 +91,13 @@ export const menuConfig = {
             ]
         },
         {
+            title: 'Pasar Desa (UMKM)', icon: <Store />, iconColor: 'text-emerald-400',
+            subMenus: [
+                { title: 'Verifikasi Toko', path: '/dashboard/umkm/verifikasi' },
+                { title: 'Manajemen Produk', path: '/dashboard/umkm/produk' },
+            ]
+        },
+        {
             title: 'Pengaturan Web', icon: <Settings />, iconColor: 'text-purple-400',
             subMenus: [
                 { title: 'Manajemen Pengguna', path: '/dashboard/users' },

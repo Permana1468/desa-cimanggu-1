@@ -34,6 +34,8 @@ const DataKependudukan = lazy(() => import('../dashboards/Admin/DataKependudukan
 const InventarisAset = lazy(() => import('../dashboards/Admin/InventarisAset'));
 const BukuKasUmum = lazy(() => import('../dashboards/Admin/BukuKasUmum'));
 const DusunModule = lazy(() => import('../dashboards/Admin/DusunModule'));
+const VerifikasiToko = lazy(() => import('../dashboards/Admin/VerifikasiToko'));
+const ManajemenProdukAdmin = lazy(() => import('../dashboards/Admin/ManajemenProdukAdmin'));
 
 // LPM Dashboards
 const UsulanPembangunan = lazy(() => import('../dashboards/LPM/UsulanPembangunan'));
@@ -119,6 +121,8 @@ const AppRoutes = () => {
                         <Route path="/dashboard/users" element={<ManajemenPengguna />} />
                         <Route path="/dashboard/verify-users" element={<VerifikasiPengguna />} />
                         <Route path="/dashboard/organisasi" element={<StrukturOrganisasi />} />
+                        <Route path="/dashboard/umkm/verifikasi" element={<VerifikasiToko />} />
+                        <Route path="/dashboard/umkm/produk" element={<ManajemenProdukAdmin />} />
                     </Route>
 
                     {/* Grup Rute SEKDES */}
