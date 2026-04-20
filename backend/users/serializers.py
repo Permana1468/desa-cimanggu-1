@@ -272,14 +272,26 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class UMKMShopSerializer(serializers.ModelSerializer):
     owner_name = serializers.CharField(source='owner.username', read_only=True)
+    product_count = serializers.SerializerMethodField()
+
     class Meta:
         model = UMKMShop
         fields = '__all__'
         read_only_fields = ('owner', 'created_at', 'is_verified')
 
+    def get_product_count(self, obj):
+        return obj.products.count()
+
 class ProductSerializer(serializers.ModelSerializer):
     shop_name = serializers.CharField(source='shop.shop_name', read_only=True)
+    shop_logo = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
         fields = '__all__'
-        read_only_fields = ('shop', 'created_at')
+        read_only_fields = ('created_at',)
+
+    def get_shop_logo(self, obj):
+        if obj.shop.logo:
+            return obj.shop.logo.url
+        return None

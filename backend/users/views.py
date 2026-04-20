@@ -835,14 +835,17 @@ class UMKMShopViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if self.action in ['list', 'retrieve']:
+            # Public only sees verified shops
             return UMKMShop.objects.filter(is_verified=True)
         if user.is_authenticated:
             if user.role == 'ADMIN':
                 return UMKMShop.objects.all()
+            # Owner sees their own shop regardless of verification
             return UMKMShop.objects.filter(owner=user)
         return UMKMShop.objects.none()
 
     def perform_create(self, serializer):
+        # Prevent non-owners from creating shops for others
         serializer.save(owner=self.request.user)
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -867,18 +870,24 @@ class ProductViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(shop_id=shop_id)
         
         user = self.request.user
-        if self.action not in ['list', 'retrieve']:
-             if user.role != 'ADMIN':
-                 queryset = queryset.filter(shop__owner=user)
+        # If public (list/retrieve), only show products from verified shops
+        if self.action in ['list', 'retrieve']:
+            return queryset.filter(shop__is_verified=True)
+            
+        if user.is_authenticated:
+             if user.role == 'ADMIN':
+                 return queryset
+             # Owner only sees and manages their own shop's products
+             return queryset.filter(shop__owner=user)
                  
-        return queryset
+        return queryset.none()
 
     def perform_create(self, serializer):
         # Additional permission check: Ensure the user owns the shop they are adding products to
         shop_id = self.request.data.get('shop')
         if not shop_id:
-             serializer.save()
-             return
+             from rest_framework.exceptions import ValidationError
+             raise ValidationError("Shop ID is required.")
              
         try:
              shop = UMKMShop.objects.get(id=shop_id)
@@ -888,7 +897,8 @@ class ProductViewSet(viewsets.ModelViewSet):
                  from rest_framework.exceptions import PermissionDenied
                  raise PermissionDenied("You do not have permission to add products to this shop.")
         except UMKMShop.DoesNotExist:
-             serializer.save()
+             from rest_framework.exceptions import ValidationError
+             raise ValidationError("Selected shop does not exist.")
 
 
 # --- System Health Check ---

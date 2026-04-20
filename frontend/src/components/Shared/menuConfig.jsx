@@ -3,7 +3,7 @@ import {
     Home, Clock, Wallet, FileText, Users, Settings, Activity,
     LogOut, ChevronDown, Pyramid, X, Menu, BarChart3, Database, Shield, Zap, Search,
     Briefcase, Map, MapPin, ChevronLeft, ChevronRight, LayoutGrid, Layers, Bell,
-    User, Moon, Sun, MessageSquare, Calendar, RefreshCw
+    User, Moon, Sun, MessageSquare, Calendar, RefreshCw, Store, ShoppingBag
 } from 'lucide-react';
 
 export const menuConfig = {
@@ -179,9 +179,14 @@ export const menuConfig = {
     ],
     STAF: [
         { title: 'Dashboard Staff', path: '/dashboard', icon: <Home />, iconColor: 'text-blue-400' },
-        { title: 'Aparatur Desa', path: '/dashboard/organisasi', icon: <Pyramid />, iconColor: 'text-orange-400' },
-        { title: 'Administrasi Desa', path: '/dashboard/buku-kas', icon: <FileText />, iconColor: 'text-blue-300' },
         { title: 'Musrenbang Desa', path: '/dashboard/rekap-musrenbang', icon: <FileText />, iconColor: 'text-amber-400' },
         { title: 'Komunikasi Pesan', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
+    ],
+    OWNER_TOKO: [
+        { title: 'Dashboard Utama', path: '/dashboard', icon: <Home />, iconColor: 'text-blue-400' },
+        { title: 'Kelola Toko', path: '/toko/pengaturan', icon: <Store />, iconColor: 'text-yellow-400' },
+        { title: 'Katalog Produk', path: '/toko/produk', icon: <ShoppingBag />, iconColor: 'text-emerald-400' },
+        { title: 'Profil & Keamanan', path: '/dashboard/profile', icon: <User />, iconColor: 'text-indigo-400' },
+        { title: 'Chat Admin', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
     ]
 };

@@ -53,6 +53,8 @@ const Messages = lazy(() => import('../dashboards/Shared/Messages'));
 
 // Toko / UMKM Dashboards
 const DashboardUtamaToko = lazy(() => import('../dashboards/Toko/DashboardUtamaToko'));
+const ManajemenToko = lazy(() => import('../dashboards/Toko/ManajemenToko'));
+const KelolaProduk = lazy(() => import('../dashboards/Toko/KelolaProduk'));
 
 const DummyPage = ({ title, icon = '📉' }) => (
     <div className="relative bg-[#1e293b]/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 md:p-12 min-h-[60vh] flex flex-col items-center justify-center shadow-[0_15px_40px_-10px_rgba(0,0,0,0.5)]">
@@ -202,6 +204,8 @@ const AppRoutes = () => {
                     {/* Grup Rute Toko UMKM */}
                     <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'OWNER_TOKO']} />}>
                         <Route path="/toko/dashboard" element={<DashboardUtamaToko />} />
+                        <Route path="/toko/pengaturan" element={<ManajemenToko />} />
+                        <Route path="/toko/produk" element={<KelolaProduk />} />
                     </Route>
 
                 </Route>

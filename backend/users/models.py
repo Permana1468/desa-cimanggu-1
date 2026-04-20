@@ -576,9 +576,12 @@ class GaleriProyekLPM(models.Model):
 # --- MODUL UMKM & PASAR DESA ---
 class UMKMShop(models.Model):
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='shops')
-    shop_name = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
-    is_verified = models.BooleanField(default=False)
+    shop_name = models.CharField("Nama Toko", max_length=255)
+    description = models.TextField("Deskripsi Toko", blank=True, null=True)
+    phone_number = models.CharField("WhatsApp / No HP", max_length=20, blank=True, null=True, help_text="Format: 08123...")
+    address = models.TextField("Alamat Toko", blank=True, null=True)
+    logo = models.ImageField("Logo Toko", upload_to='umkm_logos/', blank=True, null=True)
+    is_verified = models.BooleanField("Terverifikasi", default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
