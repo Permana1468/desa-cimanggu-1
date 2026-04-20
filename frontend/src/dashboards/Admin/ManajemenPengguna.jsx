@@ -27,7 +27,7 @@ const ManajemenPengguna = () => {
         'ADMIN', 'SEKDES', 'KAUR_PERENCANAAN', 'KAUR_TU', 'KAUR_KEUANGAN',
         'KASI_PEMERINTAHAN', 'KASI_KESEJAHTERAAN', 'KASI_PELAYANAN',
         'KADUS', 'POSYANDU', 'LPM', 'RW', 'RT', 'KARANG_TARUNA',
-        'BUMDES', 'TP_PKK', 'PUSKESOS', 'WARGA'
+        'BUMDES', 'TP_PKK', 'PUSKESOS', 'OWNER_TOKO', 'WARGA'
     ];
 
     const roleLabels = {
@@ -48,6 +48,7 @@ const ManajemenPengguna = () => {
         'BUMDES': 'Bumdes',
         'TP_PKK': 'TP-PKK',
         'PUSKESOS': 'Puskesos',
+        'OWNER_TOKO': 'Pemilik Toko (UMKM)',
         'WARGA': 'Warga Umum'
     };
 

@@ -109,6 +109,7 @@ const Register = () => {
         { value: 'KASI_PEMERINTAHAN', label: 'Kasi Pemerintahan' },
         { value: 'KASI_KESEJAHTERAAN', label: 'Kasi Kesejahteraan' },
         { value: 'KASI_PELAYANAN', label: 'Kasi Pelayanan' },
+        { value: 'OWNER_TOKO', label: 'Pemilik Toko (UMKM)' },
         { value: 'WARGA', label: 'Warga Umum' },
     ];
 
