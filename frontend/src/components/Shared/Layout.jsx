@@ -3,9 +3,80 @@ import Sidebar from './Sidebar';
 import { menuConfig } from './menuConfig';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { Menu, Home, Settings, X, User, Bell, ChevronRight, LayoutGrid, LogOut, Sun, Moon } from 'lucide-react';
+import { Menu, Home, Settings, X, User, Bell, ChevronRight, LayoutGrid, LogOut, Sun, Moon, ChevronDown } from 'lucide-react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+
+const MobileMenuItem = ({ item, idx, navigate, setIsSidebarOpen, location, level = 0 }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    if (!item) return null;
+
+    const bgColors = [
+        'bg-blue-600', 'bg-emerald-500', 'bg-amber-500', 
+        'bg-purple-600', 'bg-teal-500', 'bg-rose-500', 
+        'bg-indigo-600', 'bg-gray-600'
+    ];
+    const bgColor = bgColors[idx % bgColors.length];
+
+    const hasSubItems = item.subCategories || item.subMenus;
+    const isActive = item.path && location.pathname === item.path;
+
+    const navTo = () => {
+        if (item.path) {
+            navigate(item.path);
+            setIsSidebarOpen(false);
+        } else if (hasSubItems) {
+            setIsOpen(!isOpen);
+        }
+    };
+
+    return (
+        <div className="w-full">
+            <button
+                onClick={navTo}
+                className={`flex items-center gap-6 p-3 w-full rounded-3xl transition-all active:scale-95 group
+                           ${isActive ? 'bg-white/10 shadow-xl border border-white/20' : 'hover:bg-white/5'}`}
+            >
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-white shadow-[0_6px_20px_rgba(0,0,0,0.3)] ${bgColor} shrink-0 group-active:animate-breathing`}>
+                    {item.icon ? React.cloneElement(item.icon, { size: 22, strokeWidth: 2 }) : <LayoutGrid size={22} />}
+                </div>
+                <span className={`text-[15px] font-black tracking-tight flex-1 text-left ${isActive ? 'text-white' : 'text-white/70'}`}>
+                    {item.title}
+                </span>
+                {hasSubItems && (
+                    <ChevronDown size={18} className={`text-white/30 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                )}
+            </button>
+
+            {hasSubItems && isOpen && (
+                <div className="ml-8 mt-2 space-y-2 border-l border-white/10 pl-4 animate-fade-in">
+                    {item.subCategories?.map((sub, i) => (
+                        <MobileMenuItem 
+                            key={i} 
+                            item={sub} 
+                            idx={idx + i + 1} 
+                            navigate={navigate} 
+                            setIsSidebarOpen={setIsSidebarOpen} 
+                            location={location}
+                            level={level + 1}
+                        />
+                    ))}
+                    {item.subMenus?.map((sub, i) => (
+                        <button
+                            key={i}
+                            onClick={() => { navigate(sub.path); setIsSidebarOpen(false); }}
+                            className={`flex items-center gap-4 p-3 w-full rounded-2xl transition-all active:scale-95 text-left
+                                       ${location.pathname === sub.path ? 'text-blue-400 bg-white/5' : 'text-white/50'}`}
+                        >
+                            <div className={`w-2 h-2 rounded-full ${location.pathname === sub.path ? 'bg-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'bg-white/20'}`} />
+                            <span className="text-sm font-bold">{sub.title}</span>
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
 
 const Layout = ({ children }) => {
     const { user, logoutUser } = useContext(AuthContext);
@@ -201,45 +272,16 @@ const Layout = ({ children }) => {
 
                     {/* Body: Grid Menu Items with Alive Effects */}
                     <div className="flex-1 overflow-y-auto px-8 py-4 space-y-3 custom-scrollbar h-full">
-                        {sortedMenus?.map((item, idx) => {
-                             if (!item) return null;
-                             const bgColors = [
-                                'bg-blue-600', 'bg-emerald-500', 'bg-amber-500', 
-                                'bg-purple-600', 'bg-teal-500', 'bg-rose-500', 
-                                'bg-indigo-600', 'bg-gray-600'
-                             ];
-                             const bgColor = bgColors[idx % bgColors.length];
-
-                             // Safely clone or render icon
-                             const renderMenuIcon = () => {
-                                if (!item.icon) return <LayoutGrid size={22} />;
-                                try {
-                                    return React.cloneElement(item.icon, { size: 22, strokeWidth: 2, className: "group-active:animate-glow-pulse" });
-                                } catch (e) {
-                                    return <LayoutGrid size={22} />;
-                                }
-                             };
-
-                             return (
-                                <button
-                                    key={idx}
-                                    onClick={() => {
-                                        if (item.path) navigate(item.path);
-                                        else if (item.subMenus?.[0]?.path) navigate(item.subMenus[0].path);
-                                        setIsSidebarOpen(false);
-                                    }}
-                                    className={`flex items-center gap-6 p-3 w-full rounded-3xl transition-all active:scale-95 group
-                                               ${location.pathname === item.path ? 'bg-white/10 shadow-xl border border-white/20' : 'hover:bg-white/5'}`}
-                                >
-                                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-white shadow-[0_6px_20px_rgba(0,0,0,0.3)] ${bgColor} shrink-0 group-active:animate-breathing`}>
-                                        {renderMenuIcon()}
-                                    </div>
-                                    <span className={`text-[15px] font-black tracking-tight ${location.pathname === item.path ? 'text-white' : 'text-white/70'}`}>
-                                        {item.title}
-                                    </span>
-                                </button>
-                             );
-                        })}
+                        {sortedMenus?.map((item, idx) => (
+                            <MobileMenuItem 
+                                key={idx} 
+                                item={item} 
+                                idx={idx} 
+                                navigate={navigate} 
+                                setIsSidebarOpen={setIsSidebarOpen} 
+                                location={location}
+                            />
+                        ))}
 
                         {/* Logout Link */}
                         <button
