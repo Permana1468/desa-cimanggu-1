@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
-import { Store, ShoppingBag, PlusCircle, Activity, Package, ExternalLink, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Store, ShoppingBag, PlusCircle, Activity, Package, ExternalLink, ShieldCheck, AlertCircle, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 
@@ -10,39 +10,39 @@ const DashboardUtamaToko = () => {
         totalProducts: 0,
         unverifiedProducts: 0,
         outOfStock: 0,
-        shopStatus: 'Checking...'
+        shopStatus: 'Non-Aktif'
     });
     const [shop, setShop] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const [shopRes, productsRes] = await Promise.all([
-                    api.get('/users/api/umkm/shops/'),
-                    api.get('/users/api/umkm/products/')
-                ]);
-
-                if (shopRes.data.length > 0) {
-                    const shopData = shopRes.data[0];
-                    setShop(shopData);
-                    
-                    const products = productsRes.data;
-                    setStats({
-                        totalProducts: products.length,
-                        unverifiedProducts: products.filter(p => !shopData.is_verified).length, // Context: Products aren't verified individually yet, but shop is
-                        outOfStock: products.filter(p => parseInt(p.stock) === 0).length,
-                        shopStatus: shopData.is_verified ? 'Aktif (Terverifikasi)' : 'Menunggu Verifikasi'
-                    });
-                }
-            } catch (err) {
-                console.error("Gagal memuat statistik", err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
         fetchStats();
     }, []);
+
+    const fetchStats = async () => {
+        setIsLoading(true);
+        try {
+            const [shopRes, productsRes] = await Promise.all([
+                api.get('/users/api/umkm/shops/'),
+                api.get('/users/api/umkm/products/')
+            ]);
+
+            const shopData = shopRes.data.length > 0 ? shopRes.data[0] : null;
+            setShop(shopData);
+            
+            const products = productsRes.data;
+            setStats({
+                totalProducts: products.length,
+                unverifiedProducts: products.length, // Logic: if shop not verified, products aren't either
+                outOfStock: products.filter(p => parseInt(p.stock) === 0).length,
+                shopStatus: shopData ? (shopData.is_verified ? 'Aktif (Terverifikasi)' : 'Menunggu Verifikasi') : 'Belum Setup'
+            });
+        } catch (err) {
+            console.error("Gagal memuat statistik", err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     if (isLoading) return (
         <div className="flex flex-col items-center justify-center min-h-[400px]">
@@ -50,6 +50,26 @@ const DashboardUtamaToko = () => {
             <p className="mt-4 text-gray-400 font-medium tracking-widest uppercase text-[10px]">Menyiapkan Dashboard...</p>
         </div>
     );
+
+    // Case: Shop doesn't exist at all for this owner
+    if (!shop) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-8 animate-fade-in text-center px-6">
+                <div className="w-24 h-24 bg-yellow-500/10 rounded-[2.5rem] flex items-center justify-center text-yellow-400 border border-yellow-500/20 shadow-2xl">
+                    <Store size={48} />
+                </div>
+                <div className="max-w-md">
+                    <h2 className="text-3xl font-black text-white uppercase tracking-tight mb-4">Selamat Datang, Saudara {user?.nama_lengkap || user?.username}!</h2>
+                    <p className="text-gray-400 font-medium leading-relaxed">
+                        Anda telah terdaftar sebagai Pemilik Toko. Langkah selanjutnya adalah melengkapi Profile Toko agar dapat mulai berjualan di Pasar Desa Digital.
+                    </p>
+                </div>
+                <Link to="/toko/pengaturan" className="bg-yellow-400 hover:bg-yellow-500 text-slate-900 px-10 py-5 rounded-[2rem] font-black text-sm uppercase tracking-widest shadow-[0_20px_50px_rgba(234,179,8,0.3)] transition-all hover:-translate-y-1">
+                    Setup Identitas Toko Sekarang
+                </Link>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8 animate-fade-in">
@@ -60,6 +80,9 @@ const DashboardUtamaToko = () => {
                     <p className="text-gray-400 text-sm font-medium mt-1">Status terkini UMKM {shop?.shop_name || "Anda"}.</p>
                 </div>
                 <div className="flex items-center gap-3">
+                    <button onClick={fetchStats} className="p-3 bg-white/5 border border-white/10 rounded-2xl text-gray-400 hover:text-white transition-colors">
+                        <RefreshCw size={14} />
+                    </button>
                     <Link 
                         to="/umkm" target="_blank"
                         className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all"
@@ -121,25 +144,27 @@ const DashboardUtamaToko = () => {
                              <Link to="/toko/pengaturan" className="text-xs font-bold text-yellow-400 uppercase tracking-widest hover:underline transition-all">Edit Detail</Link>
                         </div>
                         
-                        <div className="flex flex-col md:flex-row gap-8">
-                             <div className="w-24 h-24 rounded-3xl bg-white/5 border border-white/10 overflow-hidden shrink-0">
+                        <div className="flex flex-col md:flex-row gap-8 text-center md:text-left items-center md:items-start">
+                             <div className="w-24 h-24 rounded-3xl bg-white/5 border border-white/10 overflow-hidden shrink-0 shadow-xl">
                                  {shop?.logo ? (
                                      <img src={shop.logo} alt="Logo" className="w-full h-full object-cover" />
                                  ) : (
-                                     <div className="w-full h-full flex items-center justify-center text-gray-700 font-black text-2xl">{shop?.shop_name?.charAt(0)}</div>
+                                     <div className="w-full h-full flex items-center justify-center text-gray-500 font-black text-3xl bg-white/5">
+                                         {shop?.shop_name?.charAt(0) || <Store size={32} />}
+                                     </div>
                                  )}
                              </div>
                              <div className="space-y-4">
                                  <div>
-                                     <h4 className="text-2xl font-bold text-white mb-1">{shop?.shop_name}</h4>
-                                     <p className="text-gray-400 text-sm leading-relaxed">{shop?.description || "Belum ada deskripsi toko."}</p>
+                                     <h4 className="text-2xl font-bold text-white mb-1 leading-none">{shop?.shop_name || "Nama Toko Belum Diatur"}</h4>
+                                     <p className="text-gray-400 text-sm leading-relaxed max-w-xl">{shop?.description || "Belum ada deskripsi profil toko."}</p>
                                  </div>
-                                 <div className="flex flex-wrap gap-4 pt-2">
-                                     <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/10 text-xs font-bold text-gray-300">
-                                         📍 {shop?.address || "Lokasi belum diatur"}
+                                 <div className="flex flex-wrap gap-4 pt-2 justify-center md:justify-start">
+                                     <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/10 text-[11px] font-bold text-gray-300 uppercase tracking-widest">
+                                         📍 {shop?.address || "Lokasi/Alamat Belum Diisi"}
                                      </div>
-                                     <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/10 text-xs font-bold text-gray-300">
-                                         📞 {shop?.phone_number || "No. WA belum diatur"}
+                                     <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/10 text-[11px] font-bold text-gray-300 uppercase tracking-widest">
+                                         📞 {shop?.phone_number || "WA Belum Terhubung"}
                                      </div>
                                  </div>
                              </div>
@@ -149,15 +174,15 @@ const DashboardUtamaToko = () => {
 
                 <div className="lg:col-span-1 space-y-6">
                     <div className="bg-gradient-to-b from-emerald-500/20 to-emerald-600/5 backdrop-blur-2xl border border-emerald-500/20 rounded-[2.5rem] p-10 shadow-2xl flex flex-col items-center text-center group">
-                        <div className="w-20 h-20 bg-emerald-500/10 rounded-3xl flex items-center justify-center text-emerald-400 mb-6 border border-emerald-500/20 group-hover:scale-110 transition-transform duration-500">
+                        <div className="w-20 h-20 bg-emerald-500/10 rounded-3xl flex items-center justify-center text-emerald-400 mb-6 border border-emerald-500/20 group-hover:scale-110 transition-transform duration-500 shadow-[0_15px_30px_rgba(16,185,129,0.2)]">
                             <PlusCircle size={40} />
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-2">Ingin Jualan Lagi?</h3>
+                        <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Katalog Produk</h3>
                         <p className="text-gray-400 text-sm font-medium leading-relaxed mb-8">
-                            Segera tambahkan produk baru Anda ke etalase Pasar Desa Digital agar dilihat oleh seluruh warga.
+                            Tambahkan foto dan detail produk Anda agar bisa segera bertransaksi dengan pembeli.
                         </p>
-                        <Link to="/toko/produk" className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-[0_10px_20px_rgba(16,185,129,0.3)] hover:-translate-y-1">
-                            Tambah Produk
+                        <Link to="/toko/produk" className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-[0_10px_20px_rgba(16,185,129,0.3)] hover:-translate-y-1 active:scale-95">
+                            Buka Katalog
                         </Link>
                     </div>
                 </div>

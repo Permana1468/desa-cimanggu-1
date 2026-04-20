@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
-import { Store, MapPin, Phone, Info, Upload, Save, CheckCircle, AlertCircle } from 'lucide-react';
+import { Store, MapPin, Phone, Info, Upload, Save, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import api from '../../services/api';
 
 const ManajemenToko = () => {
@@ -18,18 +18,22 @@ const ManajemenToko = () => {
     const fetchShopData = async () => {
         try {
             const res = await api.get('/users/api/umkm/shops/');
-            // The viewset filters to only own shops for OWNER_TOKO
             if (res.data.length > 0) {
-                setShop(res.data[0]);
-                if (res.data[0].logo) setLogoPreview(res.data[0].logo);
+                const data = res.data[0];
+                setShop(data);
+                if (data.logo) setLogoPreview(data.logo);
             } else {
-                // If no shop exists, we might need a create flow, 
-                // but usually it should be created by admin or on registration.
-                setShop({ shop_name: '', description: '', phone_number: '', address: '' });
+                setShop({ 
+                    shop_name: '', 
+                    description: '', 
+                    phone_number: '', 
+                    address: '',
+                    id: null 
+                });
             }
         } catch (err) {
             console.error("Gagal mengambil data toko", err);
-            setMessage({ type: 'error', text: 'Gagal memuat data toko.' });
+            setMessage({ type: 'error', text: 'Gagal memuat data toko. Periksa koneksi Anda.' });
         } finally {
             setIsLoading(false);
         }
@@ -38,6 +42,11 @@ const ManajemenToko = () => {
     const handleLogoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            // Validate size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert("Ukuran gambar terlalu besar (Maks 2MB)");
+                return;
+            }
             setLogoPreview(URL.createObjectURL(file));
             setShop({ ...shop, logo_file: file });
         }
@@ -45,6 +54,11 @@ const ManajemenToko = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!shop.shop_name.trim()) {
+            setMessage({ type: 'error', text: 'Nama Toko wajib diisi.' });
+            return;
+        }
+
         setIsSaving(true);
         setMessage({ type: '', text: '' });
 
@@ -58,20 +72,32 @@ const ManajemenToko = () => {
         }
 
         try {
+            let response;
             if (shop.id) {
-                await api.patch(`/users/api/umkm/shops/${shop.id}/`, formData, {
+                response = await api.patch(`/users/api/umkm/shops/${shop.id}/`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
+                setMessage({ type: 'success', text: 'Perubahan berhasil disimpan!' });
             } else {
-                await api.post('/users/api/umkm/shops/', formData, {
+                response = await api.post('/users/api/umkm/shops/', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
+                setMessage({ type: 'success', text: 'Toko berhasil dibuat!' });
             }
-            setMessage({ type: 'success', text: 'Data toko berhasil diperbarui!' });
-            fetchShopData();
+            
+            // Clean up temporary object URL
+            if (shop.logo_file && logoPreview.startsWith('blob:')) {
+                URL.revokeObjectURL(logoPreview);
+            }
+            
+            // Update local state with fresh data
+            setShop(response.data);
+            if (response.data.logo) setLogoPreview(response.data.logo);
+            
         } catch (err) {
             console.error("Gagal menyimpan data toko", err);
-            setMessage({ type: 'error', text: 'Gagal menyimpan perubahan. Periksa kembali data Anda.' });
+            const errorMsg = err.response?.data?.detail || err.response?.data?.shop_name?.[0] || 'Gagal menyimpan perubahan. Periksa kembali form.';
+            setMessage({ type: 'error', text: errorMsg });
         } finally {
             setIsSaving(false);
         }
@@ -91,19 +117,23 @@ const ManajemenToko = () => {
                     <h1 className="text-3xl font-black text-white tracking-tight uppercase">Identitas Toko</h1>
                     <p className="text-gray-400 text-sm font-medium">Kelola informasi publik toko UMKM Anda agar menarik pelanggan.</p>
                 </div>
-                {shop?.is_verified ? (
-                    <div className="flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold uppercase tracking-wider">
-                        <CheckCircle size={14} /> Terverifikasi Admin
-                    </div>
-                ) : (
-                    <div className="flex items-center gap-2 px-4 py-1.5 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-full text-xs font-bold uppercase tracking-wider">
-                        <AlertCircle size={14} /> Menunggu Verifikasi
-                    </div>
+                {shop?.id && (
+                    shop?.is_verified ? (
+                        <div className="flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold uppercase tracking-wider">
+                            <CheckCircle size={14} /> Terverifikasi Admin
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2 px-4 py-1.5 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-full text-xs font-bold uppercase tracking-wider">
+                                <AlertCircle size={14} /> Menunggu Verifikasi
+                            </div>
+                        </div>
+                    )
                 )}
             </div>
 
             {message.text && (
-                <div className={`p-4 rounded-2xl border flex items-center gap-3 animate-shake ${
+                <div className={`p-4 rounded-2xl border flex items-center gap-3 animate-fade-in ${
                     message.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-red-500/10 border-red-500/30 text-red-400'
                 }`}>
                     {message.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
@@ -119,27 +149,27 @@ const ManajemenToko = () => {
                         <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-6">Logo UMKM</p>
                         
                         <div className="relative w-32 h-32 mb-6 group/logo">
-                            <div className="w-full h-full rounded-[2rem] bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center overflow-hidden transition-all group-hover/logo:border-yellow-500/50">
+                            <div className="w-full h-full rounded-[2.5rem] bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center overflow-hidden transition-all group-hover/logo:border-yellow-500/50 shadow-inner">
                                 {logoPreview ? (
                                     <img src={logoPreview} alt="Logo Toko" className="w-full h-full object-cover" />
                                 ) : (
                                     <Store size={40} className="text-gray-600" />
                                 )}
                             </div>
-                            <label className="absolute -bottom-2 -right-2 w-10 h-10 bg-yellow-400 hover:bg-yellow-500 text-slate-900 rounded-xl flex items-center justify-center cursor-pointer shadow-lg transition-transform hover:scale-110 active:scale-95">
+                            <label className="absolute -bottom-2 -right-2 w-10 h-10 bg-yellow-400 hover:bg-yellow-500 text-slate-900 rounded-xl flex items-center justify-center cursor-pointer shadow-lg transition-transform hover:scale-110 active:scale-95 border-4 border-[#0f172a]">
                                 <Upload size={18} />
                                 <input type="file" className="hidden" accept="image/*" onChange={handleLogoChange} />
                             </label>
                         </div>
                         
                         <h3 className="text-lg font-bold text-white mb-1 line-clamp-1">{shop?.shop_name || "Nama Toko"}</h3>
-                        <p className="text-[11px] text-gray-500 font-medium uppercase tracking-widest italic">Est. {new Date(shop?.created_at).getFullYear() || "----"}</p>
+                        <p className="text-[11px] text-gray-500 font-black uppercase tracking-widest italic opacity-50">EST. {shop?.created_at ? new Date(shop.created_at).getFullYear() : "----"}</p>
                     </div>
 
-                    <div className="bg-amber-500/10 border border-amber-500/20 rounded-3xl p-6 flex gap-4">
-                        <Info className="text-amber-400 shrink-0" size={20} />
-                        <p className="text-[12px] text-amber-200/80 leading-relaxed font-medium">
-                            Logo dan Nama Toko adalah representasi bisnis Anda di Pasar Desa Digital. Gunakan gambar berkualitas tinggi (PNG/WebP).
+                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-3xl p-6 flex gap-4">
+                        <Info className="text-blue-400 shrink-0" size={20} />
+                        <p className="text-[12px] text-blue-200/80 leading-relaxed font-medium">
+                            Gunakan logo yang ikonik agar toko Anda mudah diingat oleh warga Desa Cimanggu I.
                         </p>
                     </div>
                 </div>
@@ -150,13 +180,13 @@ const ManajemenToko = () => {
                         <div className="md:col-span-2 space-y-2">
                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1">Nama Usaha / Toko</label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-500 group-focus-within:text-yellow-400 transition-colors">
+                                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-500 group-focus-within:text-yellow-400 transition-all">
                                     <Store size={18} />
                                 </div>
                                 <input 
                                     type="text" required
                                     className="w-full pl-14 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-bold outline-none focus:border-yellow-500/50 focus:bg-white/10 transition-all placeholder:text-gray-600"
-                                    placeholder="Contoh: Warung Berkah Cimanggu"
+                                    placeholder="Contoh: Kedai Kopi Cimanggu"
                                     value={shop?.shop_name || ''}
                                     onChange={(e) => setShop({...shop, shop_name: e.target.value})}
                                 />
@@ -164,15 +194,15 @@ const ManajemenToko = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1">WhatsApp Aktif</label>
+                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1">Nomor WhatsApp Aktif</label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-500 group-focus-within:text-yellow-400 transition-colors">
+                                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-500 group-focus-within:text-yellow-400 transition-all">
                                     <Phone size={18} />
                                 </div>
                                 <input 
                                     type="tel"
                                     className="w-full pl-14 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-bold outline-none focus:border-yellow-500/50 focus:bg-white/10 transition-all placeholder:text-gray-600"
-                                    placeholder="0812..."
+                                    placeholder="08xxxxxxxxxx"
                                     value={shop?.phone_number || ''}
                                     onChange={(e) => setShop({...shop, phone_number: e.target.value})}
                                 />
@@ -182,13 +212,13 @@ const ManajemenToko = () => {
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1">Lokasi / Alamat</label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-500 group-focus-within:text-yellow-400 transition-colors">
+                                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-500 group-focus-within:text-yellow-400 transition-all">
                                     <MapPin size={18} />
                                 </div>
                                 <input 
                                     type="text"
                                     className="w-full pl-14 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-bold outline-none focus:border-yellow-500/50 focus:bg-white/10 transition-all placeholder:text-gray-600"
-                                    placeholder="Cth: RT 02 / RW 01"
+                                    placeholder="Alamat lengkap toko / rumah"
                                     value={shop?.address || ''}
                                     onChange={(e) => setShop({...shop, address: e.target.value})}
                                 />
@@ -200,7 +230,7 @@ const ManajemenToko = () => {
                             <textarea 
                                 rows="4"
                                 className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-medium outline-none focus:border-yellow-500/50 focus:bg-white/10 transition-all placeholder:text-gray-600 resize-none"
-                                placeholder="Jelaskan produk unggulan atau keistimewaan UMKM Anda..."
+                                placeholder="Jelaskan apa yang Anda jual dan keunggulannya..."
                                 value={shop?.description || ''}
                                 onChange={(e) => setShop({...shop, description: e.target.value})}
                             />
@@ -210,10 +240,10 @@ const ManajemenToko = () => {
                     <div className="mt-12 flex justify-end">
                         <button 
                             type="submit" disabled={isSaving}
-                            className="bg-yellow-400 hover:bg-yellow-500 text-slate-900 px-10 py-5 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center gap-3 transition-all shadow-[0_10px_30px_rgb(234,179,8,0.3)] hover:-translate-y-1 active:scale-95 disabled:opacity-50"
+                            className="bg-yellow-400 hover:bg-yellow-500 text-slate-900 px-10 py-5 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center gap-3 transition-all shadow-[0_15px_40px_rgb(234,179,8,0.3)] hover:-translate-y-1 active:scale-95 disabled:opacity-50"
                         >
                             {isSaving ? <RefreshCw className="animate-spin" size={20} /> : <Save size={20} />}
-                            {isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}
+                            {isSaving ? 'MEMPROSES...' : 'SIMPAN IDENTITAS TOKO'}
                         </button>
                     </div>
                 </div>

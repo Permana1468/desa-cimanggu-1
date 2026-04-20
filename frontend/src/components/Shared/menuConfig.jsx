@@ -186,7 +186,6 @@ export const menuConfig = {
         { title: 'Dashboard Utama', path: '/dashboard', icon: <Home />, iconColor: 'text-blue-400' },
         { title: 'Kelola Toko', path: '/toko/pengaturan', icon: <Store />, iconColor: 'text-yellow-400' },
         { title: 'Katalog Produk', path: '/toko/produk', icon: <ShoppingBag />, iconColor: 'text-emerald-400' },
-        { title: 'Profil & Keamanan', path: '/dashboard/profile', icon: <User />, iconColor: 'text-indigo-400' },
         { title: 'Chat Admin', path: '/dashboard/pesan', icon: <MessageSquare />, iconColor: 'text-green-400' },
     ]
 };
