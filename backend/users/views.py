@@ -835,10 +835,15 @@ class UMKMShopViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if self.action in ['list', 'retrieve']:
+            # Admin can see everything
+            if user.is_authenticated and user.role == 'ADMIN':
+                return UMKMShop.objects.all()
+                
+            # Other authenticated staff see verified shops OR their own shop
             if user.is_authenticated and user.role != 'WARGA':
-                # Return verified shops OR user's own shop
                 from django.db.models import Q
                 return UMKMShop.objects.filter(Q(is_verified=True) | Q(owner=user))
+                
             # Public/Warga only sees verified shops
             return UMKMShop.objects.filter(is_verified=True)
             
@@ -875,11 +880,15 @@ class ProductViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(shop_id=shop_id)
         
         user = self.request.user
-        # For list/retrieve: only show products from verified shops OR owner's own products
+        # For list/retrieve: Admin sees all, Others see verified OR own products
         if self.action in ['list', 'retrieve']:
+            if user.is_authenticated and user.role == 'ADMIN':
+                return queryset
+                
             if user.is_authenticated and user.role != 'WARGA':
                 from django.db.models import Q
                 return queryset.filter(Q(shop__is_verified=True) | Q(shop__owner=user))
+                
             return queryset.filter(shop__is_verified=True)
             
         if user.is_authenticated:
