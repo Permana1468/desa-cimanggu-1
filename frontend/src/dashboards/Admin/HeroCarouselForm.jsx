@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Upload, Image as ImageIcon } from 'lucide-react';
+import { Save, Upload, Image as ImageIcon, Trash2 } from 'lucide-react';
 import api from '../../services/api';
 import { compressImage } from '../../utils/imageUtils';
 
@@ -55,6 +55,29 @@ const HeroCarouselForm = () => {
             }
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
+        }
+    };
+    const handleDeleteImage = async (imgKey) => {
+        if (!formData.id) return;
+        if (!window.confirm("Apakah Anda yakin ingin menghapus gambar ini?")) return;
+
+        setIsLoading(true);
+        try {
+            const res = await api.patch(`/users/api/landing-page/${formData.id}/`, {
+                [imgKey]: null
+            });
+            setFormData(res.data);
+            setImageFiles(prev => {
+                const newFiles = { ...prev };
+                delete newFiles[imgKey];
+                return newFiles;
+            });
+            alert("Gambar berhasil dihapus dari server!");
+        } catch (error) {
+            console.error("Gagal menghapus gambar:", error);
+            alert("Terjadi kesalahan saat menghapus gambar.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -225,8 +248,8 @@ const HeroCarouselForm = () => {
                                 {/* Input Area */}
                                 <div className="flex-1">
                                     <label className="block text-sm font-medium text-gray-300 mb-1">Gambar Slide {idx + 1}</label>
-                                    <div className="flex items-center">
-                                        <label className="flex items-center justify-center px-4 py-2 border border-white/10 rounded-l-lg bg-[#0f172a] text-gray-300 hover:bg-white/10 cursor-pointer transition-colors text-sm w-32 shrink-0">
+                                    <div className="flex items-center gap-2">
+                                        <label className="flex items-center justify-center px-4 py-2 border border-white/10 rounded-l-xl bg-[#0f172a] text-gray-300 hover:bg-white/10 cursor-pointer transition-colors text-sm w-32 shrink-0">
                                             <Upload className="w-4 h-4 mr-2" />
                                             Pilih File
                                             <input
@@ -237,9 +260,22 @@ const HeroCarouselForm = () => {
                                                 className="hidden"
                                             />
                                         </label>
-                                        <div className="flex-1 px-4 py-2 bg-[#0f172a]/50 border-y border-r border-white/10 rounded-r-lg text-sm text-gray-500 truncate">
-                                            {imageFiles[imgKey] ? imageFiles[imgKey].name : (formData[imgKey] ? "Tersimpan di server" : "Belum ada gambar")}
+                                        <div className="flex-1 px-4 py-2 bg-[#0f172a]/50 border-y border-white/10 text-sm text-gray-500 truncate min-w-0">
+                                            {imageFiles[imgKey] ? imageFiles[imgKey].name : (formData[imgKey] ? "Tersimpan di Supabase" : "Belum ada gambar")}
                                         </div>
+                                        {formData[imgKey] && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteImage(imgKey)}
+                                                className="flex items-center justify-center w-10 py-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 rounded-r-xl transition-all active:scale-90 shrink-0"
+                                                title="Hapus Gambar"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                        {!formData[imgKey] && (
+                                            <div className="w-10 py-2 border-y border-r border-white/10 rounded-r-xl bg-white/5 opacity-50 shrink-0" />
+                                        )}
                                     </div>
                                 </div>
                             </div>
