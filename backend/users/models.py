@@ -20,6 +20,7 @@ class CustomUser(AbstractUser):
         ('BUMDES', 'Bumdes'),
         ('TP_PKK', 'TP-PKK'),
         ('PUSKESOS', 'Puskesos (Sosial)'),
+        ('OWNER_TOKO', 'Pemilik Toko (UMKM)'),
         ('WARGA', 'Warga'),
     )
 
@@ -571,3 +572,36 @@ class GaleriProyekLPM(models.Model):
 
     def __str__(self):
         return f"Foto: {self.judul_foto} - {self.proyek.judul}"
+
+# --- MODUL UMKM & PASAR DESA ---
+class UMKMShop(models.Model):
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='shops')
+    shop_name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Toko UMKM"
+        verbose_name_plural = "Toko UMKM"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.shop_name} ({self.owner.username})"
+
+class Product(models.Model):
+    shop = models.ForeignKey(UMKMShop, on_delete=models.CASCADE, related_name='products')
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    price = models.DecimalField(max_digits=15, decimal_places=2)
+    stock = models.IntegerField(default=0)
+    image = models.ImageField(upload_to='umkm_products/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Produk UMKM"
+        verbose_name_plural = "Produk UMKM"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} - {self.shop.shop_name}"

@@ -2,13 +2,14 @@ import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Lock, ArrowRight, Home, RefreshCw } from 'lucide-react';
+import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 
 const heroImages = [
-    '/images/slide_1.png',
-    '/images/slide_6.png',
-    '/images/slide_4.png',
-    '/images/slide_5.png'
+    '/images/slide_1.webp',
+    '/images/slide_6.webp',
+    '/images/slide_4.webp',
+    '/images/slide_5.webp'
 ];
 
 const Login = () => {
@@ -48,8 +49,14 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            await loginUser(username, password, captcha.token, captchaAnswer);
-            navigate('/dashboard');
+            const tokens = await loginUser(username, password, captcha.token, captchaAnswer);
+            const decodedToken = jwtDecode(tokens.access);
+
+            if (decodedToken.role === 'OWNER_TOKO') {
+                navigate('/toko/dashboard');
+            } else {
+                navigate('/dashboard');
+            }
         } catch (err) {
             const msg = err.response?.data?.detail || "Gagal login, silakan periksa kembali data Anda.";
             setError(msg);
@@ -91,7 +98,7 @@ const Login = () => {
                         
                         <div className="text-center mb-10">
                             <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-white/5 border border-white/10 p-4 mb-6 shadow-2xl backdrop-blur-xl rotate-3 group-hover:rotate-0 transition-transform duration-500">
-                                <img src="/images/logo-bogor.png" alt="Logo" className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
+                                <img src="/images/logo-bogor.webp" alt="Logo" className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
                             </div>
                             <h2 className="text-3xl font-black text-white tracking-tight uppercase leading-none">
                                 <span className="block text-gold mb-1">CIMANGGU I</span>

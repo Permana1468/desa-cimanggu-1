@@ -13,6 +13,7 @@ import LandingPage from '../pages/LandingPage';
 // Lazy Loaded Pages & Components
 const MapPage = lazy(() => import('../pages/MapPage'));
 const LayarAbsensi = lazy(() => import('../pages/LayarAbsensi'));
+const UMKMCatalog = lazy(() => import('../pages/UMKMCatalog'));
 
 // Admin Dashboards
 const IdentitasProfilForm = lazy(() => import('../dashboards/Admin/IdentitasProfilForm'));
@@ -46,10 +47,12 @@ const KeuanganLPM = lazy(() => import('../dashboards/LPM/KeuanganLPM'));
 const InventarisLPM = lazy(() => import('../dashboards/LPM/InventarisLPM'));
 const KaderLPM = lazy(() => import('../dashboards/LPM/KaderLPM'));
 
-// Shared Dashboards
 const UserProfile = lazy(() => import('../dashboards/Shared/UserProfile'));
 const UserSettings = lazy(() => import('../dashboards/Shared/UserSettings'));
 const Messages = lazy(() => import('../dashboards/Shared/Messages'));
+
+// Toko / UMKM Dashboards
+const DashboardUtamaToko = lazy(() => import('../dashboards/Toko/DashboardUtamaToko'));
 
 const DummyPage = ({ title, icon = '📉' }) => (
     <div className="relative bg-[#1e293b]/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 md:p-12 min-h-[60vh] flex flex-col items-center justify-center shadow-[0_15px_40px_-10px_rgba(0,0,0,0.5)]">
@@ -89,6 +92,7 @@ const AppRoutes = () => {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/umkm" element={<UMKMCatalog />} />
 
                 {/* Rute Kiosk Penuh (Tanpa Layout Admin) */}
                 <Route path="/absensi" element={<LayarAbsensi />} />
@@ -193,6 +197,11 @@ const AppRoutes = () => {
                         <Route path="/dashboard/laporan-dusun-3" element={<DusunModule dusunName="Dusun III" rwRange="RW 05 - RW 06" />} />
                         <Route path="/dashboard/data-dusun-4" element={<DusunModule dusunName="Dusun IV" rwRange="RW 07 - RW 09" />} />
                         <Route path="/dashboard/laporan-dusun-4" element={<DusunModule dusunName="Dusun IV" rwRange="RW 07 - RW 09" />} />
+                    </Route>
+
+                    {/* Grup Rute Toko UMKM */}
+                    <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'OWNER_TOKO']} />}>
+                        <Route path="/toko/dashboard" element={<DashboardUtamaToko />} />
                     </Route>
 
                 </Route>

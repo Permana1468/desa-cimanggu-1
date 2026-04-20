@@ -9,7 +9,7 @@ const LayarAbsensi = () => {
     const [scannedPejabat, setScannedPejabat] = useState('');
 
     // Background Carousel States
-    const [heroImages, setHeroImages] = useState(['/images/slide_1.png']); // Fallback Default
+    const [heroImages, setHeroImages] = useState(['/images/slide_1.webp']); // Fallback Default
     const [currentSlide, setCurrentSlide] = useState(0);
 
     // Barcode Scanner Buffer

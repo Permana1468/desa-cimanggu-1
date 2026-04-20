@@ -2,6 +2,7 @@ from rest_framework import viewsets, generics, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.utils import timezone
 from django.http import HttpResponse
@@ -15,7 +16,9 @@ from .serializers import (UserSerializer, LandingPageSettingSerializer,
                           AdminUserResetPasswordSerializer, CustomTokenObtainPairSerializer,
                           BeritaSerializer, PejabatDesaSerializer, KehadiranSerializer,
                           UsulanMusrenbangSerializer, RencanaAnggaranSerializer, RencanaAnggaranItemSerializer,
-                          UserProfileSerializer, ChangePasswordSerializer, RegisterSerializer)
+                          UserProfileSerializer, ChangePasswordSerializer, RegisterSerializer,
+                          UMKMShopSerializer, ProductSerializer)
+from .models import CustomUser, LandingPageSetting, Berita, PejabatDesa, Kehadiran, UsulanMusrenbang, RencanaAnggaran, RencanaAnggaranItem, UMKMShop, Product
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -813,6 +816,80 @@ class LPMDashboardStatsView(APIView):
         stats['agenda_terdekat'] = agenda_data
 
         return Response(stats, status=status.HTTP_200_OK)
+
+# --- MODUL UMKM VIEWSETS ---
+class UMKMShopViewSet(viewsets.ModelViewSet):
+    """
+    API for UMKM Shops.
+    - Public can list and retrieve.
+    - Only OWNER_TOKO can create/update their own shops.
+    """
+    queryset = UMKMShop.objects.all()
+    serializer_class = UMKMShopSerializer
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
+    def get_queryset(self):
+        user = self.request.user
+        if self.action in ['list', 'retrieve']:
+            return UMKMShop.objects.filter(is_verified=True)
+        if user.is_authenticated:
+            if user.role == 'ADMIN':
+                return UMKMShop.objects.all()
+            return UMKMShop.objects.filter(owner=user)
+        return UMKMShop.objects.none()
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+class ProductViewSet(viewsets.ModelViewSet):
+    """
+    API for UMKM Products.
+    - Public can access everything in read mode.
+    - Owners can modify their products.
+    """
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        shop_id = self.request.query_params.get('shop_id')
+        if shop_id:
+            queryset = queryset.filter(shop_id=shop_id)
+        
+        user = self.request.user
+        if self.action not in ['list', 'retrieve']:
+             if user.role != 'ADMIN':
+                 queryset = queryset.filter(shop__owner=user)
+                 
+        return queryset
+
+    def perform_create(self, serializer):
+        # Additional permission check: Ensure the user owns the shop they are adding products to
+        shop_id = self.request.data.get('shop')
+        if not shop_id:
+             serializer.save()
+             return
+             
+        try:
+             shop = UMKMShop.objects.get(id=shop_id)
+             if self.request.user.role == 'ADMIN' or shop.owner == self.request.user:
+                 serializer.save()
+             else:
+                 from rest_framework.exceptions import PermissionDenied
+                 raise PermissionDenied("You do not have permission to add products to this shop.")
+        except UMKMShop.DoesNotExist:
+             serializer.save()
+
 
 # --- System Health Check ---
 from django.db import connection

@@ -7,6 +7,7 @@ const DashboardUtamaAdmin = lazy(() => import('../dashboards/Admin/DashboardUtam
 const DashboardUtamaLPM = lazy(() => import('../dashboards/LPM/DashboardUtamaLPM'));
 const DashboardUtamaWarga = lazy(() => import('../dashboards/Warga/DashboardUtamaWarga'));
 const DashboardUtamaKelembagaan = lazy(() => import('../dashboards/Shared/DashboardUtamaKelembagaan'));
+const DashboardUtamaToko = lazy(() => import('../dashboards/Toko/DashboardUtamaToko'));
 
 const Dashboard = () => {
     const { user } = useContext(AuthContext);
@@ -17,6 +18,8 @@ const Dashboard = () => {
                 return <DashboardUtamaAdmin />;
             case 'LPM':
                 return <DashboardUtamaLPM />;
+            case 'OWNER_TOKO':
+                return <DashboardUtamaToko />;
             case 'WARGA':
                 return <DashboardUtamaWarga />;
             case 'RT':

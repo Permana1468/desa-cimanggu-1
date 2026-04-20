@@ -34,7 +34,9 @@ from .views import (
     GaleriProyekLPMViewSet,
     LPMDashboardStatsView,
     HealthCheckView,
-    SystemInitView
+    SystemInitView,
+    UMKMShopViewSet,
+    ProductViewSet
 )
 
 router = DefaultRouter()
@@ -63,6 +65,10 @@ router.register(r'lpm/kader', KaderLPMViewSet, basename='lpm-kader')
 router.register(r'lpm/presensi', PresensiKegiatanLPMViewSet, basename='lpm-presensi')
 router.register(r'lpm/laporan', LaporanDigitalLPMViewSet, basename='lpm-laporan')
 router.register(r'lpm/galeri', GaleriProyekLPMViewSet, basename='lpm-galeri')
+
+# UMKM Modules
+router.register(r'umkm/shops', UMKMShopViewSet, basename='umkm-shops')
+router.register(r'umkm/products', ProductViewSet, basename='umkm-products')
 
 urlpatterns = [
     # Auth

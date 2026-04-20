@@ -19,7 +19,7 @@ const HeroCarouselForm = () => {
 
     // Live preview images array
     const previewImages = [
-        formData.carousel_image_1 || '/images/slide_1.png',
+        formData.carousel_image_1 || '/images/slide_1.webp',
         formData.carousel_image_2,
         formData.carousel_image_3
     ].filter(Boolean);

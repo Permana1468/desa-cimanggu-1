@@ -4,10 +4,10 @@ import { User, Lock, Mail, Phone, UserCircle, Briefcase, MapPin, ArrowRight, Hom
 import axios from 'axios';
 
 const heroImages = [
-    '/images/slide_1.png',
-    '/images/slide_6.png',
-    '/images/slide_4.png',
-    '/images/slide_5.png'
+    '/images/slide_1.webp',
+    '/images/slide_6.webp',
+    '/images/slide_4.webp',
+    '/images/slide_5.webp'
 ];
 
 const Register = () => {
@@ -157,7 +157,7 @@ const Register = () => {
                 <div className="relative bg-[#0f172a]/50 backdrop-blur-[40px] border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl overflow-hidden">
                     <div className="text-center mb-10">
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/5 border border-white/10 p-3 mb-5 shadow-2xl backdrop-blur-xl -rotate-2">
-                            <img src="/images/logo-bogor.png" alt="Logo" className="w-full h-full object-contain" />
+                            <img src="/images/logo-bogor.webp" alt="Logo" className="w-full h-full object-contain" />
                         </div>
                         <h2 className="text-3xl font-black text-white tracking-tight uppercase leading-none">
                             <span className="block text-gold mb-1">Daftar Akun</span>

@@ -8,7 +8,7 @@ const LandingPage = () => {
     const [siteData, setSiteData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [heroImages, setHeroImages] = useState(['/images/slide_1.png']); // Fallback Default
+    const [heroImages, setHeroImages] = useState(['/images/slide_1.webp']); // Fallback Default
 
     const [isScrolled, setIsScrolled] = useState(false);
     const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
@@ -172,6 +172,7 @@ const LandingPage = () => {
         { name: 'Layanan', id: 'layanan' },
         { name: 'Peta', id: 'peta-interaktif' },
         { name: 'Berita', id: 'berita' },
+        { name: 'UMKM', id: 'umkm', isRoute: true, path: '/umkm' },
         { name: 'Organisasi', id: 'organisasi' },
     ];
     // newsData and orgData are now state variables
@@ -261,7 +262,7 @@ const LandingPage = () => {
 
                     {/* === BAGIAN KIRI: Logo & Branding (Terpisah dari Kapsul Menu) === */}
                     <div className="flex items-center gap-3">
-                        <img src={siteData?.logo || "/images/logo-bogor.png"} alt="Logo Desa" className="w-10 h-10 object-contain drop-shadow-md" />
+                        <img src={siteData?.logo || "/images/logo-bogor.webp"} alt="Logo Desa" className="w-10 h-10 object-contain drop-shadow-md" />
                         <div className="flex flex-col justify-center">
                             <span className="text-white font-bold text-[16px] tracking-wide leading-none mb-1 uppercase">
                                 {siteData?.title || "DESA CIMANGGU I"}
@@ -288,22 +289,33 @@ const LandingPage = () => {
                         />
 
                         {/* Daftar Menu Teks */}
-                        {navMenuItems.map((menu, idx) => (
-                            <a
-                                key={idx}
-                                // Simpan elemen HTML ini ke dalam useRef untuk diukur lebarnya
-                                ref={(el) => (itemRefs.current[idx] = el)}
-                                href={`#${menu.id}`}
-                                onMouseEnter={() => handleMouseEnter(idx)}
-                                onClick={() => setActiveIndex(idx)}
-                                className={`relative z-10 px-5 py-2 text-[14px] font-medium transition-colors duration-300 ${activeIndex === idx
-                                    ? 'text-yellow-400'
-                                    : 'text-gray-300 hover:text-yellow-400'
-                                    } `}
-                            >
-                                {menu.name}
-                            </a>
-                        ))}
+                        {navMenuItems.map((menu, idx) => {
+                            const commonProps = {
+                                className: `relative z-10 px-5 py-2 text-[14px] font-medium transition-colors duration-300 ${activeIndex === idx ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-400'} `,
+                                onMouseEnter: () => handleMouseEnter(idx),
+                                onClick: () => setActiveIndex(idx)
+                            };
+
+                            return menu.isRoute ? (
+                                <Link
+                                    key={idx}
+                                    to={menu.path}
+                                    ref={(el) => (itemRefs.current[idx] = el)}
+                                    {...commonProps}
+                                >
+                                    {menu.name}
+                                </Link>
+                            ) : (
+                                <a
+                                    key={idx}
+                                    href={`#${menu.id}`}
+                                    ref={(el) => (itemRefs.current[idx] = el)}
+                                    {...commonProps}
+                                >
+                                    {menu.name}
+                                </a>
+                            );
+                        })}
                     </nav>
 
                     <div className="hidden md:flex items-center gap-4">
@@ -339,19 +351,24 @@ const LandingPage = () => {
                 {/* === MOBILE MENU DROPDOWN === */}
                 <div className={`md:hidden absolute top-full left-0 w-full bg-[#0f172a]/95 backdrop-blur-xl border-t border-white/10 transition-all duration-300 overflow-hidden ${isMobileMenuOpen ? 'max-h-96 py-4 shadow-xl' : 'max-h-0 py-0'} `}>
                     <nav className="flex flex-col px-6 gap-4">
-                        {navMenuItems.map((menu, idx) => (
-                            <a
-                                key={idx}
-                                href={`#${menu.id}`}
-                                onClick={() => {
+                        {navMenuItems.map((menu, idx) => {
+                            const commonProps = {
+                                onClick: () => {
                                     setActiveIndex(idx);
                                     setIsMobileMenuOpen(false);
-                                }}
-                                className={`text-[15px] font-medium transition-colors ${activeIndex === idx ? 'text-yellow-400' : 'text-gray-300 hover:text-white'} `}
-                            >
-                                {menu.name}
-                            </a>
-                        ))}
+                                },
+                                className: `text-[15px] font-medium transition-colors ${activeIndex === idx ? 'text-yellow-400' : 'text-gray-300 hover:text-white'} `
+                            };
+                            return menu.isRoute ? (
+                                <Link key={idx} to={menu.path} {...commonProps}>
+                                    {menu.name}
+                                </Link>
+                            ) : (
+                                <a key={idx} href={`#${menu.id}`} {...commonProps}>
+                                    {menu.name}
+                                </a>
+                            );
+                        })}
                         <a
                             href="/absensi"
                             target="_blank" rel="noopener noreferrer"
@@ -1045,7 +1062,7 @@ const LandingPage = () => {
             {/* Footer */}
             <footer className="border-t border-white/10 bg-slate-900 py-12 text-center px-4 relative z-20">
                 <img
-                    src="/images/logo-bogor.png"
+                    src="/images/logo-bogor.webp"
                     alt="Logo Footer"
                     className="w-12 h-12 object-contain drop-shadow-md mx-auto mb-6"
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}

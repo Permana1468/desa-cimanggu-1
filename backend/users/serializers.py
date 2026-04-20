@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, LandingPageSetting, Berita, PejabatDesa, Kehadiran, UsulanMusrenbang, RencanaAnggaran, RencanaAnggaranItem, ProgramPembinaan, JadwalGotongRoyong, KegiatanLPM, PengurusLPM, DokumenDED, DokumenPerencanaan, AspirasiWarga, CatatanKeuanganLPM, InventarisLPM, PeminjamanAlat, KaderLPM, PresensiKegiatanLPM, LaporanDigitalLPM, GaleriProyekLPM
+from .models import CustomUser, LandingPageSetting, Berita, PejabatDesa, Kehadiran, UsulanMusrenbang, RencanaAnggaran, RencanaAnggaranItem, ProgramPembinaan, JadwalGotongRoyong, KegiatanLPM, PengurusLPM, DokumenDED, DokumenPerencanaan, AspirasiWarga, CatatanKeuanganLPM, InventarisLPM, PeminjamanAlat, KaderLPM, PresensiKegiatanLPM, LaporanDigitalLPM, GaleriProyekLPM, UMKMShop, Product
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UserSerializer(serializers.ModelSerializer):
@@ -269,3 +269,17 @@ class RegisterSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return user
+
+class UMKMShopSerializer(serializers.ModelSerializer):
+    owner_name = serializers.CharField(source='owner.username', read_only=True)
+    class Meta:
+        model = UMKMShop
+        fields = '__all__'
+        read_only_fields = ('owner', 'created_at', 'is_verified')
+
+class ProductSerializer(serializers.ModelSerializer):
+    shop_name = serializers.CharField(source='shop.shop_name', read_only=True)
+    class Meta:
+        model = Product
+        fields = '__all__'
+        read_only_fields = ('shop', 'created_at')
