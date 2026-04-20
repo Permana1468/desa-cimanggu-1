@@ -234,8 +234,12 @@ const Layout = ({ children }) => {
                         </div>
                         
                         <div className="flex flex-col items-center">
-                            <h3 className="text-lg font-black text-white tracking-tight leading-tight">Admin Desa Cimanggu I</h3>
-                            <p className="text-[10px] text-white/40 font-medium truncate mt-0.5 tracking-wide">{user?.email || 'admin@cimanggu1.desa.id'}</p>
+                            <h3 className="text-lg font-black text-white tracking-tight leading-tight uppercase">
+                                {user?.nama_lengkap || user?.username || 'Admin Desa Cimanggu I'}
+                            </h3>
+                            <p className="text-[10px] text-white/40 font-medium truncate mt-0.5 tracking-wide">
+                                {user?.email || 'pemerintah@cimanggu1.desa.id'}
+                            </p>
                             
                             <div className="flex items-center gap-2 mt-2">
                                 <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[8px] font-black rounded-md uppercase tracking-widest border border-emerald-500/30">
