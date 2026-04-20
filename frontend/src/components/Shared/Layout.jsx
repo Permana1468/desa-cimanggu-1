@@ -108,6 +108,9 @@ const Layout = ({ children }) => {
     }, []);
 
     useEffect(() => {
+        // Only run carousel on desktop
+        if (window.innerWidth < 768) return;
+        
         const t = setInterval(() => {
             setCurrentBg(p => (p === bgImages.length - 1 ? 0 : p + 1));
         }, 8000);
@@ -142,22 +145,33 @@ const Layout = ({ children }) => {
         <div className="relative flex h-screen overflow-hidden font-[Inter,system-ui,sans-serif] bg-dark-base transition-colors duration-500">
 
             {/* ── Background Layers ────────────────────────────── */}
-            {bgImages.map((src, i) => (
+            {/* On Mobile: Render only ONE static background to save GPU and battery */}
+            {window.innerWidth < 768 ? (
                 <div
-                    key={i}
-                    className="absolute inset-0 bg-cover bg-center blur-[8px] scale-[1.04] z-0 transition-opacity duration-[2000ms] ease-in-out"
+                    className="absolute inset-0 bg-cover bg-center z-0"
                     style={{
-                        backgroundImage: `url('${src}')`,
-                        opacity: (i === currentBg) ? (theme === 'dark' ? 1 : 0.65) : 0,
+                        backgroundImage: `url('${bgImages[0]}')`,
+                        opacity: theme === 'dark' ? 0.9 : 0.6,
                     }}
                 />
-            ))}
+            ) : (
+                bgImages.map((src, i) => (
+                    <div
+                        key={i}
+                        className="absolute inset-0 bg-cover bg-center blur-[8px] scale-[1.04] z-0 transition-opacity duration-[2000ms] ease-in-out"
+                        style={{
+                            backgroundImage: `url('${src}')`,
+                            opacity: (i === currentBg) ? (theme === 'dark' ? 1 : 0.65) : 0,
+                        }}
+                    />
+                ))
+            )}
             
             {/* Theme-aware overlay */}
             <div className={`absolute inset-0 z-[1] pointer-events-none transition-all duration-700
                             ${theme === 'dark' 
-                                ? 'bg-gradient-to-br from-[rgba(6,10,24,0.96)] via-[rgba(8,14,35,0.92)] to-[rgba(6,10,24,0.95)]' 
-                                : 'bg-gradient-to-br from-[rgba(248,250,252,0.88)] via-[rgba(241,245,249,0.84)] to-[rgba(248,250,252,0.9)]'}`} 
+                                ? 'bg-gradient-to-br from-[rgba(6,10,24,0.98)] via-[rgba(8,14,35,0.95)] to-[rgba(6,10,24,0.98)]' 
+                                : 'bg-gradient-to-br from-[rgba(248,250,252,0.92)] via-[rgba(241,245,249,0.9)] to-[rgba(248,250,252,0.94)]'}`} 
             />
             
             {/* Grid pattern */}
