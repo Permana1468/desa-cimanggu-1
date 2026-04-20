@@ -103,6 +103,7 @@ export const menuConfig = {
                 { title: 'Manajemen Pengguna', path: '/dashboard/users' },
                 { title: 'Verifikasi Pendaftaran', path: '/dashboard/verify-users' },
                 { title: 'Identitas Desa', path: '/dashboard/landing-setting' },
+                { title: 'Carousel Background', path: '/dashboard/hero-carousel' },
                 { title: 'Kelola Berita', path: '/dashboard/berita' },
                 { title: 'Struktur Organisasi', path: '/dashboard/organisasi' },
             ]
