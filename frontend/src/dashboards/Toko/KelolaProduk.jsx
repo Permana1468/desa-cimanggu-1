@@ -47,6 +47,7 @@ const KelolaProduk = () => {
 
     const handleOpenModal = (mode, product = null) => {
         setModalMode(mode);
+        setMessage({ type: '', text: '' });
         if (mode === 'edit' && product) {
             setFormData({
                 id: product.id,
@@ -67,6 +68,10 @@ const KelolaProduk = () => {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            if (file.size > 2 * 1024 * 1024) {
+                alert("Ukuran gambar maksimal 2MB.");
+                return;
+            }
             setImagePreview(URL.createObjectURL(file));
             setFormData({ ...formData, image_file: file });
         }
@@ -74,6 +79,8 @@ const KelolaProduk = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setMessage({ type: '', text: '' });
+
         if (!shop?.id) {
             alert("Harap lengkapi Identitas Toko terlebih dahulu.");
             return;
@@ -92,16 +99,44 @@ const KelolaProduk = () => {
 
         try {
             if (modalMode === 'add') {
-                await api.post('/users/api/umkm/products/', data);
+                await api.post('/users/api/umkm/products/', data, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             } else {
-                await api.patch(`/users/api/umkm/products/${formData.id}/`, data);
+                await api.patch(`/users/api/umkm/products/${formData.id}/`, data, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             }
+            
+            // Success
             setIsModalOpen(false);
-            setMessage({ type: 'success', text: `Produk berhasil ${modalMode === 'add' ? 'ditambahkan' : 'diperbarui'}!` });
+            setMessage({ type: 'success', text: `Produk "${formData.name}" berhasil ${modalMode === 'add' ? 'ditambahkan' : 'diperbarui'}!` });
+            
+            // Clean up blob
+            if (imagePreview && imagePreview.startsWith('blob:')) {
+                URL.revokeObjectURL(imagePreview);
+            }
+            
             fetchInitialData();
         } catch (err) {
             console.error("Gagal menyimpan produk", err);
-            alert("Error: Gagal menyimpan produk. Mohon periksa format input.");
+            // Enhanced Error Handling: Show backend validation message if available
+            const backendError = err.response?.data;
+            let errorText = 'Gagal menyimpan produk. Periksa kembali form.';
+            
+            if (backendError) {
+                if (typeof backendError === 'object') {
+                    // Extract first error message from object (e.g. {price: ["A valid number is required."]})
+                    const firstKey = Object.keys(backendError)[0];
+                    const firstVal = backendError[firstKey];
+                    errorText = `${firstKey.toUpperCase()}: ${Array.isArray(firstVal) ? firstVal[0] : firstVal}`;
+                } else if (typeof backendError === 'string') {
+                    errorText = backendError;
+                }
+            }
+            
+            setMessage({ type: 'error', text: errorText });
+            alert(`Gagal: ${errorText}`);
         } finally {
             setIsSaving(false);
         }
@@ -145,6 +180,15 @@ const KelolaProduk = () => {
                 </button>
             </div>
 
+            {message.text && (
+                <div className={`p-4 rounded-2xl border flex items-center gap-3 animate-fade-in ${
+                    message.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-red-500/10 border-red-500/30 text-red-400'
+                }`}>
+                    {message.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+                    <span className="text-sm font-bold uppercase tracking-tight">{message.text}</span>
+                </div>
+            )}
+
             {/* Inventory Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-[#1e293b]/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 flex items-center gap-5">
@@ -170,15 +214,6 @@ const KelolaProduk = () => {
                     </div>
                 </div>
             </div>
-
-            {message.text && (
-                <div className={`p-4 rounded-2xl border flex items-center gap-3 animate-fade-in ${
-                    message.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-red-500/10 border-red-500/30 text-red-400'
-                }`}>
-                    <CheckCircle size={18} />
-                    <span className="text-sm font-bold">{message.text}</span>
-                </div>
-            )}
 
             {/* Product Table / Cards */}
             <div className="bg-[#1e293b]/40 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
@@ -268,7 +303,7 @@ const KelolaProduk = () => {
                 <form id="productForm" onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="md:col-span-2 flex flex-col items-center">
-                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4 w-full">Foto Produk</p>
+                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4 w-full text-center">Foto Produk (Maks 2MB)</p>
                             <label className="relative group/upload w-full h-48 rounded-2xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center cursor-pointer overflow-hidden hover:border-yellow-500/30 transition-all">
                                 {imagePreview ? (
                                     <img src={imagePreview} alt="Preview" className="w-full h-full object-contain" />
@@ -286,7 +321,7 @@ const KelolaProduk = () => {
                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Nama Produk</label>
                             <input 
                                 type="text" required
-                                className="w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white font-bold outline-none focus:border-yellow-500/50"
+                                className="w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white font-bold outline-none focus:border-yellow-500/50 transition-all"
                                 value={formData.name}
                                 onChange={(e) => setFormData({...formData, name: e.target.value})}
                                 placeholder="Cth: Keripik Pisang Original"
@@ -296,8 +331,8 @@ const KelolaProduk = () => {
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Harga (Rp)</label>
                             <input 
-                                type="number" required
-                                className="w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-xl text-emerald-400 font-black outline-none focus:border-yellow-500/50"
+                                type="number" required min="0" step="1"
+                                className="w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-xl text-emerald-400 font-black outline-none focus:border-yellow-500/50 transition-all"
                                 value={formData.price}
                                 onChange={(e) => setFormData({...formData, price: e.target.value})}
                                 placeholder="Cth: 15000"
@@ -307,8 +342,8 @@ const KelolaProduk = () => {
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Stok Tersedia</label>
                             <input 
-                                type="number" required
-                                className="w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white font-bold outline-none focus:border-yellow-500/50"
+                                type="number" required min="0" step="1"
+                                className="w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white font-bold outline-none focus:border-yellow-500/50 transition-all"
                                 value={formData.stock}
                                 onChange={(e) => setFormData({...formData, stock: e.target.value})}
                                 placeholder="Cth: 50"
@@ -319,7 +354,7 @@ const KelolaProduk = () => {
                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Keterangan Produk</label>
                             <textarea 
                                 rows="3"
-                                className="w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white font-medium outline-none focus:border-yellow-500/50 resize-none"
+                                className="w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white font-medium outline-none focus:border-yellow-500/50 transition-all resize-none"
                                 value={formData.description}
                                 onChange={(e) => setFormData({...formData, description: e.target.value})}
                                 placeholder="Sebutkan keunggulan atau berat produk..."

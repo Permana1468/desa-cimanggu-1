@@ -891,22 +891,15 @@ class ProductViewSet(viewsets.ModelViewSet):
         return queryset.none()
 
     def perform_create(self, serializer):
-        # Additional permission check: Ensure the user owns the shop they are adding products to
-        shop_id = self.request.data.get('shop')
-        if not shop_id:
-             from rest_framework.exceptions import ValidationError
-             raise ValidationError("Shop ID is required.")
-             
-        try:
-             shop = UMKMShop.objects.get(id=shop_id)
-             if self.request.user.role == 'ADMIN' or shop.owner == self.request.user:
-                 serializer.save()
-             else:
-                 from rest_framework.exceptions import PermissionDenied
-                 raise PermissionDenied("You do not have permission to add products to this shop.")
-        except UMKMShop.DoesNotExist:
-             from rest_framework.exceptions import ValidationError
-             raise ValidationError("Selected shop does not exist.")
+        # The serializer has already validated the 'shop' field (PrimaryKeyRelatedField)
+        shop = serializer.validated_data.get('shop')
+        
+        # Security: Ensure only the shop owner (or admin) can create products for this shop
+        if self.request.user.role == 'ADMIN' or (shop and shop.owner == self.request.user):
+            serializer.save()
+        else:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Anda tidak memiliki izin untuk menambah produk ke toko ini.")
 
 
 # --- System Health Check ---
