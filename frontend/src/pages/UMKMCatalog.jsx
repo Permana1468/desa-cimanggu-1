@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingBag, Search, MapPin, Store, ChevronLeft } from 'lucide-react';
-import api from '../../services/api';
+import api from '../services/api';
 
 const UMKMCatalog = () => {
     const [products, setProducts] = useState([]);
