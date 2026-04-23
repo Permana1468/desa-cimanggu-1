@@ -132,13 +132,16 @@ const LandingPage = () => {
     const itemRefs = React.useRef([]);
 
     // Set initial position of the sliding pill
-    React.useEffect(() => {
+    useEffect(() => {
         const activeEl = itemRefs.current[activeIndex];
         if (activeEl) {
-            setPillStyle({
-                left: activeEl.offsetLeft,
-                width: activeEl.offsetWidth,
-                opacity: 1
+            setPillStyle((prev) => {
+                if (prev.left === activeEl.offsetLeft && prev.width === activeEl.offsetWidth) return prev;
+                return {
+                    left: activeEl.offsetLeft,
+                    width: activeEl.offsetWidth,
+                    opacity: 1
+                };
             });
         }
     }, [activeIndex]);
