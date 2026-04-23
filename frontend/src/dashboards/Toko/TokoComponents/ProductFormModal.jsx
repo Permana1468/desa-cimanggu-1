@@ -1,6 +1,6 @@
 import React from 'react';
 import { Plus, Edit, Save, RefreshCw } from 'lucide-react';
-import Modal from '../../components/Shared/Modal';
+import Modal from '../../../components/Shared/Modal';
 
 const ProductFormModal = ({ isModalOpen, setIsModalOpen, modalMode, isSaving, handleSubmit, imagePreview, handleImageChange, formData, setFormData }) => {
     return (

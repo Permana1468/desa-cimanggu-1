@@ -1,5 +1,5 @@
 import React from 'react';
-import Modal from '../../components/Shared/Modal';
+import Modal from '../../../components/Shared/Modal';
 
 const FormInput = ({ label, name, type = "text", required, placeholder, value, onChange, info }) => (
     <div className="space-y-2">
