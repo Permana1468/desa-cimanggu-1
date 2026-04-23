@@ -252,3 +252,6 @@ STORAGES = {
 # Media files (Public URL from Supabase)
 MEDIA_URL = f"{SUPABASE_URL}/storage/v1/object/public/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

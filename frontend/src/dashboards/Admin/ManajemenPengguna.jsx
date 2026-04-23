@@ -4,6 +4,28 @@ import api from '../../services/api';
 import Modal from '../../components/Shared/Modal';
 import { useTheme } from '../../contexts/ThemeContext';
 
+/* ── Standardized Input Component ───────────────────────── */
+const FormInput = ({ label, name, type = "text", required, placeholder, value, onChange, info }) => (
+    <div className="space-y-2">
+        <div className="flex justify-between items-center">
+            <label className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em]">{label}</label>
+            {required && <span className="text-[9px] text-gold font-bold uppercase tracking-widest">Required</span>}
+        </div>
+        <input
+            type={type}
+            name={name}
+            required={required}
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 text-text-main text-[13.5px] 
+                       placeholder:text-text-quaternary outline-none transition-all duration-300
+                       focus:border-gold-border focus:bg-gold-light focus:shadow-gold-glow"
+        />
+        {info && <p className="text-[10px] text-text-tertiary italic mt-1.5 leading-relaxed">{info}</p>}
+    </div>
+);
+
 const ManajemenPengguna = () => {
     const { theme } = useTheme();
     const [usersList, setUsersList] = useState([]);
@@ -66,10 +88,6 @@ const ManajemenPengguna = () => {
         return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
     };
 
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
     const fetchUsers = async () => {
         setIsLoading(true);
         try {
@@ -81,6 +99,10 @@ const ManajemenPengguna = () => {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
     const handleOpenModal = (mode, user = null) => {
         setModalMode(mode);
@@ -164,28 +186,6 @@ const ManajemenPengguna = () => {
         u.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (u.email && u.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
         u.role.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    /* ── Standardized Input Component ───────────────────────── */
-    const FormInput = ({ label, name, type = "text", required, placeholder, value, onChange, info }) => (
-        <div className="space-y-2">
-            <div className="flex justify-between items-center">
-                <label className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em]">{label}</label>
-                {required && <span className="text-[9px] text-gold font-bold uppercase tracking-widest">Required</span>}
-            </div>
-            <input
-                type={type}
-                name={name}
-                required={required}
-                value={value}
-                onChange={onChange}
-                placeholder={placeholder}
-                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 text-text-main text-[13.5px] 
-                           placeholder:text-text-quaternary outline-none transition-all duration-300
-                           focus:border-gold-border focus:bg-gold-light focus:shadow-gold-glow"
-            />
-            {info && <p className="text-[10px] text-text-tertiary italic mt-1.5 leading-relaxed">{info}</p>}
-        </div>
     );
 
     return (

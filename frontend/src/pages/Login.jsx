@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Lock, ArrowRight, Home, RefreshCw } from 'lucide-react';
@@ -23,7 +23,7 @@ const Login = () => {
     const { loginUser } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const fetchCaptcha = async () => {
+    const fetchCaptcha = useCallback(async () => {
         try {
             const res = await axios.get('/users/api/captcha/');
             setCaptcha({
@@ -33,7 +33,7 @@ const Login = () => {
         } catch (err) {
             console.error("Gagal mengambil captcha", err);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchCaptcha();
@@ -41,7 +41,7 @@ const Login = () => {
             setCurrentSlide((prev) => (prev + 1) % heroImages.length);
         }, 8000);
         return () => clearInterval(interval);
-    }, []);
+    }, [fetchCaptcha]);
 
     const handleLogin = async (e) => {
         e.preventDefault();

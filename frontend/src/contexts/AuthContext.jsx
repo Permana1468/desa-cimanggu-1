@@ -5,18 +5,13 @@ import api from '../services/api';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
+    const [user, setUser] = useState(() => {
         const token = localStorage.getItem('access_token');
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
-                if (decodedToken.exp * 1000 < Date.now()) {
-                    logoutUser();
-                } else {
-                    const basicUser = {
+                if (decodedToken.exp * 1000 > Date.now()) {
+                    return {
                         id: decodedToken.user_id,
                         username: decodedToken.username,
                         role: decodedToken.role,
@@ -24,21 +19,26 @@ export const AuthProvider = ({ children }) => {
                         status: decodedToken.status,
                         is_verified: decodedToken.is_verified
                     };
-                    setUser(basicUser);
-                    // Fetch extended data like foto_profil and nama_lengkap
-                    fetchFullUserData(basicUser);
                 }
-            } catch (error) {
-                logoutUser();
+            } catch (e) {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
             }
         }
-        setLoading(false);
-    }, []);
+        return null;
+    });
+    const [loading, setLoading] = useState(true);
+
+    const logoutUser = () => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        setUser(null);
+    };
 
     const fetchFullUserData = async (basicUser) => {
         try {
             const res = await api.get('/users/api/users/me/');
-            setUser({
+            const fullData = {
                 ...basicUser,
                 nama_lengkap: res.data.nama_lengkap,
                 foto_profil: res.data.foto_profil,
@@ -46,12 +46,20 @@ export const AuthProvider = ({ children }) => {
                 nomor_telepon: res.data.nomor_telepon,
                 status: res.data.status,
                 is_verified: res.data.is_verified
-            });
+            };
+            setUser(fullData);
             return res.data;
         } catch (e) {
             console.error("Failed to fetch full user data", e);
         }
     };
+
+    useEffect(() => {
+        if (user) {
+            fetchFullUserData(user);
+        }
+        setLoading(false);
+    }, []);
 
     const refreshUser = () => {
         if (user) fetchFullUserData(user);
@@ -92,12 +100,6 @@ export const AuthProvider = ({ children }) => {
         }
 
         return tokens;
-    };
-
-    const logoutUser = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        setUser(null);
     };
 
     return (

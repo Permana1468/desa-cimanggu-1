@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Lock, Mail, Phone, UserCircle, Briefcase, MapPin, ArrowRight, Home, RefreshCw, CheckCircle2, ChevronDown } from 'lucide-react';
 import axios from 'axios';
@@ -9,6 +9,20 @@ const heroImages = [
     '/images/slide_4.webp',
     '/images/slide_5.webp'
 ];
+
+const RowInput = ({ label, name, type = 'text', icon, value, onChange, placeholder }) => (
+    <div className="space-y-2">
+        <label className="text-[10px] font-black text-text-subtle ml-1 uppercase tracking-[0.2em]">{label}</label>
+        <div className="relative group/input">
+            <div className="absolute inset-y-0 left-0 pl-4.5 flex items-center pointer-events-none">{React.cloneElement(icon, { size: 18, className: "text-text-subtle group-focus-within/input:text-gold transition-colors" })}</div>
+            <input 
+                name={name} required type={type} value={value} onChange={onChange}
+                className="w-full pl-12.5 pr-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-2xl text-text-main text-[13.5px] font-bold placeholder-text-faint focus:outline-none focus:border-gold transition-all" 
+                placeholder={placeholder} 
+            />
+        </div>
+    </div>
+);
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -29,7 +43,7 @@ const Register = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const navigate = useNavigate();
 
-    const fetchCaptcha = async () => {
+    const fetchCaptcha = useCallback(async () => {
         try {
             const res = await axios.get('/users/api/captcha/');
             setCaptcha({
@@ -39,7 +53,7 @@ const Register = () => {
         } catch (err) {
             console.error("Gagal mengambil captcha", err);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchCaptcha();
@@ -47,7 +61,7 @@ const Register = () => {
             setCurrentSlide((prev) => (prev + 1) % heroImages.length);
         }, 8000);
         return () => clearInterval(interval);
-    }, []);
+    }, [fetchCaptcha]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -252,19 +266,5 @@ const Register = () => {
         </div>
     );
 };
-
-const RowInput = ({ label, name, type = 'text', icon, value, onChange, placeholder }) => (
-    <div className="space-y-2">
-        <label className="text-[10px] font-black text-text-subtle ml-1 uppercase tracking-[0.2em]">{label}</label>
-        <div className="relative group/input">
-            <div className="absolute inset-y-0 left-0 pl-4.5 flex items-center pointer-events-none">{React.cloneElement(icon, { size: 18, className: "text-text-subtle group-focus-within/input:text-gold transition-colors" })}</div>
-            <input 
-                name={name} required type={type} value={value} onChange={onChange}
-                className="w-full pl-12.5 pr-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-2xl text-text-main text-[13.5px] font-bold placeholder-text-faint focus:outline-none focus:border-gold transition-all" 
-                placeholder={placeholder} 
-            />
-        </div>
-    </div>
-);
 
 export default Register;

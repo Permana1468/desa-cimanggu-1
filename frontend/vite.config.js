@@ -29,16 +29,4 @@ export default defineConfig({
       },
     },
   },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-utils': ['axios', 'lucide-react', 'jwt-decode'],
-          'vendor-heavy': ['recharts', 'leaflet', 'react-leaflet', 'xlsx'],
-        },
-      },
-    },
-    chunkSizeWarningLimit: 1000,
-  }
 })
