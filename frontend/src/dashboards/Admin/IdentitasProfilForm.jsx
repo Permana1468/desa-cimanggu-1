@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Save, Upload, Image as ImageIcon, CheckCircle, Info, ShieldCheck } from 'lucide-react';
 import api from '../../services/api';
 import { compressImage } from '../../utils/imageUtils';
@@ -18,28 +18,32 @@ const IdentitasProfilForm = () => {
     const [aboutImageFile, setAboutImageFile] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-        const fetchSettings = async () => {
-            try {
-                const response = await api.get('/users/api/landing-page/');
-                if (response.data && response.data.length > 0) {
-                    const data = response.data[0];
-                    setFormData({
-                        id: data.id,
-                        title: data.title || '',
-                        about_title: data.about_title || 'Sekilas Pandang',
-                        description: data.description || '',
-                        about_text: data.about_text || '',
-                        logo: data.logo || null,
-                        about_image: data.about_image || null
-                    });
-                }
-            } catch (error) {
-                console.error("Gagal memuat pengaturan:", error);
+    const fetchSettings = useCallback(async () => {
+        try {
+            const response = await api.get('/users/api/landing-page/');
+            if (response.data && response.data.length > 0) {
+                const data = response.data[0];
+                setFormData({
+                    id: data.id,
+                    title: data.title || '',
+                    about_title: data.about_title || 'Sekilas Pandang',
+                    description: data.description || '',
+                    about_text: data.about_text || '',
+                    logo: data.logo || null,
+                    about_image: data.about_image || null
+                });
             }
-        };
-        fetchSettings();
+        } catch (error) {
+            console.error("Gagal memuat pengaturan:", error);
+        }
     }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchSettings();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchSettings]);
 
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
@@ -119,7 +123,7 @@ const IdentitasProfilForm = () => {
                     onClick={handleSubmit}
                     disabled={isLoading}
                     className={`group bg-amber-500 hover:bg-amber-400 text-black px-10 py-3.5 rounded-2xl font-black text-[14px] 
-                               transition-all duration-300 flex items-center gap-3 shadow-[0_10px_30px_rgba(245,158,11,0.2)] hover:-translate-y-1 active:scale-95`}
+                                transition-all duration-300 flex items-center gap-3 shadow-[0_10px_30px_rgba(245,158,11,0.2)] hover:-translate-y-1 active:scale-95`}
                 >
                     <Save size={18} className="group-hover:rotate-12 transition-transform" />
                     {isLoading ? 'MENYIMPAN...' : 'SIMPAN PERUBAHAN'}

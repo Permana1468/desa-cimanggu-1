@@ -1,20 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { UserCheck, UserX, Search, ShieldCheck, Mail, Phone, Calendar, Loader2 } from 'lucide-react';
 import api from '../../services/api';
-import { useTheme } from '../../contexts/ThemeContext';
 
 const VerifikasiPengguna = () => {
-    const { theme } = useTheme();
     const [pendingUsers, setPendingUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isProcessing, setIsProcessing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        fetchPendingUsers();
-    }, []);
-
-    const fetchPendingUsers = async () => {
+    const fetchPendingUsers = useCallback(async () => {
         setIsLoading(true);
         try {
             // Fetch all and filter for PENDING
@@ -26,7 +20,14 @@ const VerifikasiPengguna = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchPendingUsers();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchPendingUsers]);
 
     const handleApprove = async (user) => {
         if (!window.confirm(`Setujui pendaftaran ${user.nama_lengkap || user.username}?`)) return;

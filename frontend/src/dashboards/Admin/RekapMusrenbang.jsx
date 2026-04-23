@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import * as XLSX from 'xlsx';
 
@@ -8,11 +8,7 @@ const RekapMusrenbang = () => {
     const [dataRekap, setDataRekap] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setLoading(true);
             // Mengambil data usulan musrenbang yang sudah disetujui (memiliki kewenangan)
@@ -26,7 +22,14 @@ const RekapMusrenbang = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchData();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchData]);
 
     // Filter data berdasarkan tab yang sedang aktif
     const filteredData = dataRekap.filter(item => item.kewenangan === activeTab);
@@ -201,4 +204,3 @@ const RekapMusrenbang = () => {
 };
 
 export default RekapMusrenbang;
-

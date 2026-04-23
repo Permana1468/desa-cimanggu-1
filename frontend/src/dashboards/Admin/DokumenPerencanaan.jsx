@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 
 const DokumenPerencanaan = () => {
@@ -19,11 +19,7 @@ const DokumenPerencanaan = () => {
         file: null
     });
 
-    useEffect(() => {
-        fetchDokumen();
-    }, []);
-
-    const fetchDokumen = async () => {
+    const fetchDokumen = useCallback(async () => {
         try {
             setLoading(true);
             const response = await api.get('/users/api/dokumen-perencanaan/');
@@ -33,7 +29,14 @@ const DokumenPerencanaan = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchDokumen();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchDokumen]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -86,15 +89,6 @@ const DokumenPerencanaan = () => {
     };
 
     const filteredDokumen = dokumenList.filter(doc => doc.jenis === activeTab);
-
-    // Helper: Format Ukuran File (Jika tersedia di metadata aslinya atau kita hitung sederhana)
-    const formatFileSize = (bytes) => {
-        if (!bytes) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    };
 
     return (
         <div className="text-gray-200 animate-fade-in pb-10">
@@ -295,4 +289,3 @@ const DokumenPerencanaan = () => {
 };
 
 export default DokumenPerencanaan;
-

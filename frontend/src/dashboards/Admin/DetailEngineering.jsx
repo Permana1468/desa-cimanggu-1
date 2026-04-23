@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import api from '../../services/api';
-import { Upload, FileText, Trash2, CheckCircle, Clock } from 'lucide-react';
+import { Upload, FileText, Trash2, Clock } from 'lucide-react';
 
 const DetailEngineering = () => {
     const [proyekList, setProyekList] = useState([]);
@@ -10,11 +10,7 @@ const DetailEngineering = () => {
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef(null);
 
-    useEffect(() => {
-        fetchProyek();
-    }, []);
-
-    const fetchProyek = async () => {
+    const fetchProyek = useCallback(async () => {
         try {
             setLoading(true);
             const response = await api.get('/users/api/proyek/');
@@ -26,16 +22,23 @@ const DetailEngineering = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const fetchDocuments = async (proyekId) => {
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchProyek();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchProyek]);
+
+    const fetchDocuments = useCallback(async (proyekId) => {
         try {
             const response = await api.get(`/users/api/dokumen-ded/?proyek_id=${proyekId}`);
             setDocuments(response.data);
         } catch (error) {
             console.error('Error fetching documents:', error);
         }
-    };
+    }, []);
 
     const handleSelectProyek = (proyek) => {
         setSelectedProyek(proyek);
@@ -224,4 +227,3 @@ const DetailEngineering = () => {
 };
 
 export default DetailEngineering;
-

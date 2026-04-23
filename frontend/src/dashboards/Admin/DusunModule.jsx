@@ -1,47 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { 
     MapPin, Users, Shield, AlertCircle, 
     TrendingUp, Activity, MessageSquare, 
-    Calendar, CheckCircle2, Search, Filter,
     ChevronRight, Loader2, ArrowRight
 } from 'lucide-react';
 
-const QuickStats = ({ icon: Icon, label, value, color }) => (
-    <div className="bg-[rgba(15,23,42,0.55)] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 hover:border-white/[0.15] transition-all group shrink-0 w-full sm:w-[280px]">
-        <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${color}-500/10 border border-${color}-500/20 text-${color}-400 group-hover:rotate-12 transition-transform`}>
-                <Icon size={22} />
-            </div>
-            <div>
-                <p className="text-[11px] font-bold text-white/30 uppercase tracking-widest mb-0.5">{label}</p>
-                <h3 className="text-xl font-black text-white">{value}</h3>
+const QuickStats = (props) => {
+    const { icon: Icon, label, value, color } = props;
+    return (
+        <div className="bg-[rgba(15,23,42,0.55)] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 hover:border-white/[0.15] transition-all group shrink-0 w-full sm:w-[280px]">
+            <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${color}-500/10 border border-${color}-500/20 text-${color}-400 group-hover:rotate-12 transition-transform`}>
+                    <Icon size={22} />
+                </div>
+                <div>
+                    <p className="text-[11px] font-bold text-white/30 uppercase tracking-widest mb-0.5">{label}</p>
+                    <h3 className="text-xl font-black text-white">{value}</h3>
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 const DusunModule = ({ dusunName = "Dusun I", rwRange = "RW 01 - RW 02" }) => {
     const [aspirasi, setAspirasi] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchDusunData = async () => {
-            try {
-                setLoading(true);
-                // Fetch aspirations filtered by this dusun's unit_detail
-                // Note: In a real scenario, we'd have a specific endpoint or filter param
-                const response = await api.get('/users/api/aspirasi/');
-                const filtered = response.data.filter(a => a.wilayah_tujuan?.includes(dusunName.split(' ')[1]));
-                setAspirasi(filtered);
-            } catch (error) {
-                console.error("Error fetching Dusun data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchDusunData();
+    const fetchDusunData = useCallback(async () => {
+        try {
+            setLoading(true);
+            // Fetch aspirations filtered by this dusun's unit_detail
+            // Note: In a real scenario, we'd have a specific endpoint or filter param
+            const response = await api.get('/users/api/aspirasi/');
+            const filtered = response.data.filter(a => a.wilayah_tujuan?.includes(dusunName.split(' ')[1]));
+            setAspirasi(filtered);
+        } catch (error) {
+            console.error("Error fetching Dusun data:", error);
+        } finally {
+            setLoading(false);
+        }
     }, [dusunName]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchDusunData();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchDusunData]);
 
     if (loading) {
         return (

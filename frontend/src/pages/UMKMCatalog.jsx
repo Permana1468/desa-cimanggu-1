@@ -5,10 +5,8 @@ import api from '../services/api';
 
 const UMKMCatalog = () => {
     const [products, setProducts] = useState([]);
-    const [shops, setShops] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -17,7 +15,7 @@ const UMKMCatalog = () => {
                     api.get('/users/api/umkm/shops/'),
                     api.get('/users/api/umkm/products/')
                 ]);
-                setShops(shopsRes.data);
+                
                 // Assign shop names to products locally for easier rendering, though API provides it
                 const enrichedProducts = productsRes.data.map(p => {
                     const shop = shopsRes.data.find(s => s.id === p.shop);
@@ -30,7 +28,10 @@ const UMKMCatalog = () => {
                 setIsLoading(false);
             }
         };
-        fetchData();
+        const timer = setTimeout(() => {
+            fetchData();
+        }, 0);
+        return () => clearTimeout(timer);
     }, []);
 
     const filteredProducts = products.filter(p => 

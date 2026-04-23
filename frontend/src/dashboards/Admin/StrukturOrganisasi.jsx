@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useCallback } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Printer } from 'lucide-react';
 import api from '../../services/api';
@@ -20,8 +19,7 @@ const StrukturOrganisasi = () => {
     });
 
 
-    const fetchPejabat = async () => {
-        setIsLoading(true);
+    const fetchPejabat = useCallback(async () => {
         try {
             const res = await api.get('/users/api/pejabat-desa/');
             setPejabatList(res.data);
@@ -30,11 +28,14 @@ const StrukturOrganisasi = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        fetchPejabat();
-    }, []);
+        const timer = setTimeout(() => {
+            fetchPejabat();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchPejabat]);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -65,6 +66,7 @@ const StrukturOrganisasi = () => {
             });
             setIsModalOpen(false);
             setFormData({ nama: '', jabatan: '', level: '3', foto: null });
+            setIsLoading(true); // Trigger loading for refresh
             fetchPejabat();
         } catch (error) {
             console.error("Gagal menyimpan data pejabat", error);
@@ -85,6 +87,7 @@ const StrukturOrganisasi = () => {
 
         try {
             await api.delete(`/users/api/pejabat-desa/${id}/`);
+            setIsLoading(true);
             fetchPejabat();
         } catch (error) {
             console.error("Gagal menghapus pejabat", error);
@@ -172,11 +175,11 @@ const StrukturOrganisasi = () => {
                         <tbody>
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan="5" className="py-8 text-center text-gray-400">Memuat data struktur organisasi...</td>
+                                    <td colSpan="6" className="py-8 text-center text-gray-400">Memuat data struktur organisasi...</td>
                                 </tr>
                             ) : pejabatList.length === 0 ? (
                                 <tr>
-                                    <td colSpan="5" className="py-8 text-center text-gray-400">Belum ada data struktur organisasi.</td>
+                                    <td colSpan="6" className="py-8 text-center text-gray-400">Belum ada data struktur organisasi.</td>
                                 </tr>
                             ) : (
                                 pejabatList.map((pejabat) => (
@@ -343,4 +346,3 @@ const StrukturOrganisasi = () => {
 };
 
 export default StrukturOrganisasi;
-

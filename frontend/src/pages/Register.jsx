@@ -56,11 +56,16 @@ const Register = () => {
     }, []);
 
     useEffect(() => {
-        fetchCaptcha();
+        const timer = setTimeout(() => {
+            fetchCaptcha();
+        }, 0);
         const interval = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % heroImages.length);
         }, 8000);
-        return () => clearInterval(interval);
+        return () => {
+            clearTimeout(timer);
+            clearInterval(interval);
+        };
     }, [fetchCaptcha]);
 
     const handleChange = (e) => {

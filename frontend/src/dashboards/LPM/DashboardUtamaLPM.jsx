@@ -26,7 +26,10 @@ const DashboardUtamaLPM = () => {
                 setLoading(false);
             }
         };
-        fetchStats();
+        const timer = setTimeout(() => {
+            fetchStats();
+        }, 0);
+        return () => clearTimeout(timer);
     }, []);
 
     // Format Rupiah

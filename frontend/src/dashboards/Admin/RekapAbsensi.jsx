@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useTheme } from '../../contexts/ThemeContext';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
 const RekapAbsensi = () => {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
     const { theme } = useTheme();
 
     const [dataAbsen, setDataAbsen] = useState([]);
@@ -14,7 +15,7 @@ const RekapAbsensi = () => {
     const [endDate, setEndDate] = useState('');
     const [jabatanFilter, setJabatanFilter] = useState('Semua Perangkat');
 
-    const fetchKehadiran = async () => {
+    const fetchKehadiran = useCallback(async () => {
         setIsLoading(true);
         try {
             const token = localStorage.getItem('access_token');
@@ -32,11 +33,14 @@ const RekapAbsensi = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [startDate, endDate, jabatanFilter]);
 
     useEffect(() => {
-        fetchKehadiran();
-    }, []);
+        const timer = setTimeout(() => {
+            fetchKehadiran();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchKehadiran]);
 
     const handlePrint = () => {
         window.print();

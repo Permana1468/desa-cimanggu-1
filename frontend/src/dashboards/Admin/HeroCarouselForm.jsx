@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Save, Upload, Image as ImageIcon, Trash2 } from 'lucide-react';
 import api from '../../services/api';
 import { compressImage } from '../../utils/imageUtils';
@@ -31,19 +31,23 @@ const HeroCarouselForm = () => {
         return () => clearInterval(timer);
     }, [previewImages.length]);
 
-    useEffect(() => {
-        const fetchSettings = async () => {
-            try {
-                const response = await api.get('/users/api/landing-page/');
-                if (response.data && response.data.length > 0) {
-                    setFormData(response.data[0]);
-                }
-            } catch (error) {
-                console.error("Gagal memuat pengaturan Hero:", error);
+    const fetchSettings = useCallback(async () => {
+        try {
+            const response = await api.get('/users/api/landing-page/');
+            if (response.data && response.data.length > 0) {
+                setFormData(response.data[0]);
             }
-        };
-        fetchSettings();
+        } catch (error) {
+            console.error("Gagal memuat pengaturan Hero:", error);
+        }
     }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchSettings();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchSettings]);
 
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
@@ -289,4 +293,3 @@ const HeroCarouselForm = () => {
 };
 
 export default HeroCarouselForm;
-

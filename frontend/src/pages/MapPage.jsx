@@ -43,11 +43,14 @@ const MapPage = () => {
             }
         };
 
-        fetchGeoData();
+        const timer = setTimeout(() => {
+            fetchGeoData();
+        }, 0);
+        return () => clearTimeout(timer);
     }, []);
 
     // Style untuk batas wilayah (Polygon)
-    const regionStyle = (feature) => {
+    const regionStyle = () => {
         return {
             color: '#2563eb',     // Warna garis biru
             weight: 2,

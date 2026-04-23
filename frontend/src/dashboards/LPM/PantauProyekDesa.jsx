@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
-import { Construction, MapPin, Calendar, Camera, Maximize2, ShieldCheck, CheckCircle2, Search, Info, Activity } from 'lucide-react';
+import { Construction, MapPin, Camera, Maximize2, ShieldCheck, Search, Info, Activity } from 'lucide-react';
 
 const PantauProyekDesa = () => {
     const [proyekList, setProyekList] = useState([]);
@@ -8,11 +8,7 @@ const PantauProyekDesa = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedImage, setSelectedImage] = useState(null);
 
-    useEffect(() => {
-        fetchMonitoringData();
-    }, []);
-
-    const fetchMonitoringData = async () => {
+    const fetchMonitoringData = useCallback(async () => {
         try {
             setLoading(true);
             const response = await api.get('/users/api/monitoring-proyek/');
@@ -22,11 +18,18 @@ const PantauProyekDesa = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchMonitoringData();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchMonitoringData]);
 
     const filteredProyek = proyekList.filter(p =>
-        p.judul.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.usulan_id.toLowerCase().includes(searchTerm.toLowerCase())
+        (p.judul || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.usulan_id || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -80,7 +83,7 @@ const PantauProyekDesa = () => {
                                 </div>
                                 <div className="text-right">
                                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Anggaran Terpagu</p>
-                                    <p className="text-lg font-black text-white">Rp {parseFloat(proyek.estimasi_biaya).toLocaleString('id-ID')}</p>
+                                    <p className="text-lg font-black text-white">Rp {parseFloat(proyek.estimasi_biaya || 0).toLocaleString('id-ID')}</p>
                                 </div>
                             </div>
 
@@ -177,4 +180,3 @@ const PantauProyekDesa = () => {
 };
 
 export default PantauProyekDesa;
-

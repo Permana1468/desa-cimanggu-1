@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { Users, Plus, Phone, MapPin, Briefcase, CheckCircle, XCircle, X, Loader2, Star } from 'lucide-react';
 
@@ -17,9 +17,7 @@ const DataPengurusLPM = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [showActiveOnly, setShowActiveOnly] = useState(true);
 
-    useEffect(() => { fetchPengurus(); }, []);
-
-    const fetchPengurus = async () => {
+    const fetchPengurus = useCallback(async () => {
         try {
             setLoading(true);
             const response = await api.get('/users/api/pengurus-lpm/');
@@ -29,7 +27,14 @@ const DataPengurusLPM = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => { 
+        const timer = setTimeout(() => {
+            fetchPengurus();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchPengurus]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -52,7 +57,8 @@ const DataPengurusLPM = () => {
         try {
             await api.delete(`/users/api/pengurus-lpm/${id}/`);
             fetchPengurus();
-        } catch (e) {
+        } catch (err) {
+            console.error('Delete error:', err);
             alert('Gagal menghapus data.');
         }
     };
@@ -202,4 +208,3 @@ const DataPengurusLPM = () => {
 };
 
 export default DataPengurusLPM;
-

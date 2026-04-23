@@ -44,15 +44,17 @@ const ProfilAdminLPM = () => {
                 setLoadingProfil(false);
             }
         };
-        fetchMe();
+        const timer = setTimeout(() => {
+            fetchMe();
+        }, 0);
+        return () => clearTimeout(timer);
     }, []);
 
     const handleSimpanProfil = async (e) => {
         e.preventDefault();
         try {
             setSavingProfil(true);
-            // Hanya kirim field teks saja
-            const { foto_profil, ...textData } = profilData;
+            const { foto_profil: _, ...textData } = profilData;
             await api.patch('/users/api/users/me/', textData);
             setProfilMsg({ type: 'success', text: '✅ Data profil berhasil diperbarui!' });
         } catch (err) {
@@ -85,6 +87,7 @@ const ProfilAdminLPM = () => {
             setProfilData(prev => ({ ...prev, foto_profil: res.data.foto_profil }));
             setProfilMsg({ type: 'success', text: '✅ Foto profil berhasil diperbarui!' });
         } catch (err) {
+            console.error('Upload error:', err);
             setProfilMsg({ type: 'error', text: '❌ Gagal mengunggah foto.' });
         } finally {
             setUploadingPhoto(false);

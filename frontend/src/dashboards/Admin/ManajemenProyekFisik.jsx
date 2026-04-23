@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 
 const ManajemenProyekFisik = () => {
@@ -9,11 +9,7 @@ const ManajemenProyekFisik = () => {
     const [files, setFiles] = useState({ foto_1: null, foto_2: null, foto_3: null });
     const [isSaving, setIsSaving] = useState(false);
 
-    useEffect(() => {
-        fetchProyek();
-    }, []);
-
-    const fetchProyek = async () => {
+    const fetchProyek = useCallback(async () => {
         try {
             setLoading(true);
             // Fetch all projects using the new endpoint
@@ -26,7 +22,14 @@ const ManajemenProyekFisik = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchProyek();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchProyek]);
 
     const bukaModalUpdate = (proyek) => {
         setSelectedProyek(proyek);
@@ -188,4 +191,3 @@ const ManajemenProyekFisik = () => {
 };
 
 export default ManajemenProyekFisik;
-

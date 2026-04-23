@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Scan, ScanFace, CheckCircle, XCircle } from 'lucide-react';
 import axios from 'axios';
 
@@ -15,6 +15,44 @@ const LayarAbsensi = () => {
     // Barcode Scanner Buffer
     const barcodeBuffer = useRef('');
     const scanTimeout = useRef(null);
+
+    const verifyAttendance = useCallback(async (idUnik) => {
+        try {
+            // Panggil API Backend
+            const response = await axios.post('/users/api/absensi/scan/', {
+                id_unik: idUnik
+            });
+
+            const { message, pejabat } = response.data;
+
+            setScanStatus('success');
+            setLastMessage(message);
+            setScannedPejabat(pejabat);
+
+            // Kembali ke layar siaga setelah 4 detik
+            setTimeout(() => {
+                setScanStatus('idle');
+                setLastMessage('');
+                setScannedPejabat('');
+            }, 4000);
+
+        } catch (error) {
+            console.error("Gagal scan", error);
+            setScanStatus('failed');
+            setScannedPejabat('');
+            if (error.response?.status === 404) {
+                setLastMessage('ID Tidak Dikenali! Silakan coba lagi.');
+            } else {
+                setLastMessage('Terjadi kesalahan jaringan.');
+            }
+
+            // Kembali ke layar siaga
+            setTimeout(() => {
+                setScanStatus('idle');
+                setLastMessage('');
+            }, 4000);
+        }
+    }, []);
 
     // Fetch Carousel Settings
     useEffect(() => {
@@ -50,10 +88,8 @@ const LayarAbsensi = () => {
     }, []);
 
     // Global Keydown Listener untuk Barcode Scanner
-    // Barcode scanner pada dasarnya berperilaku seperti keyboard super cepat yang diakhiri tombol 'Enter'
     useEffect(() => {
         const handleKeyDown = (e) => {
-            // Abaikan input jika user sedang fokus ke input manual (walaupun di halaman ini tidak ada input)
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
             if (e.key === 'Enter') {
@@ -61,22 +97,18 @@ const LayarAbsensi = () => {
                 if (barcodeBuffer.current.length > 0) {
                     const scannedId = barcodeBuffer.current;
                     verifyAttendance(scannedId);
-                    barcodeBuffer.current = ''; // Reset buffer setelah enter
+                    barcodeBuffer.current = ''; 
                 }
             } else if (e.key.length === 1) {
-                // Hanya tangkap karakter alphanumeric dan simbol 
                 barcodeBuffer.current += e.key;
 
-                // Animasi status sedang discan
                 if (scanStatus !== 'scanning') {
                     setScanStatus('scanning');
                     setLastMessage('Membaca ID...');
                 }
 
-                // Barcode scanner sangat cepat, jika ada jeda > 100ms kemungkinan itu ketikan manual (opsional untuk diatasi)
                 clearTimeout(scanTimeout.current);
                 scanTimeout.current = setTimeout(() => {
-                    // Jika lebih dari 100ms tidak ada Enter, mungkin ada error baca atau user ngetik manual pelan-pelan
                     barcodeBuffer.current = '';
                     if (scanStatus === 'scanning') {
                         setScanStatus('idle');
@@ -91,45 +123,7 @@ const LayarAbsensi = () => {
             window.removeEventListener('keydown', handleKeyDown);
             clearTimeout(scanTimeout.current);
         };
-    }, [scanStatus]);
-
-    const verifyAttendance = async (idUnik) => {
-        try {
-            // Panggil API Backend
-            const response = await axios.post('/users/api/absensi/scan/', {
-                id_unik: idUnik
-            });
-
-            const { status, message, pejabat } = response.data;
-
-            setScanStatus('success');
-            setLastMessage(message);
-            setScannedPejabat(pejabat);
-
-            // Kembali ke layar siaga setelah 4 detik
-            setTimeout(() => {
-                setScanStatus('idle');
-                setLastMessage('');
-                setScannedPejabat('');
-            }, 4000);
-
-        } catch (error) {
-            console.error("Gagal scan", error);
-            setScanStatus('failed');
-            setScannedPejabat('');
-            if (error.response?.status === 404) {
-                setLastMessage('ID Tidak Dikenali! Silakan coba lagi.');
-            } else {
-                setLastMessage('Terjadi kesalahan jaringan.');
-            }
-
-            // Kembali ke layar siaga
-            setTimeout(() => {
-                setScanStatus('idle');
-                setLastMessage('');
-            }, 4000);
-        }
-    };
+    }, [scanStatus, verifyAttendance]);
 
     // Format waktu
     const timeString = currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });

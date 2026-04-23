@@ -1,19 +1,13 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { Users, UserPlus, PhoneCall, CheckCircle2, XCircle, Search, Filter } from 'lucide-react';
 
 const KaderLPM = () => {
-    const { user } = useContext(AuthContext);
     const [kader, setKader] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
-    useEffect(() => {
-        fetchKader();
-    }, []);
-
-    const fetchKader = async () => {
+    const fetchKader = useCallback(async () => {
         try {
             setLoading(true);
             const response = await api.get('/users/api/lpm/kader/');
@@ -23,16 +17,23 @@ const KaderLPM = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchKader();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchKader]);
 
     const totalKader = kader.length;
     const kaderAktif = kader.filter(k => k.status === 'Aktif').length;
     const kaderNonAktif = kader.filter(k => k.status === 'Non Aktif').length;
 
     const filteredData = kader.filter(k => 
-        k.nama.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        k.keahlian?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        k.rt_rw.toLowerCase().includes(searchTerm.toLowerCase())
+        (k.nama || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+        (k.keahlian || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (k.rt_rw || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -123,7 +124,7 @@ const KaderLPM = () => {
 
                                 <div className="flex items-start gap-4 mb-4 relative z-10">
                                     <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-500/20 to-yellow-600/5 border border-yellow-500/20 flex items-center justify-center text-yellow-500 font-bold text-xl uppercase shrink-0">
-                                        {item.nama.charAt(0)}
+                                        {item.nama ? item.nama.charAt(0) : '?'}
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <h4 className="text-lg font-bold text-white truncate group-hover:text-yellow-400 transition-colors">{item.nama}</h4>
@@ -158,4 +159,3 @@ const KaderLPM = () => {
 };
 
 export default KaderLPM;
-

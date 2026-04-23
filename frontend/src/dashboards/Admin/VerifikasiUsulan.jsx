@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import { useAuth } from '../../contexts/AuthContext';
 
 const VerifikasiUsulan = () => {
-    const { user } = useAuth();
     const navigate = useNavigate();
     const [usulanMasuk, setUsulanMasuk] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -12,13 +10,8 @@ const VerifikasiUsulan = () => {
     const [catatanVerifikator, setCatatanVerifikator] = useState('');
     const [kewenangan, setKewenangan] = useState('');
 
-    useEffect(() => {
-        fetchUsulan();
-    }, []);
-
-    const fetchUsulan = async () => {
+    const fetchUsulan = useCallback(async () => {
         try {
-            setLoading(true);
             const response = await api.get('/users/api/musrenbang/');
             setUsulanMasuk(response.data);
         } catch (error) {
@@ -26,7 +19,14 @@ const VerifikasiUsulan = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchUsulan();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchUsulan]);
 
     const handleApproval = async (id, aksi) => {
         const statusBaru = aksi === 'Setujui' ? 'DISETUJUI' : 'DITOLAK';
@@ -97,14 +97,14 @@ const VerifikasiUsulan = () => {
                                         <p className="text-xs text-gray-400">{item.kategori} | {item.lokasi}</p>
                                     </td>
                                     <td className="py-4 px-6 text-center text-yellow-400 font-mono text-sm">
-                                        Rp {parseFloat(item.estimasi_biaya).toLocaleString('id-ID')}
+                                        Rp {parseFloat(item.estimasi_biaya || 0).toLocaleString('id-ID')}
                                     </td>
                                     <td className="py-4 px-6 text-center">
-                                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold border ${item.status === 'MENUNGGU' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20 animate-pulse' :
+                                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold border ${(item.status || 'MENUNGGU') === 'MENUNGGU' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20 animate-pulse' :
                                             item.status === 'DISETUJUI' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
                                                 'bg-red-500/10 text-red-400 border-red-500/20'
                                             }`}>
-                                            {item.status.replace('_', ' ')}
+                                            {(item.status || 'MENUNGGU').replace('_', ' ')}
                                         </span>
                                     </td>
                                     <td className="py-4 px-6 text-center">
@@ -160,7 +160,7 @@ const VerifikasiUsulan = () => {
                                 <div>
                                     <h4 className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">Estimasi Kasar</h4>
                                     <div className="bg-[#1e293b]/40 p-3 rounded-xl border border-white/5 text-yellow-400 font-mono font-bold text-sm">
-                                        Rp {parseFloat(selectedUsulan.estimasi_biaya).toLocaleString('id-ID')}
+                                        Rp {parseFloat(selectedUsulan.estimasi_biaya || 0).toLocaleString('id-ID')}
                                     </div>
                                 </div>
                             </div>
@@ -300,4 +300,3 @@ const VerifikasiUsulan = () => {
 };
 
 export default VerifikasiUsulan;
-

@@ -1,30 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { 
     Wallet, ArrowDownRight, ArrowUpRight, Plus, 
-    Search, Filter, Trash2, X, AlertCircle, 
-    Download, Printer, FileText, Loader2,
-    Calendar, TrendingUp, PieChart
+    Search, Trash2, X, AlertCircle, 
+    Printer, FileText, Loader2,
+    Calendar, TrendingUp
 } from 'lucide-react';
 
-const StatCard = ({ icon: Icon, label, value, color, trend }) => (
-    <div className="bg-[rgba(15,23,42,0.55)] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 hover:border-white/[0.15] transition-all group">
-        <div className="flex justify-between items-start mb-4">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${color}-500/10 border border-${color}-500/20 text-${color}-400 group-hover:scale-110 transition-transform`}>
-                <Icon size={24} />
-            </div>
-            {trend && (
-                <div className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${trend.startsWith('+') ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
-                    {trend}
+const StatCard = (props) => {
+    const { icon: Icon, label, value, color, trend } = props;
+    return (
+        <div className="bg-[rgba(15,23,42,0.55)] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 hover:border-white/[0.15] transition-all group">
+            <div className="flex justify-between items-start mb-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${color}-500/10 border border-${color}-500/20 text-${color}-400 group-hover:scale-110 transition-transform`}>
+                    {Icon && <Icon size={24} />}
                 </div>
-            )}
+                {trend && (
+                    <div className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${trend.startsWith('+') ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
+                        {trend}
+                    </div>
+                )}
+            </div>
+            <div>
+                <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest mb-1">{label}</p>
+                <h3 className="text-2xl font-black text-white">{value}</h3>
+            </div>
         </div>
-        <div>
-            <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest mb-1">{label}</p>
-            <h3 className="text-2xl font-black text-white">{value}</h3>
-        </div>
-    </div>
-);
+    );
+};
 
 const BukuKasUmum = () => {
     const [transactions, setTransactions] = useState([]);
@@ -41,21 +44,23 @@ const BukuKasUmum = () => {
         keterangan: ''
     });
 
-    useEffect(() => {
-        fetchTransactions();
-    }, []);
-
-    const fetchTransactions = async () => {
+    const fetchTransactions = useCallback(async () => {
         try {
-            setLoading(true);
             const response = await api.get('/users/api/lpm/keuangan/');
-            setTransactions(response.data);
+            setTransactions(response.data || []);
         } catch (error) {
             console.error("Error fetching transactions:", error);
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchTransactions();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchTransactions]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -76,6 +81,7 @@ const BukuKasUmum = () => {
                 tanggal: new Date().toISOString().split('T')[0],
                 keterangan: ''
             });
+            setLoading(true);
             fetchTransactions();
         } catch (error) {
             console.error("Error adding transaction:", error);
@@ -92,13 +98,13 @@ const BukuKasUmum = () => {
         }).format(angka || 0);
     };
 
-    const totalIn = transactions.filter(k => k.tipe === 'Pemasukan').reduce((sum, k) => sum + parseFloat(k.nominal), 0);
-    const totalOut = transactions.filter(k => k.tipe === 'Pengeluaran').reduce((sum, k) => sum + parseFloat(k.nominal), 0);
+    const totalIn = transactions.filter(k => k.tipe === 'Pemasukan').reduce((sum, k) => sum + parseFloat(k.nominal || 0), 0);
+    const totalOut = transactions.filter(k => k.tipe === 'Pengeluaran').reduce((sum, k) => sum + parseFloat(k.nominal || 0), 0);
     const balance = totalIn - totalOut;
 
     const filteredData = transactions.filter(k => 
-        k.judul.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        k.sumber_dana.toLowerCase().includes(searchTerm.toLowerCase())
+        (k.judul || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (k.sumber_dana || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     if (loading) {
@@ -235,7 +241,7 @@ const BukuKasUmum = () => {
                             </button>
                         </div>
                         
-                        <form onSubmit={handleSubmit} className="p-7 space-y-5">
+                        <form id="add-transaction-form" onSubmit={handleSubmit} className="p-7 space-y-5">
                             <div className="space-y-1.5">
                                 <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Keterangan Transaksi</label>
                                 <input 

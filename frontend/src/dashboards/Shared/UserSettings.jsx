@@ -4,7 +4,7 @@ import api from '../../services/api';
 import { Loader2, KeyRound, ShieldAlert, LogOut, CheckCircle2 } from 'lucide-react';
 
 const UserSettings = () => {
-    const { user, logoutUser } = useContext(AuthContext);
+    const { logoutUser } = useContext(AuthContext);
     const [passwordData, setPasswordData] = useState({
         password_lama: '',
         password_baru: '',

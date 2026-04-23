@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Trash2, Edit, KeyRound, Search, ShieldAlert, UserPlus, Settings2 } from 'lucide-react';
 import api from '../../services/api';
 import Modal from '../../components/Shared/Modal';
@@ -88,7 +88,7 @@ const ManajemenPengguna = () => {
         return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
     };
 
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         setIsLoading(true);
         try {
             const response = await api.get('/users/api/admin/users/');
@@ -98,11 +98,14 @@ const ManajemenPengguna = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        fetchUsers();
-    }, []);
+        const timer = setTimeout(() => {
+            fetchUsers();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchUsers]);
 
     const handleOpenModal = (mode, user = null) => {
         setModalMode(mode);
@@ -202,7 +205,7 @@ const ManajemenPengguna = () => {
                 <button
                     onClick={() => handleOpenModal('add')}
                     className="group bg-gold hover:bg-gold-dark text-black px-7 py-3.5 rounded-2xl font-black text-[14px] 
-                               transition-all duration-300 flex items-center gap-3 shadow-gold-glow hover:-translate-y-1"
+                                transition-all duration-300 flex items-center gap-3 shadow-gold-glow hover:-translate-y-1"
                 >
                     <UserPlus size={18} className="group-hover:rotate-12 transition-transform" />
                     TAMBAH PENGGUNA

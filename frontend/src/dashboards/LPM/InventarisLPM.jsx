@@ -1,19 +1,13 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { PackageOpen, Wrench, PackageCheck, AlertTriangle, Search, Filter, Plus } from 'lucide-react';
 
 const InventarisLPM = () => {
-    const { user } = useContext(AuthContext);
     const [inventaris, setInventaris] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
-    useEffect(() => {
-        fetchInventaris();
-    }, []);
-
-    const fetchInventaris = async () => {
+    const fetchInventaris = useCallback(async () => {
         try {
             setLoading(true);
             const response = await api.get('/users/api/lpm/inventaris/');
@@ -23,15 +17,22 @@ const InventarisLPM = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchInventaris();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchInventaris]);
 
     const totalAset = inventaris.reduce((acc, curr) => acc + curr.jumlah, 0);
     const totalBaik = inventaris.filter(i => i.kondisi === 'Baik').reduce((acc, curr) => acc + curr.jumlah, 0);
     const totalRusak = inventaris.filter(i => i.kondisi.includes('Rusak')).reduce((acc, curr) => acc + curr.jumlah, 0);
 
     const filteredData = inventaris.filter(k => 
-        k.nama_aset.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        k.kode_aset.toLowerCase().includes(searchTerm.toLowerCase())
+        (k.nama_aset || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+        (k.kode_aset || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -158,4 +159,3 @@ const InventarisLPM = () => {
 };
 
 export default InventarisLPM;
-

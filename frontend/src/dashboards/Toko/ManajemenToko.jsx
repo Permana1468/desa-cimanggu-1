@@ -1,24 +1,18 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Store, MapPin, Phone, Info, Upload, Save, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import api from '../../services/api';
 
 const ManajemenToko = () => {
-    const { user } = useContext(AuthContext);
     const [shop, setShop] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
     const [logoPreview, setLogoPreview] = useState(null);
 
-    useEffect(() => {
-        fetchShopData();
-    }, []);
-
-    const fetchShopData = async () => {
+    const fetchShopData = useCallback(async () => {
         try {
             const res = await api.get('/users/api/umkm/shops/');
-            if (res.data.length > 0) {
+            if (res.data && res.data.length > 0) {
                 const data = res.data[0];
                 setShop(data);
                 if (data.logo) setLogoPreview(data.logo);
@@ -37,7 +31,14 @@ const ManajemenToko = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchShopData();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchShopData]);
 
     const handleLogoChange = (e) => {
         const file = e.target.files[0];
@@ -48,13 +49,13 @@ const ManajemenToko = () => {
                 return;
             }
             setLogoPreview(URL.createObjectURL(file));
-            setShop({ ...shop, logo_file: file });
+            setShop(prev => ({ ...prev, logo_file: file }));
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!shop.shop_name.trim()) {
+        if (!shop || !shop.shop_name || !shop.shop_name.trim()) {
             setMessage({ type: 'error', text: 'Nama Toko wajib diisi.' });
             return;
         }
@@ -86,7 +87,7 @@ const ManajemenToko = () => {
             }
             
             // Clean up temporary object URL
-            if (shop.logo_file && logoPreview.startsWith('blob:')) {
+            if (shop.logo_file && logoPreview && typeof logoPreview === 'string' && logoPreview.startsWith('blob:')) {
                 URL.revokeObjectURL(logoPreview);
             }
             

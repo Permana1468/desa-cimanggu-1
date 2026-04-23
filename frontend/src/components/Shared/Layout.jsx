@@ -1,9 +1,9 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import Sidebar from './Sidebar';
 import { menuConfig } from './menuConfig';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { Menu, Home, Settings, X, User, Bell, ChevronRight, LayoutGrid, LogOut, Sun, Moon, ChevronDown } from 'lucide-react';
+import { Menu, Settings, User, Bell, ChevronDown, LayoutGrid, LogOut, Sun, Moon } from 'lucide-react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 
@@ -93,19 +93,25 @@ const Layout = ({ children }) => {
     const [currentBg, setCurrentBg] = useState(0);
 
     /* ── Fetch background images ──────────────────────────── */
-    useEffect(() => {
-        const fetchSettings = async () => {
-            try {
-                const response = await api.get('/users/api/landing-page/');
-                if (response.data?.length > 0) {
-                    const s = response.data[0];
-                    const imgs = [s.carousel_image_1, s.carousel_image_2, s.carousel_image_3].filter(Boolean);
-                    if (imgs.length > 0) setBgImages(imgs);
-                }
-            } catch (e) { /* fallback */ }
-        };
-        fetchSettings();
+    const fetchSettings = useCallback(async () => {
+        try {
+            const response = await api.get('/users/api/landing-page/');
+            if (response.data?.length > 0) {
+                const s = response.data[0];
+                const imgs = [s.carousel_image_1, s.carousel_image_2, s.carousel_image_3].filter(Boolean);
+                if (imgs.length > 0) setBgImages(imgs);
+            }
+        } catch (error) {
+            console.error("Layout BG fetch failed:", error);
+        }
     }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchSettings();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchSettings]);
 
     useEffect(() => {
         // Only run carousel on desktop
@@ -119,15 +125,21 @@ const Layout = ({ children }) => {
 
     // Close mobile menu on route change
     useEffect(() => {
-        setIsSidebarOpen(false);
+        const timer = setTimeout(() => {
+            setIsSidebarOpen(false);
+        }, 0);
+        return () => clearTimeout(timer);
     }, [location.pathname]);
 
     const role = user?.role || 'ADMIN';
-    const isStaffRole = ['KAUR_PERENCANAAN', 'KAUR_TU', 'KAUR_KEUANGAN', 'KASI_PEMERINTAHAN', 'KASI_KESEJAHTERAAN', 'KASI_PELAYANAN'].includes(role);
-    const menus = menuConfig?.[role] || (isStaffRole ? menuConfig?.STAF : menuConfig?.ADMIN) || [];
+    const isStaffRole = useMemo(() => ['KAUR_PERENCANAAN', 'KAUR_TU', 'KAUR_KEUANGAN', 'KASI_PEMERINTAHAN', 'KASI_KESEJAHTERAAN', 'KASI_PELAYANAN'].includes(role), [role]);
+    
+    const menus = useMemo(() => {
+        return menuConfig?.[role] || (isStaffRole ? menuConfig?.STAF : menuConfig?.ADMIN) || [];
+    }, [role, isStaffRole]);
 
     // Reorder menus for mobile: Push "Pengaturan Web" to bottom
-    const sortedMenus = React.useMemo(() => {
+    const sortedMenus = useMemo(() => {
         try {
             if (!Array.isArray(menus)) return [];
             return [...menus].sort((a, b) => {
@@ -135,8 +147,8 @@ const Layout = ({ children }) => {
                 if (b?.title === 'Pengaturan Web') return -1;
                 return 0;
             });
-        } catch (e) {
-            console.error("Menu sort error:", e);
+        } catch (error) {
+            console.error("Menu sort error:", error);
             return menus || [];
         }
     }, [menus]);

@@ -3,10 +3,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import {
-    Home, Clock, Wallet, FileText, Users, Settings, Activity,
-    LogOut, ChevronDown, Pyramid, X, Menu, BarChart3, Database, Shield, Zap, Search,
-    Briefcase, Map, MapPin, ChevronLeft, ChevronRight, LayoutGrid, Layers, Bell,
-    User, Moon, Sun, MessageSquare, Calendar, RefreshCw
+    ChevronDown, Bell, LogOut, User, Settings, Sun, Moon, ChevronLeft, ChevronRight, X
 } from 'lucide-react';
 import useRole from '../../hooks/useRole';
 import { menuConfig } from './menuConfig';
@@ -28,12 +25,6 @@ const SidebarItem = ({ item, isCollapsed, setIsCollapsed, setIsSidebarOpen, leve
     const [isOpen, setIsOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     
-    const isActiveLink = item.path && (
-        item.path === '/dashboard' 
-            ? location.pathname === '/dashboard' 
-            : location.pathname.startsWith(item.path)
-    );
-
     const hasActiveChild = (menu) => {
         if (menu.subMenus?.some(s => location.pathname === s.path)) return true;
         if (menu.subCategories?.some(c => hasActiveChild(c))) return true;
@@ -43,8 +34,11 @@ const SidebarItem = ({ item, isCollapsed, setIsCollapsed, setIsSidebarOpen, leve
     const isParentActive = hasActiveChild(item);
 
     useEffect(() => {
-        if (isParentActive && !isCollapsed) setIsOpen(true);
-        if (isCollapsed) setIsOpen(false);
+        const timer = setTimeout(() => {
+            if (isParentActive && !isCollapsed) setIsOpen(true);
+            if (isCollapsed) setIsOpen(false);
+        }, 0);
+        return () => clearTimeout(timer);
     }, [isParentActive, isCollapsed]);
 
     const renderIcon = (active) => {
@@ -212,7 +206,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed 
 
     // Fallback logic for staff roles that use a generic STAF menu
     const isStaffRole = ['KAUR_PERENCANAAN', 'KAUR_TU', 'KAUR_KEUANGAN', 'KASI_PEMERINTAHAN', 'KASI_KESEJAHTERAAN', 'KASI_PELAYANAN'].includes(role);
-    const menus = menuConfig[role] || (isStaffRole ? menuConfig.STAF : menuConfig.ADMIN);
+    const menus = menuConfig[role] || (isStaffRole ? menuConfig.STAF : menuConfig.ADMIN) || [];
 
     return (
         <aside

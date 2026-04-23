@@ -35,14 +35,18 @@ const UserProfile = () => {
                 setLoading(false);
             }
         };
-        fetchMe();
+
+        const timer = setTimeout(() => {
+            fetchMe();
+        }, 0);
+        return () => clearTimeout(timer);
     }, []);
 
     const handleSave = async (e) => {
         e.preventDefault();
         try {
             setSaving(true);
-            const { foto_profil, ...textData } = profilData;
+            const { foto_profil: _, ...textData } = profilData;
             await api.patch('/users/api/users/me/', textData);
             setMessage({ type: 'success', text: '✅ Profil berhasil diperbarui!' });
             refreshUser(); // Update navbar
@@ -85,6 +89,7 @@ const UserProfile = () => {
             setMessage({ type: 'success', text: '✅ Foto profil berhasil diperbarui!' });
             refreshUser();
         } catch (err) {
+            console.error('Upload error:', err);
             setMessage({ type: 'error', text: '❌ Gagal mengunggah foto.' });
         } finally {
             setUploading(false);

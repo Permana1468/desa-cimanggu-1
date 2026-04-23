@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { Wallet, ArrowDownRight, ArrowUpRight, Plus, Search, Filter, Trash2, X, AlertCircle } from 'lucide-react';
 
 const KeuanganLPM = () => {
-    const { user } = useContext(AuthContext);
     const [keuangan, setKeuangan] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -21,11 +19,7 @@ const KeuanganLPM = () => {
         keterangan: ''
     });
 
-    useEffect(() => {
-        fetchKeuangan();
-    }, []);
-
-    const fetchKeuangan = async () => {
+    const fetchKeuangan = useCallback(async () => {
         try {
             setLoading(true);
             const response = await api.get('/users/api/lpm/keuangan/');
@@ -35,7 +29,14 @@ const KeuanganLPM = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchKeuangan();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchKeuangan]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -84,11 +85,11 @@ const KeuanganLPM = () => {
         }).format(angka || 0);
     };
 
-    const totalPemasukan = keuangan.filter(k => k.tipe === 'Pemasukan').reduce((sum, k) => sum + parseFloat(k.nominal), 0);
-    const totalPengeluaran = keuangan.filter(k => k.tipe === 'Pengeluaran').reduce((sum, k) => sum + parseFloat(k.nominal), 0);
+    const totalPemasukan = keuangan.filter(k => k.tipe === 'Pemasukan').reduce((sum, k) => sum + parseFloat(k.nominal || 0), 0);
+    const totalPengeluaran = keuangan.filter(k => k.tipe === 'Pengeluaran').reduce((sum, k) => sum + parseFloat(k.nominal || 0), 0);
     const saldo = totalPemasukan - totalPengeluaran;
 
-    const filteredData = keuangan.filter(k => k.judul.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredData = keuangan.filter(k => (k.judul || '').toLowerCase().includes(searchTerm.toLowerCase()));
 
     return (
         <div className="text-gray-200 animate-fade-in pb-10">
@@ -343,4 +344,3 @@ const KeuanganLPM = () => {
 };
 
 export default KeuanganLPM;
-

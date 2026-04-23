@@ -1,26 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { 
     PackageOpen, Wrench, PackageCheck, AlertTriangle, 
-    Search, Filter, Plus, Download, Boxes, 
+    Search, Filter, Plus, Boxes, 
     History, ShieldCheck, MoreVertical, Loader2
 } from 'lucide-react';
 
-const StatCard = ({ icon: Icon, label, value, subtext, color }) => (
-    <div className="bg-[rgba(15,23,42,0.55)] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 relative overflow-hidden group hover:border-white/[0.15] transition-all">
-        <div className={`absolute top-0 right-0 w-24 h-24 bg-${color}-500/5 blur-3xl rounded-full`}></div>
-        <div className="flex justify-between items-start relative z-10">
-            <div>
-                <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest mb-1">{label}</p>
-                <h3 className={`text-3xl font-black text-${color}-400`}>{value}</h3>
-                <p className="text-[10px] text-white/20 mt-2 font-medium">{subtext}</p>
-            </div>
-            <div className={`w-12 h-12 rounded-xl bg-${color}-500/10 flex items-center justify-center text-${color}-400 border border-${color}-500/20 group-hover:scale-110 transition-transform`}>
-                <Icon size={24} />
+const StatCard = (props) => {
+    const { icon: IconComponent, label, value, subtext, color } = props;
+    return (
+        <div className="bg-[rgba(15,23,42,0.55)] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 relative overflow-hidden group hover:border-white/[0.15] transition-all">
+            <div className={`absolute top-0 right-0 w-24 h-24 bg-${color}-500/5 blur-3xl rounded-full`}></div>
+            <div className="flex justify-between items-start relative z-10">
+                <div>
+                    <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest mb-1">{label}</p>
+                    <h3 className={`text-3xl font-black text-${color}-400`}>{value}</h3>
+                    <p className="text-[10px] text-white/20 mt-2 font-medium">{subtext}</p>
+                </div>
+                <div className={`w-12 h-12 rounded-xl bg-${color}-500/10 flex items-center justify-center text-${color}-400 border border-${color}-500/20 group-hover:scale-110 transition-transform`}>
+                    <IconComponent size={24} />
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 const InventarisAset = () => {
     const [assets, setAssets] = useState([]);
@@ -28,11 +31,7 @@ const InventarisAset = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterKategori, setFilterKategori] = useState('Semua Kategori');
 
-    useEffect(() => {
-        fetchInventaris();
-    }, []);
-
-    const fetchInventaris = async () => {
+    const fetchInventaris = useCallback(async () => {
         try {
             setLoading(true);
             // Reusing the LPM inventaris endpoint for general village assets if shared, 
@@ -44,7 +43,14 @@ const InventarisAset = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchInventaris();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchInventaris]);
 
     const stats = {
         total: assets.reduce((acc, curr) => acc + curr.jumlah, 0),

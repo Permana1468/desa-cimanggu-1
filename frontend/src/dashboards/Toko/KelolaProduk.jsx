@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ShoppingBag, Plus, Trash2, Edit, Save, X, Image as ImageIcon, Search, AlertCircle, CheckCircle, RefreshCw } from 'lucide-react';
 import api from '../../services/api';
 import Modal from '../../components/Shared/Modal';
@@ -22,28 +22,31 @@ const KelolaProduk = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const [message, setMessage] = useState({ type: '', text: '' });
 
-    useEffect(() => {
-        fetchInitialData();
-    }, []);
-
-    const fetchInitialData = async () => {
+    const fetchInitialData = useCallback(async () => {
         try {
             const [shopRes, productsRes] = await Promise.all([
                 api.get('/users/api/umkm/shops/'),
                 api.get('/users/api/umkm/products/')
             ]);
             
-            if (shopRes.data.length > 0) {
+            if (shopRes.data && shopRes.data.length > 0) {
                 setShop(shopRes.data[0]);
             }
-            setProducts(productsRes.data);
+            setProducts(productsRes.data || []);
         } catch (err) {
             console.error("Gagal memuat data", err);
             setMessage({ type: 'error', text: 'Gagal sinkronisasi data produk.' });
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchInitialData();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchInitialData]);
 
     const handleOpenModal = (mode, product = null) => {
         setModalMode(mode);
@@ -113,20 +116,19 @@ const KelolaProduk = () => {
             setMessage({ type: 'success', text: `Produk "${formData.name}" berhasil ${modalMode === 'add' ? 'ditambahkan' : 'diperbarui'}!` });
             
             // Clean up blob
-            if (imagePreview && imagePreview.startsWith('blob:')) {
+            if (imagePreview && typeof imagePreview === 'string' && imagePreview.startsWith('blob:')) {
                 URL.revokeObjectURL(imagePreview);
             }
             
+            setIsLoading(true);
             fetchInitialData();
         } catch (err) {
             console.error("Gagal menyimpan produk", err);
-            // Enhanced Error Handling: Show backend validation message if available
             const backendError = err.response?.data;
             let errorText = 'Gagal menyimpan produk. Periksa kembali form.';
             
             if (backendError) {
                 if (typeof backendError === 'object') {
-                    // Extract first error message from object (e.g. {price: ["A valid number is required."]})
                     const firstKey = Object.keys(backendError)[0];
                     const firstVal = backendError[firstKey];
                     errorText = `${firstKey.toUpperCase()}: ${Array.isArray(firstVal) ? firstVal[0] : firstVal}`;
@@ -147,6 +149,7 @@ const KelolaProduk = () => {
         try {
             await api.delete(`/users/api/umkm/products/${id}/`);
             setMessage({ type: 'success', text: 'Produk berhasil dihapus.' });
+            setIsLoading(true);
             fetchInitialData();
         } catch (err) {
             console.error("Gagal menghapus", err);
@@ -154,7 +157,7 @@ const KelolaProduk = () => {
     };
 
     const filteredProducts = products.filter(p => 
-        p.name.toLowerCase().includes(searchQuery.toLowerCase())
+        (p.name || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     if (isLoading) return (
@@ -246,7 +249,7 @@ const KelolaProduk = () => {
                                         </div>
                                     </td>
                                     <td className="px-8 py-6 text-sm font-black text-emerald-400">
-                                        Rp {parseFloat(product.price).toLocaleString('id-ID')}
+                                        Rp {parseFloat(product.price || 0).toLocaleString('id-ID')}
                                     </td>
                                     <td className="px-8 py-6">
                                         <div className="flex flex-col">
@@ -281,7 +284,6 @@ const KelolaProduk = () => {
                 </div>
             </div>
 
-            {/* Add/Edit Modal */}
             <Modal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

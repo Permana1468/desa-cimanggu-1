@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { compressImage } from '../../utils/imageUtils';
 import Modal from '../../components/Shared/Modal';
-import { FileText, Save, Image as ImageIcon, Send, Trash2, Calendar, Eye, PenTool } from 'lucide-react';
+import { FileText, Image as ImageIcon, Send, Trash2, Calendar, Eye, PenTool } from 'lucide-react';
 
 const KelolaBerita = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,7 +18,7 @@ const KelolaBerita = () => {
         gambar_cover: null
     });
 
-    const fetchBerita = async () => {
+    const fetchBerita = useCallback(async () => {
         setIsLoading(true);
         try {
             const res = await api.get('/users/api/berita/');
@@ -28,11 +28,14 @@ const KelolaBerita = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        fetchBerita();
-    }, []);
+        const timer = setTimeout(() => {
+            fetchBerita();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchBerita]);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -94,12 +97,12 @@ const KelolaBerita = () => {
                         Kelola Publikasi
                         <span className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)] animate-pulse" />
                     </h2>
-                    <p className="text-white/30 text-[13px] font-medium mt-1">Manajemen berita, pengumuman, dan artikel desa.</p>
+                    <p className="text-white/30 text-[13px] font-medium mt-1">Manajemen berita, pengumuman, and artikel desa.</p>
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
                     className="group bg-blue-600 hover:bg-blue-500 text-white px-7 py-3.5 rounded-2xl font-black text-[14px] 
-                               transition-all duration-300 flex items-center gap-3 shadow-[0_10px_30px_rgba(37,99,235,0.2)] hover:-translate-y-1"
+                                transition-all duration-300 flex items-center gap-3 shadow-[0_10px_30px_rgba(37,99,235,0.2)] hover:-translate-y-1"
                 >
                     <PenTool size={18} className="group-hover:rotate-12 transition-transform" />
                     TULIS BERITA BARU

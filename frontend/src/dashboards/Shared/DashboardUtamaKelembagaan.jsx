@@ -1,11 +1,9 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import { Users, FileText, Activity, MessageSquare, TrendingUp, Calendar, MapPin, ShieldCheck, Zap } from 'lucide-react';
-import { useTheme } from '../../contexts/ThemeContext';
 
 const DashboardUtamaKelembagaan = () => {
     const { user } = useContext(AuthContext);
-    const { theme } = useTheme();
 
     // Map roles to specific titles/descriptions
     const roleConfig = {

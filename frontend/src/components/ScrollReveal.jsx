@@ -18,13 +18,14 @@ const ScrollReveal = ({ children, delay = 0, className = "" }) => {
             rootMargin: '0px 0px -50px 0px'
         });
 
-        if (domRef.current) {
-            observer.observe(domRef.current);
+        const currentRef = domRef.current;
+        if (currentRef) {
+            observer.observe(currentRef);
         }
 
         return () => {
-            if (domRef.current) {
-                observer.unobserve(domRef.current);
+            if (currentRef) {
+                observer.unobserve(currentRef);
             }
         };
     }, []);

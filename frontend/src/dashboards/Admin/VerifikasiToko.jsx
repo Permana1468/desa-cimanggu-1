@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Store, CheckCircle, XCircle, Search, ShieldCheck, Mail, Phone, MapPin, Loader2, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Store, CheckCircle, XCircle, Search, ShieldCheck, Phone, MapPin, Loader2 } from 'lucide-react';
 import api from '../../services/api';
 
 const VerifikasiToko = () => {
@@ -9,12 +9,7 @@ const VerifikasiToko = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState('ALL'); // ALL, PENDING, VERIFIED
 
-    useEffect(() => {
-        fetchShops();
-    }, []);
-
-    const fetchShops = async () => {
-        setIsLoading(true);
+    const fetchShops = useCallback(async () => {
         try {
             const response = await api.get('/users/api/umkm/shops/');
             setShops(response.data);
@@ -23,7 +18,14 @@ const VerifikasiToko = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchShops();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchShops]);
 
     const handleToggleVerification = async (shop) => {
         const action = shop.is_verified ? 'batalkan verifikasi' : 'setujui verifikasi';
@@ -45,8 +47,10 @@ const VerifikasiToko = () => {
     };
 
     const filteredShops = shops.filter(shop => {
-        const matchesSearch = shop.shop_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                             shop.owner_name.toLowerCase().includes(searchQuery.toLowerCase());
+        const name = shop.shop_name || '';
+        const owner = shop.owner_name || '';
+        const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             owner.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesFilter = filterStatus === 'ALL' || 
                              (filterStatus === 'PENDING' && !shop.is_verified) || 
                              (filterStatus === 'VERIFIED' && shop.is_verified);
@@ -62,7 +66,7 @@ const VerifikasiToko = () => {
                         Verifikasi Toko UMKM
                         <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.5)] animate-pulse" />
                     </h2>
-                    <p className="text-gray-400 text-sm font-medium mt-1">Tinjauidentitas & kelayakan usaha warga sebelum dipublikasi ke Pasar Desa Digital.</p>
+                    <p className="text-gray-400 text-sm font-medium mt-1">Tinjau identitas & kelayakan usaha warga sebelum dipublikasi ke Pasar Desa Digital.</p>
                 </div>
                 <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10 shrink-0">
                     <button 

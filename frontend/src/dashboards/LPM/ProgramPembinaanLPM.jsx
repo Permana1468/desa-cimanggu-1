@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
-import { Calendar, Users, GraduationCap, Briefcase, Plus, Search, Filter, MoreVertical, CheckCircle2, Clock, PlayCircle } from 'lucide-react';
+import { Calendar, Users, GraduationCap, Briefcase, Plus, CheckCircle2, Clock, PlayCircle } from 'lucide-react';
 
 const ProgramPembinaanLPM = () => {
     const { user } = useAuth();
@@ -18,11 +18,7 @@ const ProgramPembinaanLPM = () => {
         status: 'Direncanakan'
     });
 
-    useEffect(() => {
-        fetchPrograms();
-    }, []);
-
-    const fetchPrograms = async () => {
+    const fetchPrograms = useCallback(async () => {
         try {
             setLoading(true);
             const response = await api.get('/users/api/program-pembinaan/');
@@ -32,7 +28,14 @@ const ProgramPembinaanLPM = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchPrograms();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchPrograms]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -81,7 +84,7 @@ const ProgramPembinaanLPM = () => {
                         <GraduationCap className="text-yellow-500 w-8 h-8" />
                         Program Pembinaan Masyarakat
                     </h2>
-                    <p className="text-gray-400 text-sm">Kelola program pelatihan dan pemberdayaan oleh LPM {user?.unit_detail}.</p>
+                    <p className="text-gray-400 text-sm">Kelola program pelatihan and pemberdayaan oleh LPM {user?.unit_detail}.</p>
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
@@ -110,7 +113,7 @@ const ProgramPembinaanLPM = () => {
                     <div>
                         <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Total Peserta</p>
                         <p className="text-2xl font-bold text-white">
-                            {programs.reduce((acc, curr) => acc + parseInt(curr.jumlah_peserta || 0), 0)}
+                            {programs.reduce((acc, curr) => acc + parseInt(curr.jumlah_peserta || 0, 10), 0)}
                         </p>
                     </div>
                 </div>
@@ -198,7 +201,7 @@ const ProgramPembinaanLPM = () => {
                                 <h3 className="text-lg font-bold text-white">Daftarkan Program Pembinaan</h3>
                                 <p className="text-xs text-gray-400">Penyelenggara: LPM {user?.unit_detail}</p>
                             </div>
-                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white text-2xl transitions">✕</button>
+                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white text-2xl">✕</button>
                         </div>
 
                         <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto custom-scrollbar">
@@ -318,4 +321,3 @@ const ProgramPembinaanLPM = () => {
 };
 
 export default ProgramPembinaanLPM;
-

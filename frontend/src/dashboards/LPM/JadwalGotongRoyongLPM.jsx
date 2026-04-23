@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
-import { Calendar, Clock, MapPin, User, Users, Plus, Search, CheckCircle, XCircle, AlertCircle, Info } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, Users, Plus, AlertCircle } from 'lucide-react';
 
 const JadwalGotongRoyongLPM = () => {
     const { user } = useAuth();
@@ -19,11 +19,7 @@ const JadwalGotongRoyongLPM = () => {
         status: 'Akan Datang'
     });
 
-    useEffect(() => {
-        fetchSchedules();
-    }, []);
-
-    const fetchSchedules = async () => {
+    const fetchSchedules = useCallback(async () => {
         try {
             setLoading(true);
             const response = await api.get('/users/api/gotong-royong/');
@@ -33,7 +29,14 @@ const JadwalGotongRoyongLPM = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchSchedules();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchSchedules]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -118,7 +121,7 @@ const JadwalGotongRoyongLPM = () => {
                                 </div>
                                 <div className="flex items-center gap-3 text-sm text-gray-400">
                                     <Clock className="w-4 h-4 text-blue-400" />
-                                    <span>{item.waktu.substring(0, 5)} WIB</span>
+                                    <span>{(item.waktu || '').substring(0, 5)} WIB</span>
                                 </div>
                                 <div className="flex items-center gap-3 text-sm text-gray-400 col-span-2">
                                     <MapPin className="w-4 h-4 text-red-400" />
@@ -209,4 +212,3 @@ const JadwalGotongRoyongLPM = () => {
 };
 
 export default JadwalGotongRoyongLPM;
-

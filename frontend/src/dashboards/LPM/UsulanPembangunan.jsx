@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
-
-// ... (GrafikTracking remains same)
 
 // Komponen Visualisasi Perjalanan Usulan (Stepper)
 const GrafikTracking = ({ status }) => {
@@ -103,20 +101,7 @@ const UsulanPembangunan = () => {
         foto_3: null
     });
 
-    useEffect(() => {
-        fetchUsulan();
-
-        // Handle Pre-fill from Aspirasi
-        if (location.state?.prefill) {
-            setFormData(prev => ({
-                ...prev,
-                ...location.state.prefill
-            }));
-            setIsModalOpen(true);
-        }
-    }, [location.state]);
-
-    const fetchUsulan = async () => {
+    const fetchUsulan = useCallback(async () => {
         try {
             setLoading(true);
             const response = await api.get('/users/api/musrenbang/');
@@ -126,7 +111,28 @@ const UsulanPembangunan = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchUsulan();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchUsulan]);
+
+    useEffect(() => {
+        // Handle Pre-fill from Aspirasi
+        const timer = setTimeout(() => {
+            if (location.state?.prefill) {
+                setFormData(prev => ({
+                    ...prev,
+                    ...location.state.prefill
+                }));
+                setIsModalOpen(true);
+            }
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [location.state]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -336,10 +342,10 @@ const UsulanPembangunan = () => {
                                                 <div key={idx} className="aspect-video bg-[#1e293b]/60 border border-white/10 rounded-xl overflow-hidden group relative">
                                                     {foto ? (
                                                         <img
-                                                            src={foto.startsWith('http') ? foto : `http://127.0.0.1:8000${foto}`}
+                                                            src={typeof foto === 'string' && foto.startsWith('http') ? foto : `http://127.0.0.1:8000${foto}`}
                                                             alt="Dokumentasi"
                                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform cursor-pointer"
-                                                            onClick={() => window.open(foto.startsWith('http') ? foto : `http://127.0.0.1:8000${foto}`, '_blank')}
+                                                            onClick={() => window.open(typeof foto === 'string' && foto.startsWith('http') ? foto : `http://127.0.0.1:8000${foto}`, '_blank')}
                                                         />
                                                     ) : (
                                                         <div className="w-full h-full flex flex-col items-center justify-center text-gray-700">
@@ -517,4 +523,3 @@ const UsulanPembangunan = () => {
 };
 
 export default UsulanPembangunan;
-

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 
 const RencanaAnggaran = () => {
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const usulan_id = searchParams.get('usulan_id');
 
     // State untuk Data Proyek
@@ -15,15 +16,7 @@ const RencanaAnggaran = () => {
     // State untuk Baris Item RAB
     const [rabItems, setRabItems] = useState([]);
 
-    useEffect(() => {
-        if (usulan_id) {
-            fetchData();
-        } else {
-            setLoading(false);
-        }
-    }, [usulan_id]);
-
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setLoading(true);
             // 1. Ambil Detail Usulan
@@ -51,7 +44,18 @@ const RencanaAnggaran = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [usulan_id]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (usulan_id) {
+                fetchData();
+            } else {
+                setLoading(false);
+            }
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [usulan_id, fetchData]);
 
     // Fungsi Format Rupiah
     const formatRupiah = (angka) => {
@@ -115,7 +119,7 @@ const RencanaAnggaran = () => {
             }
 
             alert(`✅ RAB Berhasil Disimpan sebagai ${isFinal ? 'FINAL' : 'DRAFT'}!`);
-            if (isFinal) window.location.href = '/dashboard/verifikasi-usulan';
+            if (isFinal) navigate('/dashboard/verifikasi-usulan');
         } catch (error) {
             console.error('Error saving RAB:', error);
             alert('❌ Gagal menyimpan RAB. Pastikan semua data valid.');
@@ -145,7 +149,7 @@ const RencanaAnggaran = () => {
                     Silakan pilih usulan pembangunan melalui Panel Verifikasi.
                 </p>
                 <button
-                    onClick={() => window.location.href = '/dashboard/verifikasi-usulan'}
+                    onClick={() => navigate('/dashboard/verifikasi-usulan')}
                     className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-3 rounded-xl transition shadow-lg shadow-blue-500/20"
                 >
                     Ke Halaman Verifikasi
@@ -313,4 +317,3 @@ const RencanaAnggaran = () => {
 };
 
 export default RencanaAnggaran;
-

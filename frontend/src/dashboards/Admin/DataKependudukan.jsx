@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { 
     Users, Search, Filter, UserPlus, Download, 
-    MoreHorizontal, Mail, Phone, MapPin, Calendar,
+    MoreHorizontal, Mail, Phone, MapPin, 
     ChevronLeft, ChevronRight, Loader2, UserCheck,
     TrendingUp, Activity
 } from 'lucide-react';
 
-const StatCard = ({ icon: Icon, label, value, color }) => (
-    <div className="bg-[rgba(15,23,42,0.55)] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 flex items-center gap-4 hover:border-white/[0.15] transition-all group">
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${color}-500/10 border border-${color}-500/20 text-${color}-400 group-hover:scale-110 transition-transform`}>
-            <Icon size={22} />
+const StatCard = (props) => {
+    const { icon: Icon, label, value, color } = props;
+    return (
+        <div className="bg-[rgba(15,23,42,0.55)] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 flex items-center gap-4 hover:border-white/[0.15] transition-all group">
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${color}-500/10 border border-${color}-500/20 text-${color}-400 group-hover:scale-110 transition-transform`}>
+                <Icon size={22} />
+            </div>
+            <div>
+                <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest mb-0.5">{label}</p>
+                <h3 className="text-2xl font-black text-white">{value}</h3>
+            </div>
         </div>
-        <div>
-            <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest mb-0.5">{label}</p>
-            <h3 className="text-2xl font-black text-white">{value}</h3>
-        </div>
-    </div>
-);
+    );
+};
 
 const DataKependudukan = () => {
     const [citizens, setCitizens] = useState([]);
@@ -25,13 +28,8 @@ const DataKependudukan = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filterDusun, setFilterDusun] = useState('Semua Dusun');
 
-    useEffect(() => {
-        fetchCitizens();
-    }, []);
-
-    const fetchCitizens = async () => {
+    const fetchCitizens = useCallback(async () => {
         try {
-            setLoading(true);
             const response = await api.get('/users/api/admin/users/');
             // Filter users with role 'WARGA' or any user if empty
             const warga = response.data.filter(u => u.role === 'WARGA' || u.role === 'ADMIN');
@@ -41,11 +39,20 @@ const DataKependudukan = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchCitizens();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchCitizens]);
 
     const filteredData = citizens.filter(c => {
-        const matchesSearch = (c.nama_lengkap || c.username || "").toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesDusun = filterDusun === 'Semua Dusun' || (c.unit_detail || "").includes(filterDusun);
+        const name = c.nama_lengkap || c.username || "";
+        const unit = c.unit_detail || "";
+        const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesDusun = filterDusun === 'Semua Dusun' || unit.includes(filterDusun);
         return matchesSearch && matchesDusun;
     });
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { MessageSquare, MapPin, Calendar, ArrowRight, CheckCircle2, Clock, Trash2 } from 'lucide-react';
@@ -8,11 +8,7 @@ const AspirasiWargaLPM = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        fetchAspirasi();
-    }, []);
-
-    const fetchAspirasi = async () => {
+    const fetchAspirasi = useCallback(async () => {
         try {
             setLoading(true);
             const response = await api.get('/users/api/aspirasi/');
@@ -22,7 +18,14 @@ const AspirasiWargaLPM = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchAspirasi();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchAspirasi]);
 
     const updateStatus = async (id, status) => {
         try {
@@ -148,4 +151,3 @@ const AspirasiWargaLPM = () => {
 };
 
 export default AspirasiWargaLPM;
-

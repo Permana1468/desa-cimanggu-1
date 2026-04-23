@@ -171,9 +171,8 @@ const Messages = () => {
                             </div>
                         </div>
 
-                        {/* Messages Area */}
                         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 space-y-6">
-                            {mockMessages.map((msg, idx) => (
+                            {mockMessages.map((msg) => (
                                 <div key={msg.id} className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}>
                                     <div className={`max-w-[85%] md:max-w-[70%] px-5 py-3.5 rounded-3xl relative
                                                    ${msg.sender === 'me' 

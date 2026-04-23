@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 
 const RealisasiAnggaran = () => {
     const [tagihan, setTagihan] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchTagihan();
-    }, []);
-
-    const fetchTagihan = async () => {
+    const fetchTagihan = useCallback(async () => {
         try {
             setLoading(true);
             // Fetch projects that are waiting for disbursement
@@ -21,7 +17,14 @@ const RealisasiAnggaran = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchTagihan();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchTagihan]);
 
     const handleCairkan = async (id, judul) => {
         if (!window.confirm(`Konfirmasi pencairan dana untuk proyek: ${judul}?`)) return;
@@ -99,4 +102,3 @@ const RealisasiAnggaran = () => {
 };
 
 export default RealisasiAnggaran;
-

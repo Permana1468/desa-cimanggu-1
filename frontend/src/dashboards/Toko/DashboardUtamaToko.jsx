@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import { Store, ShoppingBag, PlusCircle, Activity, Package, ExternalLink, ShieldCheck, AlertCircle, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -15,12 +15,7 @@ const DashboardUtamaToko = () => {
     const [shop, setShop] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        fetchStats();
-    }, []);
-
-    const fetchStats = async () => {
-        setIsLoading(true);
+    const fetchStats = useCallback(async () => {
         try {
             const [shopRes, productsRes] = await Promise.all([
                 api.get('/users/api/umkm/shops/'),
@@ -30,11 +25,11 @@ const DashboardUtamaToko = () => {
             const shopData = shopRes.data.length > 0 ? shopRes.data[0] : null;
             setShop(shopData);
             
-            const products = productsRes.data;
+            const products = productsRes.data || [];
             setStats({
                 totalProducts: products.length,
                 unverifiedProducts: products.length, // Logic: if shop not verified, products aren't either
-                outOfStock: products.filter(p => parseInt(p.stock) === 0).length,
+                outOfStock: products.filter(p => parseInt(p.stock || 0) === 0).length,
                 shopStatus: shopData ? (shopData.is_verified ? 'Aktif (Terverifikasi)' : 'Menunggu Verifikasi') : 'Belum Setup'
             });
         } catch (err) {
@@ -42,6 +37,18 @@ const DashboardUtamaToko = () => {
         } finally {
             setIsLoading(false);
         }
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchStats();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchStats]);
+
+    const handleRefresh = () => {
+        setIsLoading(true);
+        fetchStats();
     };
 
     if (isLoading) return (
@@ -80,8 +87,8 @@ const DashboardUtamaToko = () => {
                     <p className="text-gray-400 text-sm font-medium mt-1">Status terkini UMKM {shop?.shop_name || "Anda"}.</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button onClick={fetchStats} className="p-3 bg-white/5 border border-white/10 rounded-2xl text-gray-400 hover:text-white transition-colors">
-                        <RefreshCw size={14} />
+                    <button onClick={handleRefresh} className="p-3 bg-white/5 border border-white/10 rounded-2xl text-gray-400 hover:text-white transition-colors">
+                        <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} />
                     </button>
                     <Link 
                         to="/umkm" target="_blank"

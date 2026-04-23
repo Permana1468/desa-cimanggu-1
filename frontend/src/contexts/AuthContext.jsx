@@ -1,4 +1,5 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import api from '../services/api';
 
@@ -20,7 +21,7 @@ export const AuthProvider = ({ children }) => {
                         is_verified: decodedToken.is_verified
                     };
                 }
-            } catch (e) {
+            } catch {
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');
             }
@@ -29,13 +30,13 @@ export const AuthProvider = ({ children }) => {
     });
     const [loading, setLoading] = useState(true);
 
-    const logoutUser = () => {
+    const logoutUser = useCallback(() => {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         setUser(null);
-    };
+    }, []);
 
-    const fetchFullUserData = async (basicUser) => {
+    const fetchFullUserData = useCallback(async (basicUser) => {
         try {
             const res = await api.get('/users/api/users/me/');
             const fullData = {
@@ -49,21 +50,24 @@ export const AuthProvider = ({ children }) => {
             };
             setUser(fullData);
             return res.data;
-        } catch (e) {
-            console.error("Failed to fetch full user data", e);
+        } catch (error) {
+            console.error("Failed to fetch full user data", error);
         }
-    };
-
-    useEffect(() => {
-        if (user) {
-            fetchFullUserData(user);
-        }
-        setLoading(false);
     }, []);
 
-    const refreshUser = () => {
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (user && !user.nama_lengkap) {
+                fetchFullUserData(user);
+            }
+            setLoading(false);
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [user, fetchFullUserData]);
+
+    const refreshUser = useCallback(() => {
         if (user) fetchFullUserData(user);
-    };
+    }, [user, fetchFullUserData]);
 
     const loginUser = async (username, password, captcha_token, captcha_answer) => {
         const response = await api.post('/users/api/token/', {

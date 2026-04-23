@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Search, Trash2, ShieldAlert, Store, Loader2, AlertCircle, RefreshCw, ExternalLink } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ShoppingBag, Search, Trash2, ShieldAlert, Store, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import api from '../../services/api';
 
 const ManajemenProdukAdmin = () => {
@@ -8,12 +8,7 @@ const ManajemenProdukAdmin = () => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        fetchProducts();
-    }, []);
-
-    const fetchProducts = async () => {
-        setIsLoading(true);
+    const fetchProducts = useCallback(async () => {
         try {
             // Note: ADMIN role get_queryset returns all products
             const response = await api.get('/users/api/umkm/products/');
@@ -23,6 +18,19 @@ const ManajemenProdukAdmin = () => {
         } finally {
             setIsLoading(false);
         }
+    }, []);
+
+    useEffect(() => {
+        // Initial load
+        const timer = setTimeout(() => {
+            fetchProducts();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchProducts]);
+
+    const handleRefresh = () => {
+        setIsLoading(true);
+        fetchProducts();
     };
 
     const handleDeleteProduct = async (product) => {
@@ -41,8 +49,8 @@ const ManajemenProdukAdmin = () => {
     };
 
     const filteredProducts = products.filter(p => 
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        p.shop_name.toLowerCase().includes(searchQuery.toLowerCase())
+        (p.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (p.shop_name || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -57,7 +65,7 @@ const ManajemenProdukAdmin = () => {
                     <p className="text-gray-400 text-sm font-medium mt-1">Pantau & bersihkan konten produk yang tidak sesuai dari etalase desa.</p>
                 </div>
                 <button 
-                    onClick={fetchProducts}
+                    onClick={handleRefresh}
                     className="p-3 bg-white/5 border border-white/10 rounded-2xl text-gray-400 hover:text-white transition-colors"
                     title="Refresh Data"
                 >
@@ -122,7 +130,7 @@ const ManajemenProdukAdmin = () => {
                                             </div>
                                         </td>
                                         <td className="px-8 py-6">
-                                            <p className="text-sm font-black text-emerald-400">Rp {parseFloat(p.price).toLocaleString('id-ID')}</p>
+                                            <p className="text-sm font-black text-emerald-400">Rp {parseFloat(p.price || 0).toLocaleString('id-ID')}</p>
                                             <p className="text-[10px] font-black text-gray-600 uppercase tracking-tighter mt-1">Stok: {p.stock} Unit</p>
                                         </td>
                                         <td className="px-8 py-6 max-w-xs">

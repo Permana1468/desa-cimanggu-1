@@ -1,8 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FileText, Map as MapIcon, HeartPulse, Activity, ShieldCheck, Users, Search, ChevronLeft, ChevronRight, Calendar, Loader, Download, Clock } from 'lucide-react';
 import api from '../services/api';
 import ScrollReveal from '../components/ScrollReveal';
+
+const OrgCard = ({ role, name, foto, isMain = false }) => (
+    <div className={`group relative overflow-hidden flex flex-col items-center justify-center p-5 rounded-2xl border transition-all duration-500 ${isMain ? 'bg-gradient-to-b from-yellow-500/10 to-[#0f172a] border-yellow-500/30 shadow-[0_0_20px_rgba(234,179,8,0.1)]' : 'bg-[#1e293b]/60 border-white/10 backdrop-blur-md'} w-44 md:w-52 text-center z-10 hover:-translate-y-3 hover:scale-[1.03] hover:shadow-2xl hover:border-blue-400/30 hover:bg-[#1e293b]/80`}>
+        {/* Background Glow Effect */}
+        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0 ${isMain ? 'bg-yellow-500/5 blur-xl' : 'bg-blue-500/5 blur-xl'}`}></div>
+
+        {/* Light Sweep Animation */}
+        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out z-20"></div>
+
+        <div className="relative z-10 flex flex-col items-center">
+            {foto ? (
+                <img
+                    src={foto}
+                    alt={name}
+                    loading="lazy"
+                    className={`w-14 h-14 rounded-full mb-3 object-cover border-2 transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-1 ${isMain ? 'border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.3)]' : 'border-slate-700 group-hover:border-blue-500/50 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]'}`}
+                />
+            ) : (
+                <div className={`w-14 h-14 rounded-full mb-3 flex items-center justify-center text-xl transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-1 shadow-inner ${isMain ? 'bg-yellow-500/20 text-yellow-400 shadow-[0_0_20px_rgba(234,179,8,0.4)]' : 'bg-blue-500/20 text-blue-400 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]'} `}>
+                    👤
+                </div>
+            )}
+            <h4 className={`text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase mb-1.5 transition-colors ${isMain ? 'text-yellow-400' : 'text-blue-400 group-hover:text-blue-300'}`}>
+                {role}
+            </h4>
+            <h3 className="text-sm font-bold text-white leading-tight line-clamp-2">
+                {name}
+            </h3>
+        </div>
+    </div>
+);
 
 const LandingPage = () => {
     const [siteData, setSiteData] = useState(null);
@@ -69,67 +100,71 @@ const LandingPage = () => {
         }
     };
 
-    useEffect(() => {
-        const fetchAllData = async () => {
-            try {
-                // Fetch Settings
-                const resSettings = await api.get('/users/api/landing-page/');
-                if (resSettings.data && resSettings.data.length > 0) {
-                    const data = resSettings.data[0];
-                    setSiteData(data);
-                    const fetchedImages = [data.carousel_image_1, data.carousel_image_2, data.carousel_image_3].filter(img => img);
-                    if (fetchedImages.length > 0) {
-                        setHeroImages(fetchedImages);
-                    }
+    const fetchAllData = useCallback(async () => {
+        try {
+            // Fetch Settings
+            const resSettings = await api.get('/users/api/landing-page/');
+            if (resSettings.data && resSettings.data.length > 0) {
+                const data = resSettings.data[0];
+                setSiteData(data);
+                const fetchedImages = [data.carousel_image_1, data.carousel_image_2, data.carousel_image_3].filter(img => img);
+                if (fetchedImages.length > 0) {
+                    setHeroImages(fetchedImages);
                 }
-
-                // Fetch Berita
-                const resBerita = await api.get('/users/api/berita/');
-                if (resBerita.data) {
-                    const mappedNews = resBerita.data.map(item => ({
-                        id: item.id,
-                        title: item.judul,
-                        date: new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
-                        image: item.gambar_cover || "https://images.unsplash.com/photo-1593113544338-9cb52bce56bc?q=80&w=800&auto=format&fit=crop"
-                    }));
-                    setNewsData(mappedNews);
-                }
-
-                // Fetch Pejabat
-                const resPejabat = await api.get('/users/api/pejabat-desa/');
-                if (resPejabat.data) {
-                    const p = resPejabat.data;
-                    const mapPejabat = (obj) => ({ name: obj.nama, role: obj.jabatan, foto: obj.foto });
-
-                    const kadesData = p.find(x => x.level === 1);
-                    const sekdesData = p.find(x => x.level === 2);
-
-                    setOrgData({
-                        kades: kadesData ? mapPejabat(kadesData) : { name: "Belum Diisi", role: "Kepala Desa" },
-                        sekdes: sekdesData ? mapPejabat(sekdesData) : { name: "Belum Diisi", role: "Sekretaris Desa" },
-                        staff: p.filter(x => x.level === 3).map(mapPejabat),
-                        kadus: p.filter(x => x.level === 4).map(mapPejabat)
-                    });
-                }
-
-                // Fetch Gotong Royong Publik
-                const resGR = await api.get('/users/api/gotong-royong/publik/');
-                if (resGR.data) {
-                    setGotongRoyongData(resGR.data);
-                }
-            } catch (error) {
-                console.error("Gagal mendapatkan data Landing Page:", error);
-            } finally {
-                setIsLoading(false);
             }
-        };
-        fetchAllData();
+
+            // Fetch Berita
+            const resBerita = await api.get('/users/api/berita/');
+            if (resBerita.data) {
+                const mappedNews = resBerita.data.map(item => ({
+                    id: item.id,
+                    title: item.judul,
+                    date: new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+                    image: item.gambar_cover || "https://images.unsplash.com/photo-1593113544338-9cb52bce56bc?q=80&w=800&auto=format&fit=crop"
+                }));
+                setNewsData(mappedNews);
+            }
+
+            // Fetch Pejabat
+            const resPejabat = await api.get('/users/api/pejabat-desa/');
+            if (resPejabat.data) {
+                const p = resPejabat.data;
+                const mapPejabat = (obj) => ({ name: obj.nama, role: obj.jabatan, foto: obj.foto });
+
+                const kadesData = p.find(x => x.level === 1);
+                const sekdesData = p.find(x => x.level === 2);
+
+                setOrgData({
+                    kades: kadesData ? mapPejabat(kadesData) : { name: "Belum Diisi", role: "Kepala Desa" },
+                    sekdes: sekdesData ? mapPejabat(sekdesData) : { name: "Belum Diisi", role: "Sekretaris Desa" },
+                    staff: p.filter(x => x.level === 3).map(mapPejabat),
+                    kadus: p.filter(x => x.level === 4).map(mapPejabat)
+                });
+            }
+
+            // Fetch Gotong Royong Publik
+            const resGR = await api.get('/users/api/gotong-royong/publik/');
+            if (resGR.data) {
+                setGotongRoyongData(resGR.data);
+            }
+        } catch (error) {
+            console.error("Gagal mendapatkan data Landing Page:", error);
+        } finally {
+            setIsLoading(false);
+        }
     }, []);
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchAllData();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [fetchAllData]);
+
     // Navbar Animation States
-    const [pillStyle, setPillStyle] = React.useState({ left: 0, width: 0, opacity: 0 });
-    const [activeIndex, setActiveIndex] = React.useState(0);
-    const itemRefs = React.useRef([]);
+    const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
+    const [activeIndex, setActiveIndex] = useState(0);
+    const itemRefs = useRef([]);
 
     // Set initial position of the sliding pill
     useEffect(() => {
@@ -178,19 +213,18 @@ const LandingPage = () => {
         { name: 'UMKM', id: 'umkm', isRoute: true, path: '/umkm' },
         { name: 'Organisasi', id: 'organisasi' },
     ];
-    // newsData and orgData are now state variables
 
     // Efek Auto-Slide setiap 8 detik
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentSlide((prev) => (prev === heroImages.length - 1 ? 0 : prev + 1));
-        }, 8000); // Diubah ke 8 detik
+        }, 8000); 
 
         return () => clearInterval(timer);
     }, [heroImages.length]);
 
     // Handle Navbar Scroll
-    React.useEffect(() => {
+    useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 20);
         };
@@ -205,37 +239,6 @@ const LandingPage = () => {
     const prevNews = () => {
         setCurrentNewsIndex((prev) => (prev === 0 ? newsData.length - 1 : prev - 1));
     };
-
-    const OrgCard = ({ role, name, foto, isMain = false }) => (
-        <div className={`group relative overflow-hidden flex flex-col items-center justify-center p-5 rounded-2xl border transition-all duration-500 ${isMain ? 'bg-gradient-to-b from-yellow-500/10 to-[#0f172a] border-yellow-500/30 shadow-[0_0_20px_rgba(234,179,8,0.1)]' : 'bg-[#1e293b]/60 border-white/10 backdrop-blur-md'} w-44 md:w-52 text-center z-10 hover:-translate-y-3 hover:scale-[1.03] hover:shadow-2xl hover:border-blue-400/30 hover:bg-[#1e293b]/80`}>
-            {/* Background Glow Effect */}
-            <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0 ${isMain ? 'bg-yellow-500/5 blur-xl' : 'bg-blue-500/5 blur-xl'}`}></div>
-
-            {/* Light Sweep Animation */}
-            <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out z-20"></div>
-
-            <div className="relative z-10 flex flex-col items-center">
-                {foto ? (
-                    <img
-                        src={foto}
-                        alt={name}
-                        loading="lazy"
-                        className={`w-14 h-14 rounded-full mb-3 object-cover border-2 transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-1 ${isMain ? 'border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.3)]' : 'border-slate-700 group-hover:border-blue-500/50 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]'}`}
-                    />
-                ) : (
-                    <div className={`w-14 h-14 rounded-full mb-3 flex items-center justify-center text-xl transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-1 shadow-inner ${isMain ? 'bg-yellow-500/20 text-yellow-400 shadow-[0_0_20px_rgba(234,179,8,0.4)]' : 'bg-blue-500/20 text-blue-400 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]'} `}>
-                        👤
-                    </div>
-                )}
-                <h4 className={`text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase mb-1.5 transition-colors ${isMain ? 'text-yellow-400' : 'text-blue-400 group-hover:text-blue-300'}`}>
-                    {role}
-                </h4>
-                <h3 className="text-sm font-bold text-white leading-tight line-clamp-2">
-                    {name}
-                </h3>
-            </div>
-        </div>
-    );
 
     // Render loading skeleton jika data sedang diambil
     if (isLoading) {
@@ -770,7 +773,7 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                {/* 6. Berita Section - Coverflow Carousel (NEW) */}
+                {/* 6. Berita Section - Coverflow Carousel */}
                 <section id="berita" className="scroll-mt-32">
                     <ScrollReveal>
                         <div className="text-center mb-16">
@@ -800,30 +803,23 @@ const LandingPage = () => {
                                     return (
                                         <div
                                             key={news.id}
-                                            className={`absolute transition-all duration-500 ease-out cursor-pointer ${scale}`}
+                                            className={`absolute w-64 md:w-80 bg-slate-800 rounded-3xl overflow-hidden shadow-2xl border border-white/10 transition-all duration-700 ease-out cursor-pointer ${scale}`}
                                             style={{
                                                 transform: `translateX(${translateX}%) rotateY(${rotateY}deg)`,
                                                 zIndex: zIndex,
+                                                filter: isCenter ? 'none' : 'blur(2px)'
                                             }}
                                             onClick={() => setCurrentNewsIndex(idx)}
                                         >
-                                            <div className={`w-64 md:w-80 h-96 rounded-2xl overflow-hidden shadow-2xl bg-slate-800 border-2 ${isCenter ? 'border-yellow-400 shadow-[0_0_30px_rgba(234,179,8,0.4)]' : 'border-white/10'} flex flex-col`}>
-                                                <div className="h-48 overflow-hidden relative">
-                                                    <img src={news.image} alt={news.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
-                                                    {isCenter && (
-                                                        <div className="absolute top-3 left-3 px-3 py-1 bg-yellow-500 text-slate-900 text-xs font-bold rounded-full">
-                                                            Terbaru
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="p-5 flex flex-col flex-grow justify-between">
-                                                    <h4 className={`font-bold text-lg leading-snug line-clamp-3 ${isCenter ? 'text-white' : 'text-slate-300'}`}>
-                                                        {news.title}
-                                                    </h4>
-                                                    <div className="flex items-center gap-2 text-sm text-slate-400 mt-4">
-                                                        <Calendar size={14} />
-                                                        <span>{news.date}</span>
-                                                    </div>
+                                            <div className="aspect-[4/5] relative">
+                                                <img src={news.image} alt={news.title} className="w-full h-full object-cover" />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
+                                                <div className="absolute bottom-6 left-6 right-6">
+                                                    <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-2 block">{news.date}</span>
+                                                    <h4 className="text-lg font-bold text-white leading-tight line-clamp-3">{news.title}</h4>
+                                                    <Link to={`/berita/${news.id}`} className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-yellow-400 group">
+                                                        Baca Artikel <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                                                    </Link>
                                                 </div>
                                             </div>
                                         </div>
@@ -838,285 +834,246 @@ const LandingPage = () => {
                     </ScrollReveal>
                 </section>
 
-                {/* 7. Informasi Publik Section (Existing) */}
-                <section id="informasi" className="scroll-mt-32 pb-16">
+                {/* 7. Aspirasi Section (Existing) */}
+                <section id="aspirasi" className="scroll-mt-32">
                     <ScrollReveal>
                         <div className="text-center mb-16">
-                            <h3 className="text-red-400 font-bold tracking-widest uppercase text-sm mb-3">Transparansi</h3>
-                            <h2 className="text-3xl md:text-5xl font-extrabold text-white">Informasi Publik</h2>
+                            <h3 className="text-emerald-400 font-bold tracking-widest uppercase text-sm mb-3">Partisipasi Warga</h3>
+                            <h2 className="text-3xl md:text-5xl font-extrabold text-white">Kotak Aspirasi Digital</h2>
+                            <p className="text-slate-400 mt-4 max-w-2xl mx-auto">Sampaikan kritik, saran, atau usulan pembangunan langsung kepada Pemerintah Desa Cimanggu I secara transparan.</p>
                         </div>
-                    </ScrollReveal>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <ScrollReveal delay={0}>
-                            <div className="group bg-slate-800/40 hover:bg-slate-700/60 transition-all duration-300 backdrop-blur-md border border-white/5 rounded-3xl p-8 md:p-10 flex items-start gap-6 transform hover:-translate-y-2 hover:shadow-2xl cursor-pointer h-full">
-                                <div className="p-4 bg-red-500/20 text-red-400 rounded-2xl group-hover:scale-110 group-hover:bg-red-500/30 transition-all duration-300">
-                                    <Activity size={32} />
-                                </div>
-                                <div>
-                                    <h4 className="text-xl font-bold text-white mb-3 group-hover:text-red-400 transition-colors">Cakupan Stunting</h4>
-                                    <p className="text-slate-400 text-sm leading-relaxed mb-4">Akses data stunting desa berdasarkan hasil pendataan Posyandu per Rukun Warga secara berkala dan transparan.</p>
-                                    <a href="#" className="inline-flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 font-bold group-hover:translate-x-2 transition-transform">
-                                        Lihat Laporan Detail <ChevronRight size={16} />
-                                    </a>
-                                </div>
-                            </div>
-                        </ScrollReveal>
-
-                        <ScrollReveal delay={200}>
-                            <div className="group bg-slate-800/40 hover:bg-slate-700/60 transition-all duration-300 backdrop-blur-md border border-white/5 rounded-3xl p-8 md:p-10 flex items-start gap-6 transform hover:-translate-y-2 hover:shadow-2xl cursor-pointer h-full">
-                                <div className="p-4 bg-green-500/20 text-green-400 rounded-2xl group-hover:scale-110 group-hover:bg-green-500/30 transition-all duration-300">
-                                    <ShieldCheck size={32} />
-                                </div>
-                                <div>
-                                    <h4 className="text-xl font-bold text-white mb-3 group-hover:text-green-400 transition-colors">Produk Hukum Desa</h4>
-                                    <p className="text-slate-400 text-sm leading-relaxed mb-4">Dokumen Peraturan Desa (Perdes), Keputusan Kepala Desa, rancangan APBDES, dan legalitas desa lainnya.</p>
-                                    <a href="#" className="inline-flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 font-bold group-hover:translate-x-2 transition-transform">
-                                        Akses Arsip Dokumen <ChevronRight size={16} />
-                                    </a>
-                                </div>
-                            </div>
-                        </ScrollReveal>
-                    </div>
-                </section>
-            </div>
-
-            {/* Section Jadwal Gotong Royong (PUBLIC) */}
-            {gotongRoyongData.length > 0 && (
-                <section id="gotong-royong" className="py-24 px-4 bg-slate-900/50 relative">
-                    <div className="max-w-7xl mx-auto">
-                        <ScrollReveal>
-                            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-                                <div>
-                                    <h3 className="text-yellow-500 font-bold tracking-widest uppercase text-sm mb-3">Agenda Terdekat</h3>
-                                    <h2 className="text-3xl md:text-5xl font-extrabold text-white">Jadwal Gotong Royong</h2>
-                                </div>
-                                <p className="text-slate-400 max-w-md text-sm md:text-base">Mari berpartisipasi dalam kegiatan kerja bakti untuk membangun Desa Cimanggu I yang lebih bersih dan nyaman.</p>
-                            </div>
-                        </ScrollReveal>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {gotongRoyongData.map((item, idx) => (
-                                <ScrollReveal key={item.id} delay={idx * 150}>
-                                    <div className="bg-[#1e293b]/60 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 hover:border-yellow-500/30 transition-all group relative overflow-hidden h-full flex flex-col">
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/5 blur-3xl group-hover:bg-yellow-500/10 transition-colors pointer-events-none"></div>
-
-                                        <div className="flex justify-between items-start mb-6">
-                                            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl px-4 py-2 text-center min-w-[70px]">
-                                                <span className="block text-2xl font-black text-yellow-500 uppercase leading-none">
-                                                    {new Date(item.tanggal).getDate()}
-                                                </span>
-                                                <span className="text-[10px] font-bold text-yellow-600 uppercase tracking-tighter">
-                                                    {new Date(item.tanggal).toLocaleDateString('id-ID', { month: 'short' })}
-                                                </span>
-                                            </div>
-                                            <span className="bg-blue-500/10 text-blue-400 text-[10px] font-black border border-blue-500/20 px-3 py-1 rounded-full uppercase tracking-widest">
-                                                {item.status}
-                                            </span>
-                                        </div>
-
-                                        <h3 className="text-xl font-bold text-white mb-4 group-hover:text-yellow-400 transition-colors line-clamp-2">{item.judul}</h3>
-
-                                        <div className="space-y-4 mb-8 flex-1 text-sm">
-                                            <div className="flex items-center gap-3 text-slate-400">
-                                                <Clock className="text-blue-400" size={16} />
-                                                <span>{item.waktu.substring(0, 5)} WIB - Selesai</span>
-                                            </div>
-                                            <div className="flex items-center gap-3 text-slate-400">
-                                                <MapIcon className="text-red-400" size={16} />
-                                                <span className="line-clamp-1">{item.lokasi}</span>
-                                            </div>
-                                            <div className="flex items-center gap-3 text-slate-400">
-                                                <Users className="text-green-400" size={16} />
-                                                <span className="line-clamp-1">{item.peserta_target}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="pt-6 border-t border-white/5">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-slate-800 rounded-full border border-white/10 flex items-center justify-center text-xs font-bold text-slate-400 uppercase">
-                                                    {item.koordinator.substring(0, 2)}
-                                                </div>
-                                                <div>
-                                                    <p className="text-[10px] text-slate-500 uppercase font-bold tracking-tight">Koordinator Lapangan</p>
-                                                    <p className="text-sm font-bold text-slate-300">{item.koordinator}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ScrollReveal>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-            )}
-
-            {/* Section Aspirasi Warga */}
-            <section id="aspirasi" className="py-24 px-4 bg-[#0f172a] relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
-                <div className="max-w-5xl mx-auto">
-                    <div className="text-center mb-12">
-                        <ScrollReveal>
-                            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Aspirasi & Keluhan Warga</h2>
-                            <p className="text-slate-400 max-w-2xl mx-auto">Suara Anda membangun desa. Sampaikan inspirasi, keluhan, atau saran pembangunan langsung kepada unit wilayah terkait.</p>
-                        </ScrollReveal>
-                    </div>
-
-                    <ScrollReveal delay={200}>
-                        <div className="bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative">
-                            <div className="absolute -top-12 -right-12 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
-                            <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl"></div>
-
-                            <form onSubmit={handleAspirationSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-                                <div className="space-y-6">
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-300 mb-2">Nama Lengkap</label>
-                                        <input
-                                            type="text"
-                                            name="nama_warga"
-                                            required
-                                            value={aspirationForm.nama_warga}
-                                            onChange={handleAspirationChange}
-                                            className="w-full bg-slate-900/50 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors"
-                                            placeholder="Cth: Bpk. Jajang"
-                                        />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-300 mb-2">RT / RW</label>
-                                            <input
-                                                type="text"
-                                                name="rt_rw"
-                                                required
-                                                value={aspirationForm.rt_rw}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                            {/* Form Aspirasi */}
+                            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-2xl">
+                                <form onSubmit={handleAspirationSubmit} className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Nama Lengkap</label>
+                                            <input 
+                                                type="text" name="nama_warga" required
+                                                className="w-full bg-slate-900/50 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                                                placeholder="Sesuai KTP"
+                                                value={aspirationForm.nama_warga}
                                                 onChange={handleAspirationChange}
-                                                className="w-full bg-slate-900/50 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors"
-                                                placeholder="001 / 003"
                                             />
                                         </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-300 mb-2">Unit LPM Tujuan</label>
-                                            <select
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Wilayah RT/RW</label>
+                                            <input 
+                                                type="text" name="rt_rw" required
+                                                className="w-full bg-slate-900/50 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                                                placeholder="Cth: 001/005"
+                                                value={aspirationForm.rt_rw}
+                                                onChange={handleAspirationChange}
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Kategori Pesan</label>
+                                            <select 
+                                                name="kategori"
+                                                className="w-full bg-slate-900/50 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-emerald-500 transition-colors appearance-none"
+                                                value={aspirationForm.kategori}
+                                                onChange={handleAspirationChange}
+                                            >
+                                                <option value="Infrastruktur" className="bg-slate-900">Infrastruktur</option>
+                                                <option value="Kesehatan" className="bg-slate-900">Kesehatan</option>
+                                                <option value="Pendidikan" className="bg-slate-900">Pendidikan</option>
+                                                <option value="Kamtibmas" className="bg-slate-900">Kamtibmas</option>
+                                                <option value="Lainnya" className="bg-slate-900">Lainnya</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Dusun Tujuan</label>
+                                            <select 
                                                 name="wilayah_tujuan"
+                                                className="w-full bg-slate-900/50 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-emerald-500 transition-colors appearance-none"
                                                 value={aspirationForm.wilayah_tujuan}
                                                 onChange={handleAspirationChange}
-                                                className="w-full bg-slate-900/50 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors appearance-none"
                                             >
-                                                <option value="001">RW 001 / Dusun I</option>
-                                                <option value="002">RW 002 / Dusun II</option>
-                                                <option value="003">RW 003 / Dusun III</option>
-                                                <option value="004">RW 004 / Dusun IV</option>
+                                                <option value="001" className="bg-slate-900">Dusun I</option>
+                                                <option value="002" className="bg-slate-900">Dusun II</option>
+                                                <option value="003" className="bg-slate-900">Dusun III</option>
+                                                <option value="004" className="bg-slate-900">Dusun IV</option>
                                             </select>
                                         </div>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-300 mb-2">Kategori Aspirasi</label>
-                                        <div className="grid grid-cols-2 gap-3">
-                                            {['Infrastruktur', 'Sosial', 'Keamanan', 'Layanan Publik'].map(cat => (
-                                                <button
-                                                    key={cat}
-                                                    type="button"
-                                                    onClick={() => setAspirationForm(prev => ({ ...prev, kategori: cat }))}
-                                                    className={`py-3 px-4 rounded-xl text-xs font-bold transition-all border ${aspirationForm.kategori === cat
-                                                        ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/30'
-                                                        : 'bg-slate-900/50 border-white/5 text-slate-400 hover:border-white/20'
-                                                        }`}
-                                                >
-                                                    {cat}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="space-y-6 flex flex-col">
-                                    <div className="flex-1 flex flex-col">
-                                        <label className="block text-sm font-medium text-slate-300 mb-2">Isi Pesan / Aspirasi</label>
-                                        <textarea
-                                            name="isi_pesan"
-                                            required
+
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Isi Pesan / Aspirasi</label>
+                                        <textarea 
+                                            name="isi_pesan" required rows="4"
+                                            className="w-full bg-slate-900/50 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                                            placeholder="Tuliskan aspirasi Anda secara detail..."
                                             value={aspirationForm.isi_pesan}
                                             onChange={handleAspirationChange}
-                                            className="w-full bg-slate-900/50 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors flex-1 resize-none min-h-[160px]"
-                                            placeholder="Sampaikan aspirasi atau keluhan Anda di sini secara detail..."
                                         ></textarea>
                                     </div>
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmittingAspiration}
-                                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-5 rounded-2xl shadow-xl shadow-blue-600/20 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+
+                                    <button 
+                                        type="submit" disabled={isSubmittingAspiration}
+                                        className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-2xl transition-all shadow-lg hover:shadow-emerald-500/30 flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
                                     >
-                                        {isSubmittingAspiration ? (
-                                            <Loader className="animate-spin" size={20} />
-                                        ) : (
-                                            <>
-                                                <span>Kirim Aspirasi Sekarang</span>
-                                                < ChevronRight size={18} />
-                                            </>
-                                        )}
+                                        {isSubmittingAspiration ? 'Mengirim...' : 'Kirim Aspirasi Sekarang'} <ChevronRight size={20} />
                                     </button>
-                                    <p className="text-[10px] text-slate-500 text-center italic">Aspirasi Anda akan diteruskan ke LPM unit wilayah terkait untuk diproses lebih lanjut.</p>
+                                </form>
+                            </div>
+
+                            {/* Alur & Kontak */}
+                            <div className="space-y-8">
+                                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8">
+                                    <h4 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                                        <ShieldCheck className="text-emerald-400" /> Alur Pengaduan
+                                    </h4>
+                                    <div className="space-y-6">
+                                        {[
+                                            { step: '01', title: 'Verifikasi Identitas', desc: 'Sistem memverifikasi data pelapor untuk mencegah spam.' },
+                                            { step: '02', title: 'Review Admin', desc: 'Aspirasi ditelaah oleh operator desa untuk diteruskan ke bidang terkait.' },
+                                            { step: '03', title: 'Tindak Lanjut', desc: 'Aparatur desa memberikan respon atau menjadwalkan musyawarah.' },
+                                        ].map((item, i) => (
+                                            <div key={i} className="flex gap-5">
+                                                <span className="text-2xl font-black text-emerald-500/30">{item.step}</span>
+                                                <div>
+                                                    <h5 className="text-white font-bold mb-1">{item.title}</h5>
+                                                    <p className="text-slate-400 text-sm">{item.desc}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </form>
+                                
+                                <div className="bg-gradient-to-r from-emerald-900/40 to-blue-900/40 border border-emerald-500/20 rounded-3xl p-8 flex items-center justify-between group">
+                                    <div>
+                                        <h4 className="text-lg font-bold text-white mb-1">Butuh Bantuan Mendesak?</h4>
+                                        <p className="text-slate-400 text-xs">Hubungi layanan kedaruratan desa via WhatsApp</p>
+                                    </div>
+                                    <a href="https://wa.me/628123456789" target="_blank" rel="noreferrer" className="w-12 h-12 bg-emerald-500 text-slate-900 rounded-full flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform">
+                                        <Activity size={24} />
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </ScrollReveal>
-                </div>
-            </section>
+                </section>
 
-            {/* Footer */}
-            <footer className="border-t border-white/10 bg-slate-900 py-12 text-center px-4 relative z-20">
-                <img
-                    src="/images/logo-bogor.webp"
-                    alt="Logo Footer"
-                    className="w-12 h-12 object-contain drop-shadow-md mx-auto mb-6"
-                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                    style={{ cursor: 'pointer' }}
-                />
-                <h3 className="text-xl font-bold text-white mb-2">Pemerintah {siteData?.title || 'Desa Cimanggu I'}</h3>
-                <p className="text-slate-400 text-sm mb-8">{siteData?.description || 'Kecamatan Cibungbulang, Kabupaten Bogor'}</p>
-                <div className="flex justify-center gap-6 mb-8 text-slate-500">
-                    <a href="#" className="hover:text-white transition-colors">Kebijakan Privasi</a>
-                    <a href="#" className="hover:text-white transition-colors">Syarat & Ketentuan</a>
-                    <a href="#" className="hover:text-white transition-colors">Kontak</a>
-                </div>
-                <p className="text-slate-500 text-xs text-center border-t border-slate-800 pt-8 mt-4 max-w-4xl mx-auto">
-                    &copy; {new Date().getFullYear()} Pemerintah {siteData?.title || 'Desa Cimanggu I'}. <br />
+                {/* 8. Jadwal Gotong Royong Section (NEW) */}
+                <section id="gotong-royong" className="scroll-mt-32">
+                    <ScrollReveal>
+                        <div className="text-center mb-16">
+                            <h3 className="text-amber-400 font-bold tracking-widest uppercase text-sm mb-3">Kegiatan Warga</h3>
+                            <h2 className="text-3xl md:text-5xl font-extrabold text-white">Jadwal Gotong Royong</h2>
+                        </div>
 
-                </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {gotongRoyongData.length > 0 ? (
+                                gotongRoyongData.map((item, i) => (
+                                    <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors group">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="p-3 bg-amber-500/20 text-amber-500 rounded-xl">
+                                                <Calendar size={24} />
+                                            </div>
+                                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{new Date(item.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+                                        </div>
+                                        <h4 className="text-lg font-bold text-white mb-2 line-clamp-2">{item.judul_kegiatan}</h4>
+                                        <p className="text-slate-400 text-xs mb-4 flex items-center gap-1.5">
+                                            <MapIcon size={12} /> {item.lokasi}
+                                        </p>
+                                        <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                                            <span className="text-[10px] font-bold text-amber-500/80 uppercase">Dusun {item.dusun}</span>
+                                            <span className="text-[10px] text-slate-500 flex items-center gap-1"><Clock size={10} /> {item.jam || '08:00'}</span>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="col-span-full py-20 text-center text-slate-500 font-bold italic">
+                                    Belum ada jadwal gotong royong yang dipublikasikan.
+                                </div>
+                            )}
+                        </div>
+                    </ScrollReveal>
+                </section>
+
+            </div>
+
+            {/* --- FOOTER --- */}
+            <footer className="bg-[#080d19] pt-24 pb-12 border-t border-white/5 mt-20 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                <div className="max-w-7xl mx-auto px-6 md:px-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                        {/* Column 1: Brand */}
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-3">
+                                <img src={siteData?.logo || "/images/logo-bogor.webp"} alt="Logo" className="w-12 h-12" />
+                                <div className="font-black text-xl tracking-tight text-white uppercase leading-tight">
+                                    {siteData?.title || "DESA CIMANGGU I"}
+                                </div>
+                            </div>
+                            <p className="text-slate-400 text-sm leading-relaxed">
+                                Mewujudkan kemandirian desa melalui transformasi digital dan pemberdayaan masyarakat yang berkelanjutan.
+                            </p>
+                        </div>
+
+                        {/* Column 2: Tautan */}
+                        <div>
+                            <h5 className="text-white font-bold mb-6 uppercase tracking-widest text-xs">Tautan Penting</h5>
+                            <ul className="space-y-4 text-sm text-slate-400 font-medium">
+                                <li><a href="#profil" className="hover:text-yellow-400 transition-colors">Profil Desa</a></li>
+                                <li><a href="#layanan" className="hover:text-yellow-400 transition-colors">Layanan Publik</a></li>
+                                <li><a href="#organisasi" className="hover:text-yellow-400 transition-colors">Struktur Pemdes</a></li>
+                                <li><Link to="/umkm" className="hover:text-yellow-400 transition-colors">Katalog UMKM</Link></li>
+                            </ul>
+                        </div>
+
+                        {/* Column 3: Layanan Terkait */}
+                        <div>
+                            <h5 className="text-white font-bold mb-6 uppercase tracking-widest text-xs">E-Government</h5>
+                            <ul className="space-y-4 text-sm text-slate-400 font-medium">
+                                <li><a href="/login" className="hover:text-yellow-400 transition-colors">Portal Pegawai</a></li>
+                                <li><a href="/absensi" target="_blank" className="hover:text-yellow-400 transition-colors">Sistem Absensi</a></li>
+                                <li><a href="#aspirasi" className="hover:text-yellow-400 transition-colors">Kotak Aspirasi</a></li>
+                                <li><a href="/profil" className="hover:text-yellow-400 transition-colors">Transparansi Dana</a></li>
+                            </ul>
+                        </div>
+
+                        {/* Column 4: Kontak */}
+                        <div>
+                            <h5 className="text-white font-bold mb-6 uppercase tracking-widest text-xs">Hubungi Kami</h5>
+                            <ul className="space-y-4 text-sm text-slate-400 font-medium">
+                                <li className="flex gap-3">
+                                    <MapIcon size={18} className="text-yellow-500 shrink-0" />
+                                    <span>{siteData?.address || "Jl. Kapten Dasuki Bakri, Kec. Cibungbulang, Bogor, Jawa Barat 16630"}</span>
+                                </li>
+                                <li className="flex gap-3">
+                                    <Clock size={18} className="text-yellow-500 shrink-0" />
+                                    <span>Sen - Jum: 08:00 - 16:00 WIB</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <p className="text-slate-500 text-xs font-medium">
+                            &copy; {new Date().getFullYear()} {siteData?.title || "Pemerintah Desa Cimanggu I"}. Hak Cipta Dilindungi.
+                        </p>
+                        <div className="flex gap-8 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            <a href="/" className="hover:text-white transition-colors">Kebijakan Privasi</a>
+                            <a href="/" className="hover:text-white transition-colors">Syarat & Ketentuan</a>
+                        </div>
+                    </div>
+                </div>
             </footer>
 
-            {/* Global Custom CSS for specific Landing Page animations/utilities */}
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                .perspective-1000 {
-                    perspective: 1000px;
-                }
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
-                    height: 6px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: rgba(255, 255, 255, 0.05);
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(255, 255, 255, 0.2);
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(255, 255, 255, 0.4);
-                }
-                .hide-scrollbar::-webkit-scrollbar {
-                    display: none;
-                }
-                .hide-scrollbar {
-                    -ms-overflow-style: none;
-                    scrollbar-width: none;
-                }
-                html {
-                    scroll-behavior: smooth;
-                }
-                `
-            }} />
+            {/* Tombol Back to Top (Floating) */}
+            <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className={`fixed bottom-8 right-8 z-[60] bg-yellow-500 hover:bg-yellow-400 text-slate-900 w-12 h-12 rounded-full shadow-2xl flex items-center justify-center transition-all duration-500 transform ${isScrolled ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-20 opacity-0 scale-50'} `}
+            >
+                <ChevronRight size={24} className="-rotate-90" />
+            </button>
+
         </div>
     );
 };
